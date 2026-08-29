@@ -1,109 +1,64 @@
-# Aegis (OsirisV2)
+# Aegis
 
-Plataforma local de inteligência geoespacial e OSINT, inspirada no estilo operacional Palantir Gotham/Foundry. O repositório chama-se **OsirisV2**; o produto chama-se **Aegis**.
+[![Build](https://img.shields.io/github/actions/workflow/status/CoderDias/Aegis/dotnet-desktop.yml?branch=main&label=build&logo=githubactions&logoColor=white)](https://github.com/CoderDias/Aegis/actions/workflows/dotnet-desktop.yml)
+[![Docker Image](https://img.shields.io/github/actions/workflow/status/CoderDias/Aegis/docker-image.yml?branch=main&label=docker%20image&logo=docker&logoColor=white)](https://github.com/CoderDias/Aegis/actions/workflows/docker-image.yml)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/10.0)
+[![Blazor](https://img.shields.io/badge/Blazor-Server-512BD4?logo=blazor)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
+[![Docker](https://img.shields.io/badge/Docker-ghcr.io-2496ED?logo=docker)](https://github.com/CoderDias/Aegis/pkgs/container/aegis)
+[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE.txt)
+[![Release](https://img.shields.io/github/v/release/CoderDias/Aegis)](https://github.com/CoderDias/Aegis/releases)
 
-## Requisitos
+Plataforma local de inteligência geoespacial e OSINT — mapa interativo, investigações com assets e timeline, rastreamento aéreo (OpenSky), geocodificação, POIs via Overpass, e agregação de feeds (notícias, ransomware, sismos, navios, alertas meteorológicos, hosts). Tudo roda na sua máquina; dados de investigação ficam em SQLite local.
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- Conexão com internet para tiles de mapa, OpenSky, Nominatim e Overpass (investigações e SQLite funcionam offline)
-- Docker Desktop (opcional, para subir via Compose)
+## Como rodar
 
-## Primeira configuração
-
-Os arquivos com secrets **não vão para o git**. Use os templates:
-
-```powershell
-# Windows (PowerShell)
-Copy-Item src/Aegis.Web/appsettings.json.example src/Aegis.Web/appsettings.json
-Copy-Item src/Aegis.Web/appsettings.Development.json.example src/Aegis.Web/appsettings.Development.json
-Copy-Item .env.example .env
-```
+### Imagem Docker
 
 ```bash
-# Linux / macOS
-cp src/Aegis.Web/appsettings.json.example src/Aegis.Web/appsettings.json
-cp src/Aegis.Web/appsettings.Development.json.example src/Aegis.Web/appsettings.Development.json
+docker pull ghcr.io/coderdias/aegis:latest
 cp .env.example .env
+# edite .env com suas chaves
+
+docker run -d \
+  --name aegis \
+  -p 8080:8080 \
+  -v aegis-data:/app/App_Data \
+  --env-file .env \
+  ghcr.io/coderdias/aegis:latest
 ```
 
-Edite `src/Aegis.Web/appsettings.json` e preencha os placeholders:
+Acesse **http://localhost:8080**.
 
-| Chave | Descrição |
-|-------|-----------|
-| `OpenSky:ClientId` / `ClientSecret` | OAuth OpenSky v1.1 |
-| `AirStream:ApiToken` | Token ADSB.fi (fallback de voos) |
-| `Shodan:ApiKey` | Opcional — hosts enriquecidos |
-| `Censys:ApiToken` | Opcional — descoberta de hosts |
-| `GeoIntel:AisStreamApiKey` | Opcional — navios via AISStream |
-| `Nominatim:UserAgent` | **Obrigatório** — identifique sua instalação |
-
-Alternativa: [User Secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets) ou variáveis de ambiente (`OpenSky__ClientSecret`, etc.).
-
-## Execução local (.NET)
+### Docker manual (clone + build)
 
 ```bash
-dotnet restore Aegis.sln
-dotnet run --project src/Aegis.Web --urls http://localhost:5121
-```
-
-Abra **http://localhost:5121**.
-
-### Banco de dados
-
-O SQLite é criado automaticamente em `src/Aegis.Web/App_Data/aegis.db` na primeira execução (`Database:MigrateOnStartup=true`).
-
-Com `appsettings.Development.json`, `Database:SeedDemo=true` cria investigações demo (**Operação Alpha** e **Corredor Aéreo — Demo**).
-
-## Docker Compose
-
-```bash
+git clone https://github.com/CoderDias/Aegis.git
+cd Aegis
 cp .env.example .env
 # edite .env com suas chaves
 
 docker compose up --build
 ```
 
-Acesse **http://localhost:8080**. Dados persistem no volume `aegis-data`.
-
-Build manual (sem Compose):
+Ou, sem Compose:
 
 ```bash
 docker build -t aegis -f src/Aegis.Web/Dockerfile .
 docker run -p 8080:8080 -v aegis-data:/app/App_Data --env-file .env aegis
 ```
 
-## Configuração
+### .NET (sem Docker)
 
-Referência completa em `src/Aegis.Web/appsettings.json.example`:
+Requer [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
-| Seção | Descrição |
-|-------|-----------|
-| `ConnectionStrings:DefaultConnection` | Caminho do SQLite |
-| `OpenSky` | URL, intervalo de polling (15s padrão), credenciais OAuth |
-| `Nominatim` | URL e User-Agent **obrigatório** |
-| `OpenStreetMap` | Tiles Carto Dark + fallback OSM |
-| `Map` | Centro padrão (Brasil), zoom min/max |
-| `Overpass` | Instância e limites de área |
-| `Flights` | Retenção de tracks (7 dias), máx. markers |
-| `RegionalPrefetch` | Cache regional de hosts/OSM em background |
-
-## Funcionalidades
-
-- **Mapa interativo** — Leaflet, tema escuro, modal unificado no clique, adicionar ao caso
-- **Rastreamento aéreo** — OpenSky Network, filtros, histórico local
-- **Geocodificação** — Nominatim (busca + reverse), cache 7 dias
-- **POIs/edifícios** — Overpass API em zoom alto
-- **Investigações** — assets, anotações, timeline, geofences
-- **Intel multi-fonte** — notícias RSS, ransomware, sismos, navios, alertas meteorológicos, hosts
-
-## Arquitetura
-
+```bash
+git clone https://github.com/CoderDias/Aegis.git
+cd Aegis
+dotnet restore Aegis.sln
+dotnet run --project src/Aegis.Web --urls http://localhost:5121
 ```
-Aegis.Web          → Blazor Server (UI)
-Aegis.Application  → Casos de uso, DTOs
-Aegis.Domain       → Entidades, value objects, regras
-Aegis.Infrastructure → EF Core, HTTP clients, background jobs
-```
+
+Acesse **http://localhost:5121**. Na primeira execução, copie e preencha os arquivos `*.example` (`appsettings.json`, `.env`).
 
 ## Testes
 
@@ -133,3 +88,7 @@ Aegis agrega dados **públicos** para análise local. Não use para vigilância 
 ## Licença
 
 Projeto de referência / uso local. Verifique licenças das fontes de dados externas antes de redistribuir.
+
+---
+
+*Nota pessoal: este projeto foi quase totalmente feito por IA, sem fins lucrativos, sem motivos — só por diversão e para testar os limites de um agente de IA com prompts simples.*
