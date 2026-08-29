@@ -10,8 +10,31 @@
 
 Plataforma local de inteligência geoespacial e OSINT — mapa interativo, investigações com assets e timeline, rastreamento aéreo (OpenSky), geocodificação, POIs via Overpass, e agregação de feeds (notícias, ransomware, sismos, navios, alertas meteorológicos, hosts). Tudo roda na sua máquina; dados de investigação ficam em SQLite local.
 
-## Como rodar
+![Aegis — painel operacional](https://i.imgur.com/Hs6SEW2.png)
 
+## O que monitora
+
+| Objeto | Fonte |
+|--------|-------|
+| Aeronaves | [OpenSky Network](https://opensky-network.org) API (+ fallback ADSB.fi) |
+| Navios (AIS) | [AISStream](https://aisstream.io) WebSocket (+ fallback Overpass/OSM) |
+| Notícias (geo) | RSS público (G1, Agência Brasil, etc.) + geocodificação Nominatim |
+| Ransomware | [Ransomware.live](https://ransomware.live) API |
+| Sismos | [USGS](https://earthquake.usgs.gov) earthquake feed |
+| Hosts / Shodan | Shodan API, Censys API, descoberta passiva (InternetDB, TCP probe) |
+| Edifícios | Overpass API / [OpenStreetMap](https://www.openstreetmap.org) |
+| Estradas | Overpass API / OpenStreetMap |
+| POIs | Overpass API / OpenStreetMap + catálogo estático (gov.br) |
+| Torres rádio | Overpass API / OpenStreetMap |
+| Repetidoras | RepeaterBook (BR) + Overpass/OSM |
+| ERB / ANATEL | Catálogo estático (dados ANATEL) |
+| Câmeras públicas | Catálogo estático (OSINT Brazuca) |
+| Portos / ANTAQ | Catálogo estático (ANTAQ / OSINT Brazuca) |
+| Alertas meteorológicos | INMET, DWD, JMA, MeteoInfo (RU) |
+| INPE / focos 24h | [TerraBrasilis](https://terrabrasilis.dpi.inpe.br) WMS (Queimadas) |
+| Mapa de calor | Agregação local das camadas ativas no viewport |
+
+## Como rodar
 ### Imagem Docker
 
 ```bash
