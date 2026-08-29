@@ -1,0 +1,50 @@
+# Build and test the Aegis solution (.NET 10, Blazor Server).
+# Adapted from the GitHub desktop-app template — without WAP/MSIX signing.
+
+name: .NET Core Desktop
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: Aegis.sln
+      DotNet_Version: 10.0.x
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DotNet_Version }}
+
+      - name: Prepare local config (no secrets in repo)
+        shell: pwsh
+        run: |
+          Copy-Item src/Aegis.Web/appsettings.json.example src/Aegis.Web/appsettings.json
+          Copy-Item src/Aegis.Web/appsettings.Development.json.example src/Aegis.Web/appsettings.Development.json
+
+      - name: Restore
+        run: dotnet restore $env:Solution_Name
+
+      - name: Build
+        run: dotnet build $env:Solution_Name --configuration $env:Configuration --no-restore
+        env:
+          Configuration: ${{ matrix.configuration }}
+
+      - name: Test
+        run: dotnet test $env:Solution_Name --configuration $env:Configuration --no-build --verbosity normal
+        env:
+          Configuration: ${{ matrix.configuration }}
