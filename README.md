@@ -104,9 +104,15 @@ dotnet test Aegis.sln
 - Dados aéreos: [OpenSky Network](https://opensky-network.org)
 - Geocoding: [Nominatim](https://nominatim.org) / OSM Foundation
 
-## Uso ético
+## Uso ético e isenção de responsabilidade
 
-Aegis agrega dados **públicos** para análise local. Não use para vigilância ilegal, crime ou targeting de pessoas. Assets do tipo "Pessoa" são anotações manuais do operador — não há enriquecimento automático de PII.
+Aegis agrega dados **públicos** para análise local — pesquisa, estudo, hobby e testes em ambiente controlado. Não foi projetado, vendido ou mantido para vigilância ilegal, perseguição, stalking, assédio, fraude, invasão de sistemas, violação de privacidade ou qualquer atividade contrária à lei.
+
+**Você é o único responsável** pelo uso desta ferramenta, pelas configurações que escolher, pelas chaves de API que inserir, pelos dados que importar e por garantir conformidade com as leis aplicáveis na sua jurisdição (incluindo LGPD, Marco Civil, regulamentação de telecomunicações, termos de uso das APIs integradas etc.).
+
+**Isenção:** o autor e os colaboradores **não se responsabilizam** por danos diretos, indiretos, incidentais, consequenciais ou punitivos decorrentes do uso ou mau uso do software — inclusive quando terceiros utilizarem o projeto de forma ilegal, abusiva ou não autorizada. O software é fornecido **"no estado em que se encontra"**, sem garantias de adequação a um fim específico.
+
+Assets do tipo "Pessoa" são anotações manuais do operador — não há enriquecimento automático de PII. Se não souber se um uso é lícito, **não use**.
 
 ## Licença
 
