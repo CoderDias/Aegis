@@ -1,0 +1,21 @@
+﻿@inherits LayoutComponentBase
+@inject WorkspaceState Workspace
+
+<div class="aegis-app">
+    <TopBar @rendermode="InteractiveServer" />
+    <div class="aegis-body">
+        <NavRail @rendermode="InteractiveServer" />
+        <main class="aegis-main">
+            @Body
+        </main>
+    </div>
+</div>
+
+<InvestigationAlertsPanel @rendermode="InteractiveServer" />
+<NotificationHost @rendermode="InteractiveServer" />
+
+<div id="blazor-error-ui" data-nosnippet>
+    Erro não tratado na aplicação.
+    <a href="." class="reload">Recarregar</a>
+    <span class="dismiss">✕</span>
+</div>

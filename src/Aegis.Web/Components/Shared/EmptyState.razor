@@ -1,0 +1,22 @@
+<div class="aegis-empty">
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <span style="font-size:24px" aria-hidden="true">@Icon</span>
+    }
+    <p class="aegis-empty__title">@Title</p>
+    @if (!string.IsNullOrEmpty(Description))
+    {
+        <p style="margin:0;font-size:var(--font-sm)">@Description</p>
+    }
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Nenhum dado";
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

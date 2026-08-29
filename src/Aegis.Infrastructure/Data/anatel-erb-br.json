@@ -1,0 +1,3682 @@
+﻿[
+    {
+        "id":  1,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.499568,
+        "lng":  -46.737728
+    },
+    {
+        "id":  2,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.543171,
+        "lng":  -46.72947
+    },
+    {
+        "id":  3,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.482677,
+        "lng":  -46.626123
+    },
+    {
+        "id":  4,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.471625,
+        "lng":  -46.709623
+    },
+    {
+        "id":  5,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.548319,
+        "lng":  -46.68393
+    },
+    {
+        "id":  6,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.621927,
+        "lng":  -46.624765
+    },
+    {
+        "id":  7,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.455759,
+        "lng":  -46.606841
+    },
+    {
+        "id":  8,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.654342,
+        "lng":  -46.752966
+    },
+    {
+        "id":  9,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.455145,
+        "lng":  -46.618009
+    },
+    {
+        "id":  10,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.486654,
+        "lng":  -46.735672
+    },
+    {
+        "id":  11,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.492223,
+        "lng":  -46.625076
+    },
+    {
+        "id":  12,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.687547,
+        "lng":  -46.68754
+    },
+    {
+        "id":  13,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.45368,
+        "lng":  -46.778814
+    },
+    {
+        "id":  14,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.458445,
+        "lng":  -46.555492
+    },
+    {
+        "id":  15,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.655264,
+        "lng":  -46.772098
+    },
+    {
+        "id":  16,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.465507,
+        "lng":  -46.592063
+    },
+    {
+        "id":  17,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.625012,
+        "lng":  -46.548272
+    },
+    {
+        "id":  18,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.505556,
+        "lng":  -46.736906
+    },
+    {
+        "id":  19,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.518632,
+        "lng":  -46.625226
+    },
+    {
+        "id":  20,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.57389,
+        "lng":  -46.568025
+    },
+    {
+        "id":  21,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.634466,
+        "lng":  -46.776024
+    },
+    {
+        "id":  22,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.619768,
+        "lng":  -46.759402
+    },
+    {
+        "id":  23,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.678717,
+        "lng":  -46.640772
+    },
+    {
+        "id":  24,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.460657,
+        "lng":  -46.648246
+    },
+    {
+        "id":  25,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.550121,
+        "lng":  -46.777314
+    },
+    {
+        "id":  26,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.696131,
+        "lng":  -46.779078
+    },
+    {
+        "id":  27,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.503757,
+        "lng":  -46.769638
+    },
+    {
+        "id":  28,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.421309,
+        "lng":  -46.641642
+    },
+    {
+        "id":  29,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.515018,
+        "lng":  -46.766667
+    },
+    {
+        "id":  30,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.657436,
+        "lng":  -46.648915
+    },
+    {
+        "id":  31,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.54029,
+        "lng":  -46.65979
+    },
+    {
+        "id":  32,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.427822,
+        "lng":  -46.603978
+    },
+    {
+        "id":  33,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.694176,
+        "lng":  -46.515496
+    },
+    {
+        "id":  34,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.60015,
+        "lng":  -46.56679
+    },
+    {
+        "id":  35,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.669057,
+        "lng":  -46.644355
+    },
+    {
+        "id":  36,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.467167,
+        "lng":  -46.735435
+    },
+    {
+        "id":  37,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.635302,
+        "lng":  -46.602501
+    },
+    {
+        "id":  38,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.403894,
+        "lng":  -46.550133
+    },
+    {
+        "id":  39,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.485515,
+        "lng":  -46.693158
+    },
+    {
+        "id":  40,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.403051,
+        "lng":  -46.58475
+    },
+    {
+        "id":  41,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.596378,
+        "lng":  -46.501281
+    },
+    {
+        "id":  42,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.634076,
+        "lng":  -46.700367
+    },
+    {
+        "id":  43,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.635163,
+        "lng":  -46.602298
+    },
+    {
+        "id":  44,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.67188,
+        "lng":  -46.481955
+    },
+    {
+        "id":  45,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.668172,
+        "lng":  -46.683607
+    },
+    {
+        "id":  46,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.474655,
+        "lng":  -46.532252
+    },
+    {
+        "id":  47,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.687375,
+        "lng":  -46.527851
+    },
+    {
+        "id":  48,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.628578,
+        "lng":  -46.502134
+    },
+    {
+        "id":  49,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.616166,
+        "lng":  -46.616397
+    },
+    {
+        "id":  50,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.512401,
+        "lng":  -46.722307
+    },
+    {
+        "id":  51,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.645086,
+        "lng":  -46.771125
+    },
+    {
+        "id":  52,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.419962,
+        "lng":  -46.483772
+    },
+    {
+        "id":  53,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.659434,
+        "lng":  -46.514981
+    },
+    {
+        "id":  54,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.611569,
+        "lng":  -46.612004
+    },
+    {
+        "id":  55,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.486256,
+        "lng":  -46.743422
+    },
+    {
+        "id":  56,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.582566,
+        "lng":  -46.515722
+    },
+    {
+        "id":  57,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.595539,
+        "lng":  -46.490861
+    },
+    {
+        "id":  58,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.537095,
+        "lng":  -46.495677
+    },
+    {
+        "id":  59,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.661503,
+        "lng":  -46.7478
+    },
+    {
+        "id":  60,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.645444,
+        "lng":  -46.49791
+    },
+    {
+        "id":  61,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.578799,
+        "lng":  -46.602762
+    },
+    {
+        "id":  62,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.662515,
+        "lng":  -46.506794
+    },
+    {
+        "id":  63,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.432836,
+        "lng":  -46.72821
+    },
+    {
+        "id":  64,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.537339,
+        "lng":  -46.595221
+    },
+    {
+        "id":  65,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.4533,
+        "lng":  -46.555805
+    },
+    {
+        "id":  66,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.598095,
+        "lng":  -46.622322
+    },
+    {
+        "id":  67,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.625867,
+        "lng":  -46.5136
+    },
+    {
+        "id":  68,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.643131,
+        "lng":  -46.696862
+    },
+    {
+        "id":  69,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.449915,
+        "lng":  -46.587992
+    },
+    {
+        "id":  70,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.573847,
+        "lng":  -46.538458
+    },
+    {
+        "id":  71,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.466362,
+        "lng":  -46.49399
+    },
+    {
+        "id":  72,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.560018,
+        "lng":  -46.512771
+    },
+    {
+        "id":  73,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.653146,
+        "lng":  -46.603741
+    },
+    {
+        "id":  74,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.509717,
+        "lng":  -46.62973
+    },
+    {
+        "id":  75,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.66669,
+        "lng":  -46.538199
+    },
+    {
+        "id":  76,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.543636,
+        "lng":  -46.563795
+    },
+    {
+        "id":  77,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.541052,
+        "lng":  -46.543409
+    },
+    {
+        "id":  78,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.640435,
+        "lng":  -46.499577
+    },
+    {
+        "id":  79,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.683295,
+        "lng":  -46.715667
+    },
+    {
+        "id":  80,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.648544,
+        "lng":  -46.6926
+    },
+    {
+        "id":  81,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.435381,
+        "lng":  -46.63899
+    },
+    {
+        "id":  82,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.563863,
+        "lng":  -46.550978
+    },
+    {
+        "id":  83,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.400199,
+        "lng":  -46.673282
+    },
+    {
+        "id":  84,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.606605,
+        "lng":  -46.724949
+    },
+    {
+        "id":  85,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.522084,
+        "lng":  -46.59615
+    },
+    {
+        "id":  86,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.413163,
+        "lng":  -46.756441
+    },
+    {
+        "id":  87,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.435807,
+        "lng":  -46.686279
+    },
+    {
+        "id":  88,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.435577,
+        "lng":  -46.512795
+    },
+    {
+        "id":  89,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.610494,
+        "lng":  -46.605927
+    },
+    {
+        "id":  90,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.432761,
+        "lng":  -46.656722
+    },
+    {
+        "id":  91,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.503343,
+        "lng":  -46.484601
+    },
+    {
+        "id":  92,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.417826,
+        "lng":  -46.554336
+    },
+    {
+        "id":  93,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.59776,
+        "lng":  -46.582827
+    },
+    {
+        "id":  94,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.49441,
+        "lng":  -46.623437
+    },
+    {
+        "id":  95,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.596837,
+        "lng":  -46.714447
+    },
+    {
+        "id":  96,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.506897,
+        "lng":  -46.59835
+    },
+    {
+        "id":  97,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.50044,
+        "lng":  -46.750132
+    },
+    {
+        "id":  98,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.447236,
+        "lng":  -46.692738
+    },
+    {
+        "id":  99,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.594605,
+        "lng":  -46.779805
+    },
+    {
+        "id":  100,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.594702,
+        "lng":  -46.733369
+    },
+    {
+        "id":  101,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.506816,
+        "lng":  -46.747438
+    },
+    {
+        "id":  102,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.645931,
+        "lng":  -46.583262
+    },
+    {
+        "id":  103,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.50744,
+        "lng":  -46.584258
+    },
+    {
+        "id":  104,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.59313,
+        "lng":  -46.595404
+    },
+    {
+        "id":  105,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.571441,
+        "lng":  -46.721397
+    },
+    {
+        "id":  106,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.533684,
+        "lng":  -46.61874
+    },
+    {
+        "id":  107,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.57659,
+        "lng":  -46.583597
+    },
+    {
+        "id":  108,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.490987,
+        "lng":  -46.712321
+    },
+    {
+        "id":  109,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.537878,
+        "lng":  -46.536107
+    },
+    {
+        "id":  110,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.60482,
+        "lng":  -46.603221
+    },
+    {
+        "id":  111,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.564545,
+        "lng":  -46.483057
+    },
+    {
+        "id":  112,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.442171,
+        "lng":  -46.767593
+    },
+    {
+        "id":  113,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.573953,
+        "lng":  -46.730906
+    },
+    {
+        "id":  114,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.578111,
+        "lng":  -46.779457
+    },
+    {
+        "id":  115,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.561613,
+        "lng":  -46.68731
+    },
+    {
+        "id":  116,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.485612,
+        "lng":  -46.655794
+    },
+    {
+        "id":  117,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.643479,
+        "lng":  -46.540921
+    },
+    {
+        "id":  118,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.427847,
+        "lng":  -46.498112
+    },
+    {
+        "id":  119,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.637474,
+        "lng":  -46.49583
+    },
+    {
+        "id":  120,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Sao Paulo",
+        "lat":  -23.509969,
+        "lng":  -46.588053
+    },
+    {
+        "id":  121,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.908788,
+        "lng":  -43.212096
+    },
+    {
+        "id":  122,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.003827,
+        "lng":  -43.072869
+    },
+    {
+        "id":  123,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.809325,
+        "lng":  -43.153416
+    },
+    {
+        "id":  124,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.939475,
+        "lng":  -43.257784
+    },
+    {
+        "id":  125,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.003731,
+        "lng":  -43.288783
+    },
+    {
+        "id":  126,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.024788,
+        "lng":  -43.2335
+    },
+    {
+        "id":  127,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.83149,
+        "lng":  -43.091812
+    },
+    {
+        "id":  128,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.886418,
+        "lng":  -43.259073
+    },
+    {
+        "id":  129,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.960773,
+        "lng":  -43.159358
+    },
+    {
+        "id":  130,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.029748,
+        "lng":  -43.133758
+    },
+    {
+        "id":  131,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.902706,
+        "lng":  -43.101187
+    },
+    {
+        "id":  132,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.857224,
+        "lng":  -43.073702
+    },
+    {
+        "id":  133,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.816444,
+        "lng":  -43.205463
+    },
+    {
+        "id":  134,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.823906,
+        "lng":  -43.099165
+    },
+    {
+        "id":  135,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.80403,
+        "lng":  -43.095308
+    },
+    {
+        "id":  136,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.008585,
+        "lng":  -43.098547
+    },
+    {
+        "id":  137,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.826507,
+        "lng":  -43.245191
+    },
+    {
+        "id":  138,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.798084,
+        "lng":  -43.096485
+    },
+    {
+        "id":  139,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.923474,
+        "lng":  -43.072369
+    },
+    {
+        "id":  140,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.96499,
+        "lng":  -43.093053
+    },
+    {
+        "id":  141,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.891921,
+        "lng":  -43.069576
+    },
+    {
+        "id":  142,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.015631,
+        "lng":  -43.086768
+    },
+    {
+        "id":  143,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.825984,
+        "lng":  -43.196507
+    },
+    {
+        "id":  144,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.795842,
+        "lng":  -43.258344
+    },
+    {
+        "id":  145,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.90703,
+        "lng":  -43.057584
+    },
+    {
+        "id":  146,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.897031,
+        "lng":  -43.132388
+    },
+    {
+        "id":  147,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.998887,
+        "lng":  -43.242188
+    },
+    {
+        "id":  148,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.00225,
+        "lng":  -43.253242
+    },
+    {
+        "id":  149,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.938247,
+        "lng":  -43.154622
+    },
+    {
+        "id":  150,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.859652,
+        "lng":  -43.223751
+    },
+    {
+        "id":  151,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.914447,
+        "lng":  -43.141453
+    },
+    {
+        "id":  152,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.019469,
+        "lng":  -43.221985
+    },
+    {
+        "id":  153,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.807561,
+        "lng":  -43.078399
+    },
+    {
+        "id":  154,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.954356,
+        "lng":  -43.2326
+    },
+    {
+        "id":  155,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.830625,
+        "lng":  -43.080665
+    },
+    {
+        "id":  156,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.831128,
+        "lng":  -43.181054
+    },
+    {
+        "id":  157,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.841983,
+        "lng":  -43.076443
+    },
+    {
+        "id":  158,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.819259,
+        "lng":  -43.256103
+    },
+    {
+        "id":  159,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.882699,
+        "lng":  -43.179671
+    },
+    {
+        "id":  160,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.921091,
+        "lng":  -43.127384
+    },
+    {
+        "id":  161,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.941895,
+        "lng":  -43.256332
+    },
+    {
+        "id":  162,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.003749,
+        "lng":  -43.171395
+    },
+    {
+        "id":  163,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.945626,
+        "lng":  -43.177561
+    },
+    {
+        "id":  164,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.993059,
+        "lng":  -43.139469
+    },
+    {
+        "id":  165,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.945225,
+        "lng":  -43.094531
+    },
+    {
+        "id":  166,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.948771,
+        "lng":  -43.221625
+    },
+    {
+        "id":  167,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.931721,
+        "lng":  -43.157119
+    },
+    {
+        "id":  168,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.995801,
+        "lng":  -43.06767
+    },
+    {
+        "id":  169,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.851351,
+        "lng":  -43.145188
+    },
+    {
+        "id":  170,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.811545,
+        "lng":  -43.186769
+    },
+    {
+        "id":  171,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.003254,
+        "lng":  -43.176471
+    },
+    {
+        "id":  172,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.866394,
+        "lng":  -43.062461
+    },
+    {
+        "id":  173,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.959284,
+        "lng":  -43.116875
+    },
+    {
+        "id":  174,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.899955,
+        "lng":  -43.175502
+    },
+    {
+        "id":  175,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.993302,
+        "lng":  -43.138924
+    },
+    {
+        "id":  176,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.915992,
+        "lng":  -43.164034
+    },
+    {
+        "id":  177,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.871277,
+        "lng":  -43.223928
+    },
+    {
+        "id":  178,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.913757,
+        "lng":  -43.27937
+    },
+    {
+        "id":  179,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.988578,
+        "lng":  -43.236094
+    },
+    {
+        "id":  180,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.855448,
+        "lng":  -43.202399
+    },
+    {
+        "id":  181,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.021541,
+        "lng":  -43.184081
+    },
+    {
+        "id":  182,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.823284,
+        "lng":  -43.279805
+    },
+    {
+        "id":  183,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.892975,
+        "lng":  -43.128831
+    },
+    {
+        "id":  184,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.82332,
+        "lng":  -43.279487
+    },
+    {
+        "id":  185,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.813306999999998,
+        "lng":  -43.081766
+    },
+    {
+        "id":  186,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.000075,
+        "lng":  -43.052499
+    },
+    {
+        "id":  187,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.000334,
+        "lng":  -43.225359
+    },
+    {
+        "id":  188,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.993778,
+        "lng":  -43.230268
+    },
+    {
+        "id":  189,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.874269,
+        "lng":  -43.139497
+    },
+    {
+        "id":  190,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.010749,
+        "lng":  -43.167815
+    },
+    {
+        "id":  191,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.817606,
+        "lng":  -43.153836
+    },
+    {
+        "id":  192,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.913063,
+        "lng":  -43.168414
+    },
+    {
+        "id":  193,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.802701,
+        "lng":  -43.220018
+    },
+    {
+        "id":  194,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.003975,
+        "lng":  -43.073017
+    },
+    {
+        "id":  195,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.919502,
+        "lng":  -43.097957
+    },
+    {
+        "id":  196,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.883296,
+        "lng":  -43.15045
+    },
+    {
+        "id":  197,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -23.018648,
+        "lng":  -43.278504
+    },
+    {
+        "id":  198,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.809917,
+        "lng":  -43.145114
+    },
+    {
+        "id":  199,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.835053,
+        "lng":  -43.077763
+    },
+    {
+        "id":  200,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Rio de Janeiro",
+        "lat":  -22.817951,
+        "lng":  -43.239015
+    },
+    {
+        "id":  201,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.744915,
+        "lng":  -47.881856
+    },
+    {
+        "id":  202,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.86142,
+        "lng":  -47.784762
+    },
+    {
+        "id":  203,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.848561,
+        "lng":  -47.89687
+    },
+    {
+        "id":  204,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.88183,
+        "lng":  -47.944478
+    },
+    {
+        "id":  205,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.748022,
+        "lng":  -47.976966
+    },
+    {
+        "id":  206,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.844959,
+        "lng":  -47.841897
+    },
+    {
+        "id":  207,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.705333,
+        "lng":  -47.972478
+    },
+    {
+        "id":  208,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.83958,
+        "lng":  -47.973417
+    },
+    {
+        "id":  209,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.79231,
+        "lng":  -47.786408
+    },
+    {
+        "id":  210,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.837864,
+        "lng":  -47.845008
+    },
+    {
+        "id":  211,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.72134,
+        "lng":  -47.967292
+    },
+    {
+        "id":  212,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.855676,
+        "lng":  -47.903397
+    },
+    {
+        "id":  213,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.751822,
+        "lng":  -47.916499
+    },
+    {
+        "id":  214,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.738992,
+        "lng":  -47.899186
+    },
+    {
+        "id":  215,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.726877,
+        "lng":  -47.97871
+    },
+    {
+        "id":  216,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.782595,
+        "lng":  -47.938575
+    },
+    {
+        "id":  217,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.743915,
+        "lng":  -47.862586
+    },
+    {
+        "id":  218,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.741251,
+        "lng":  -47.787959
+    },
+    {
+        "id":  219,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.816051,
+        "lng":  -47.885335
+    },
+    {
+        "id":  220,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.749754,
+        "lng":  -47.84911
+    },
+    {
+        "id":  221,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.787441,
+        "lng":  -47.790697
+    },
+    {
+        "id":  222,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.74225,
+        "lng":  -47.940491
+    },
+    {
+        "id":  223,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.766232,
+        "lng":  -47.872346
+    },
+    {
+        "id":  224,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.699627,
+        "lng":  -47.873137
+    },
+    {
+        "id":  225,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.765058,
+        "lng":  -47.946341
+    },
+    {
+        "id":  226,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.714034,
+        "lng":  -47.892703
+    },
+    {
+        "id":  227,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.771818,
+        "lng":  -47.789714
+    },
+    {
+        "id":  228,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.814973,
+        "lng":  -47.873948
+    },
+    {
+        "id":  229,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.804303,
+        "lng":  -47.960088
+    },
+    {
+        "id":  230,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.709134,
+        "lng":  -47.819625
+    },
+    {
+        "id":  231,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.698886,
+        "lng":  -47.782069
+    },
+    {
+        "id":  232,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.726847,
+        "lng":  -47.931551
+    },
+    {
+        "id":  233,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.804976,
+        "lng":  -47.964627
+    },
+    {
+        "id":  234,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.738755,
+        "lng":  -47.796363
+    },
+    {
+        "id":  235,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.698726,
+        "lng":  -47.824289
+    },
+    {
+        "id":  236,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.725841,
+        "lng":  -47.956193
+    },
+    {
+        "id":  237,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.781743,
+        "lng":  -47.882018
+    },
+    {
+        "id":  238,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Brasilia",
+        "lat":  -15.803731,
+        "lng":  -47.957936
+    },
+    {
+        "id":  239,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Brasilia",
+        "lat":  -15.840522,
+        "lng":  -47.952468
+    },
+    {
+        "id":  240,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Brasilia",
+        "lat":  -15.75944,
+        "lng":  -47.917947
+    },
+    {
+        "id":  241,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -20.017853,
+        "lng":  -43.897099
+    },
+    {
+        "id":  242,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.875507,
+        "lng":  -43.84074
+    },
+    {
+        "id":  243,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.878009,
+        "lng":  -43.878211
+    },
+    {
+        "id":  244,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.984804,
+        "lng":  -43.949058
+    },
+    {
+        "id":  245,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.976488,
+        "lng":  -43.873063
+    },
+    {
+        "id":  246,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -20.001604,
+        "lng":  -43.956247
+    },
+    {
+        "id":  247,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -20.012973,
+        "lng":  -43.918462
+    },
+    {
+        "id":  248,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.957714,
+        "lng":  -43.967391
+    },
+    {
+        "id":  249,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.845431,
+        "lng":  -43.935155
+    },
+    {
+        "id":  250,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.827993,
+        "lng":  -43.926325
+    },
+    {
+        "id":  251,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -20.011739,
+        "lng":  -43.885535
+    },
+    {
+        "id":  252,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.877817,
+        "lng":  -43.890902
+    },
+    {
+        "id":  253,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.833507,
+        "lng":  -43.993219
+    },
+    {
+        "id":  254,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.918381,
+        "lng":  -44.017832
+    },
+    {
+        "id":  255,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.846828,
+        "lng":  -43.966939
+    },
+    {
+        "id":  256,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.884556,
+        "lng":  -43.997243
+    },
+    {
+        "id":  257,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.886045,
+        "lng":  -44.008918
+    },
+    {
+        "id":  258,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.887089,
+        "lng":  -43.916467
+    },
+    {
+        "id":  259,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.996507,
+        "lng":  -43.900139
+    },
+    {
+        "id":  260,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.935114,
+        "lng":  -43.870075
+    },
+    {
+        "id":  261,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.886935,
+        "lng":  -43.890016
+    },
+    {
+        "id":  262,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.855707,
+        "lng":  -44.013065
+    },
+    {
+        "id":  263,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.901396,
+        "lng":  -43.938672
+    },
+    {
+        "id":  264,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.854086,
+        "lng":  -44.008096
+    },
+    {
+        "id":  265,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.826111,
+        "lng":  -43.934592
+    },
+    {
+        "id":  266,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.885913,
+        "lng":  -43.950886
+    },
+    {
+        "id":  267,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.964648,
+        "lng":  -44.000875
+    },
+    {
+        "id":  268,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.89926,
+        "lng":  -43.981948
+    },
+    {
+        "id":  269,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.942862,
+        "lng":  -43.96465
+    },
+    {
+        "id":  270,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -20.007194,
+        "lng":  -43.921309
+    },
+    {
+        "id":  271,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.849557,
+        "lng":  -43.938393
+    },
+    {
+        "id":  272,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.957964,
+        "lng":  -43.871446
+    },
+    {
+        "id":  273,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -20.006097,
+        "lng":  -44.031122
+    },
+    {
+        "id":  274,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.949437,
+        "lng":  -44.02316
+    },
+    {
+        "id":  275,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.982712,
+        "lng":  -43.871959
+    },
+    {
+        "id":  276,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.913193,
+        "lng":  -43.900978
+    },
+    {
+        "id":  277,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.978857,
+        "lng":  -43.950595
+    },
+    {
+        "id":  278,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.949256,
+        "lng":  -44.010466
+    },
+    {
+        "id":  279,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.987673,
+        "lng":  -44.027675
+    },
+    {
+        "id":  280,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.854478,
+        "lng":  -43.952845
+    },
+    {
+        "id":  281,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.914455,
+        "lng":  -43.934202
+    },
+    {
+        "id":  282,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -20.011398,
+        "lng":  -43.844529
+    },
+    {
+        "id":  283,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.859884,
+        "lng":  -43.908148
+    },
+    {
+        "id":  284,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.992813,
+        "lng":  -43.919815
+    },
+    {
+        "id":  285,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.866578,
+        "lng":  -43.855211
+    },
+    {
+        "id":  286,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.899341,
+        "lng":  -43.956548
+    },
+    {
+        "id":  287,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.936586,
+        "lng":  -43.869669
+    },
+    {
+        "id":  288,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Belo Horizonte",
+        "lat":  -20.007193,
+        "lng":  -43.868338
+    },
+    {
+        "id":  289,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.86151,
+        "lng":  -43.940301
+    },
+    {
+        "id":  290,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Belo Horizonte",
+        "lat":  -19.873944,
+        "lng":  -44.010291
+    },
+    {
+        "id":  291,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.365799,
+        "lng":  -49.311296
+    },
+    {
+        "id":  292,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.434367,
+        "lng":  -49.217986
+    },
+    {
+        "id":  293,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.382967,
+        "lng":  -49.327051
+    },
+    {
+        "id":  294,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Curitiba",
+        "lat":  -25.454895,
+        "lng":  -49.232648
+    },
+    {
+        "id":  295,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.444983,
+        "lng":  -49.338835
+    },
+    {
+        "id":  296,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Curitiba",
+        "lat":  -25.373591,
+        "lng":  -49.256142
+    },
+    {
+        "id":  297,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.423187,
+        "lng":  -49.260666
+    },
+    {
+        "id":  298,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.508463,
+        "lng":  -49.284314
+    },
+    {
+        "id":  299,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.497794,
+        "lng":  -49.27581
+    },
+    {
+        "id":  300,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.387318,
+        "lng":  -49.309911
+    },
+    {
+        "id":  301,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.463421,
+        "lng":  -49.338752
+    },
+    {
+        "id":  302,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.365501,
+        "lng":  -49.312452
+    },
+    {
+        "id":  303,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Curitiba",
+        "lat":  -25.38319,
+        "lng":  -49.302895
+    },
+    {
+        "id":  304,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Curitiba",
+        "lat":  -25.421006,
+        "lng":  -49.220506
+    },
+    {
+        "id":  305,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Curitiba",
+        "lat":  -25.416048,
+        "lng":  -49.338374
+    },
+    {
+        "id":  306,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.406673,
+        "lng":  -49.244771
+    },
+    {
+        "id":  307,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.461948,
+        "lng":  -49.199617
+    },
+    {
+        "id":  308,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.488138,
+        "lng":  -49.319968
+    },
+    {
+        "id":  309,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.488114,
+        "lng":  -49.207336
+    },
+    {
+        "id":  310,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.50608,
+        "lng":  -49.286573
+    },
+    {
+        "id":  311,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.368475,
+        "lng":  -49.345649
+    },
+    {
+        "id":  312,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.448561,
+        "lng":  -49.341474
+    },
+    {
+        "id":  313,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.425979,
+        "lng":  -49.269483
+    },
+    {
+        "id":  314,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Curitiba",
+        "lat":  -25.432067,
+        "lng":  -49.340401
+    },
+    {
+        "id":  315,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.490021,
+        "lng":  -49.192181
+    },
+    {
+        "id":  316,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.450715,
+        "lng":  -49.282415
+    },
+    {
+        "id":  317,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.435454,
+        "lng":  -49.281121
+    },
+    {
+        "id":  318,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Curitiba",
+        "lat":  -25.368856,
+        "lng":  -49.27537
+    },
+    {
+        "id":  319,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.419284,
+        "lng":  -49.325283
+    },
+    {
+        "id":  320,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Curitiba",
+        "lat":  -25.362719,
+        "lng":  -49.227386
+    },
+    {
+        "id":  321,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.425574,
+        "lng":  -49.22711
+    },
+    {
+        "id":  322,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.392007,
+        "lng":  -49.242531
+    },
+    {
+        "id":  323,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Curitiba",
+        "lat":  -25.449046,
+        "lng":  -49.317487
+    },
+    {
+        "id":  324,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Curitiba",
+        "lat":  -25.43719,
+        "lng":  -49.330695
+    },
+    {
+        "id":  325,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Curitiba",
+        "lat":  -25.357452,
+        "lng":  -49.219881
+    },
+    {
+        "id":  326,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.010851,
+        "lng":  -51.298116
+    },
+    {
+        "id":  327,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.975407,
+        "lng":  -51.177399
+    },
+    {
+        "id":  328,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.031042,
+        "lng":  -51.210626
+    },
+    {
+        "id":  329,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.021137,
+        "lng":  -51.299619
+    },
+    {
+        "id":  330,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.016846,
+        "lng":  -51.169277
+    },
+    {
+        "id":  331,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.985113,
+        "lng":  -51.20326
+    },
+    {
+        "id":  332,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.031267,
+        "lng":  -51.146493
+    },
+    {
+        "id":  333,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.046925,
+        "lng":  -51.238014
+    },
+    {
+        "id":  334,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.955304,
+        "lng":  -51.141669
+    },
+    {
+        "id":  335,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.05904,
+        "lng":  -51.298264
+    },
+    {
+        "id":  336,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.005751,
+        "lng":  -51.151404
+    },
+    {
+        "id":  337,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.041079,
+        "lng":  -51.148433
+    },
+    {
+        "id":  338,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.000997,
+        "lng":  -51.287312
+    },
+    {
+        "id":  339,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.970195,
+        "lng":  -51.294532
+    },
+    {
+        "id":  340,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.960871,
+        "lng":  -51.27087
+    },
+    {
+        "id":  341,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.074577,
+        "lng":  -51.1722
+    },
+    {
+        "id":  342,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.090708,
+        "lng":  -51.192078
+    },
+    {
+        "id":  343,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.043192,
+        "lng":  -51.226185
+    },
+    {
+        "id":  344,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.015924,
+        "lng":  -51.263927
+    },
+    {
+        "id":  345,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.968136,
+        "lng":  -51.160103
+    },
+    {
+        "id":  346,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.069992,
+        "lng":  -51.272002
+    },
+    {
+        "id":  347,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.005025,
+        "lng":  -51.155386
+    },
+    {
+        "id":  348,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.96479,
+        "lng":  -51.275768
+    },
+    {
+        "id":  349,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.989024,
+        "lng":  -51.284115
+    },
+    {
+        "id":  350,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.992109,
+        "lng":  -51.201072
+    },
+    {
+        "id":  351,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.096808,
+        "lng":  -51.226053
+    },
+    {
+        "id":  352,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.006738,
+        "lng":  -51.180726
+    },
+    {
+        "id":  353,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.976719,
+        "lng":  -51.268332
+    },
+    {
+        "id":  354,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.982992,
+        "lng":  -51.26256
+    },
+    {
+        "id":  355,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -29.982101,
+        "lng":  -51.165155
+    },
+    {
+        "id":  356,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.027065,
+        "lng":  -51.172861
+    },
+    {
+        "id":  357,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.074258,
+        "lng":  -51.200203
+    },
+    {
+        "id":  358,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.004121,
+        "lng":  -51.255846
+    },
+    {
+        "id":  359,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.014697,
+        "lng":  -51.249787
+    },
+    {
+        "id":  360,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Porto Alegre",
+        "lat":  -30.027365,
+        "lng":  -51.241684
+    },
+    {
+        "id":  361,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Salvador",
+        "lat":  -12.871859,
+        "lng":  -38.463854
+    },
+    {
+        "id":  362,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Salvador",
+        "lat":  -12.884285,
+        "lng":  -38.498895
+    },
+    {
+        "id":  363,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -12.986197,
+        "lng":  -38.551747
+    },
+    {
+        "id":  364,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Salvador",
+        "lat":  -12.952826,
+        "lng":  -38.516592
+    },
+    {
+        "id":  365,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Salvador",
+        "lat":  -13.027721,
+        "lng":  -38.427541
+    },
+    {
+        "id":  366,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -12.948744,
+        "lng":  -38.578362
+    },
+    {
+        "id":  367,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -13.040423,
+        "lng":  -38.552449
+    },
+    {
+        "id":  368,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Salvador",
+        "lat":  -13.005924,
+        "lng":  -38.497314
+    },
+    {
+        "id":  369,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -13.056788,
+        "lng":  -38.515859
+    },
+    {
+        "id":  370,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Salvador",
+        "lat":  -12.884575,
+        "lng":  -38.590051
+    },
+    {
+        "id":  371,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Salvador",
+        "lat":  -12.961296,
+        "lng":  -38.536692
+    },
+    {
+        "id":  372,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Salvador",
+        "lat":  -12.917779,
+        "lng":  -38.439381
+    },
+    {
+        "id":  373,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Salvador",
+        "lat":  -12.945133,
+        "lng":  -38.425841
+    },
+    {
+        "id":  374,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Salvador",
+        "lat":  -12.87829,
+        "lng":  -38.580134
+    },
+    {
+        "id":  375,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -13.05479,
+        "lng":  -38.472497
+    },
+    {
+        "id":  376,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Salvador",
+        "lat":  -12.893574,
+        "lng":  -38.509931
+    },
+    {
+        "id":  377,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -12.948323,
+        "lng":  -38.402127
+    },
+    {
+        "id":  378,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -13.002274,
+        "lng":  -38.526283
+    },
+    {
+        "id":  379,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -13.015886,
+        "lng":  -38.465935
+    },
+    {
+        "id":  380,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -12.900304,
+        "lng":  -38.427497
+    },
+    {
+        "id":  381,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -12.954583,
+        "lng":  -38.501623
+    },
+    {
+        "id":  382,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -12.930547,
+        "lng":  -38.591529
+    },
+    {
+        "id":  383,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -13.041279,
+        "lng":  -38.509941
+    },
+    {
+        "id":  384,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -13.046687,
+        "lng":  -38.403612
+    },
+    {
+        "id":  385,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -12.875717,
+        "lng":  -38.562133
+    },
+    {
+        "id":  386,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Salvador",
+        "lat":  -12.919738,
+        "lng":  -38.551134
+    },
+    {
+        "id":  387,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Salvador",
+        "lat":  -12.912425,
+        "lng":  -38.563214
+    },
+    {
+        "id":  388,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -12.915491,
+        "lng":  -38.536252
+    },
+    {
+        "id":  389,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Salvador",
+        "lat":  -13.024802,
+        "lng":  -38.559022
+    },
+    {
+        "id":  390,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Salvador",
+        "lat":  -12.928654,
+        "lng":  -38.501894
+    },
+    {
+        "id":  391,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Recife",
+        "lat":  -8.068245,
+        "lng":  -34.825863
+    },
+    {
+        "id":  392,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Recife",
+        "lat":  -8.08961,
+        "lng":  -34.888966
+    },
+    {
+        "id":  393,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Recife",
+        "lat":  -8.072107,
+        "lng":  -34.889394
+    },
+    {
+        "id":  394,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Recife",
+        "lat":  -8.113009,
+        "lng":  -34.831836
+    },
+    {
+        "id":  395,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Recife",
+        "lat":  -8.073287,
+        "lng":  -34.871309
+    },
+    {
+        "id":  396,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Recife",
+        "lat":  -7.97508,
+        "lng":  -34.891246
+    },
+    {
+        "id":  397,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Recife",
+        "lat":  -7.971872,
+        "lng":  -34.866918
+    },
+    {
+        "id":  398,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.083378,
+        "lng":  -34.940303
+    },
+    {
+        "id":  399,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Recife",
+        "lat":  -8.111686,
+        "lng":  -34.821274
+    },
+    {
+        "id":  400,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.109018,
+        "lng":  -34.874596
+    },
+    {
+        "id":  401,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.105593,
+        "lng":  -34.8801
+    },
+    {
+        "id":  402,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Recife",
+        "lat":  -7.98177,
+        "lng":  -34.833105
+    },
+    {
+        "id":  403,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.093342,
+        "lng":  -34.834963
+    },
+    {
+        "id":  404,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.045044,
+        "lng":  -34.887684
+    },
+    {
+        "id":  405,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Recife",
+        "lat":  -8.08508,
+        "lng":  -34.840931
+    },
+    {
+        "id":  406,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -7.974751,
+        "lng":  -34.883106
+    },
+    {
+        "id":  407,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.121526,
+        "lng":  -34.908761
+    },
+    {
+        "id":  408,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.007007,
+        "lng":  -34.835051
+    },
+    {
+        "id":  409,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.016916,
+        "lng":  -34.934867
+    },
+    {
+        "id":  410,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Recife",
+        "lat":  -8.077249,
+        "lng":  -34.927924
+    },
+    {
+        "id":  411,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.060512,
+        "lng":  -34.913088
+    },
+    {
+        "id":  412,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Recife",
+        "lat":  -8.008768,
+        "lng":  -34.797417
+    },
+    {
+        "id":  413,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Recife",
+        "lat":  -8.123553,
+        "lng":  -34.881516
+    },
+    {
+        "id":  414,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Recife",
+        "lat":  -8.001786,
+        "lng":  -34.831739
+    },
+    {
+        "id":  415,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Recife",
+        "lat":  -8.070579,
+        "lng":  -34.876828
+    },
+    {
+        "id":  416,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Fortaleza",
+        "lat":  -3.710328,
+        "lng":  -38.618298
+    },
+    {
+        "id":  417,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Fortaleza",
+        "lat":  -3.762691,
+        "lng":  -38.596935
+    },
+    {
+        "id":  418,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Fortaleza",
+        "lat":  -3.744604,
+        "lng":  -38.607492
+    },
+    {
+        "id":  419,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Fortaleza",
+        "lat":  -3.640034,
+        "lng":  -38.558585
+    },
+    {
+        "id":  420,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Fortaleza",
+        "lat":  -3.641842,
+        "lng":  -38.584854
+    },
+    {
+        "id":  421,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Fortaleza",
+        "lat":  -3.721467,
+        "lng":  -38.476092
+    },
+    {
+        "id":  422,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Fortaleza",
+        "lat":  -3.763049,
+        "lng":  -38.604532
+    },
+    {
+        "id":  423,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Fortaleza",
+        "lat":  -3.646716,
+        "lng":  -38.536312
+    },
+    {
+        "id":  424,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Fortaleza",
+        "lat":  -3.776999,
+        "lng":  -38.471198
+    },
+    {
+        "id":  425,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Fortaleza",
+        "lat":  -3.789489,
+        "lng":  -38.57974
+    },
+    {
+        "id":  426,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Fortaleza",
+        "lat":  -3.76969,
+        "lng":  -38.556428
+    },
+    {
+        "id":  427,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Fortaleza",
+        "lat":  -3.665362,
+        "lng":  -38.596589
+    },
+    {
+        "id":  428,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Fortaleza",
+        "lat":  -3.746187,
+        "lng":  -38.604559
+    },
+    {
+        "id":  429,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Fortaleza",
+        "lat":  -3.769524,
+        "lng":  -38.605908
+    },
+    {
+        "id":  430,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Fortaleza",
+        "lat":  -3.688963,
+        "lng":  -38.498734
+    },
+    {
+        "id":  431,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Fortaleza",
+        "lat":  -3.706687,
+        "lng":  -38.611712
+    },
+    {
+        "id":  432,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Fortaleza",
+        "lat":  -3.779966,
+        "lng":  -38.570319
+    },
+    {
+        "id":  433,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Fortaleza",
+        "lat":  -3.789243,
+        "lng":  -38.59753
+    },
+    {
+        "id":  434,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Fortaleza",
+        "lat":  -3.64464,
+        "lng":  -38.523612
+    },
+    {
+        "id":  435,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Fortaleza",
+        "lat":  -3.695859,
+        "lng":  -38.605691
+    },
+    {
+        "id":  436,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Fortaleza",
+        "lat":  -3.736578,
+        "lng":  -38.575115
+    },
+    {
+        "id":  437,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Fortaleza",
+        "lat":  -3.688812,
+        "lng":  -38.490344
+    },
+    {
+        "id":  438,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Fortaleza",
+        "lat":  -3.726826,
+        "lng":  -38.596479
+    },
+    {
+        "id":  439,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Fortaleza",
+        "lat":  -3.711669,
+        "lng":  -38.59528
+    },
+    {
+        "id":  440,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Fortaleza",
+        "lat":  -3.70605,
+        "lng":  -38.613524
+    },
+    {
+        "id":  441,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Manaus",
+        "lat":  -3.218748,
+        "lng":  -60.067191
+    },
+    {
+        "id":  442,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Manaus",
+        "lat":  -3.188353,
+        "lng":  -60.007891
+    },
+    {
+        "id":  443,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Manaus",
+        "lat":  -3.063659,
+        "lng":  -59.931903
+    },
+    {
+        "id":  444,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Manaus",
+        "lat":  -3.08422,
+        "lng":  -60.095558
+    },
+    {
+        "id":  445,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Manaus",
+        "lat":  -3.039907,
+        "lng":  -59.945903
+    },
+    {
+        "id":  446,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Manaus",
+        "lat":  -3.100729,
+        "lng":  -59.98291
+    },
+    {
+        "id":  447,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Manaus",
+        "lat":  -3.064065,
+        "lng":  -59.961184
+    },
+    {
+        "id":  448,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Manaus",
+        "lat":  -3.154805,
+        "lng":  -59.920188
+    },
+    {
+        "id":  449,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Manaus",
+        "lat":  -3.103343,
+        "lng":  -60.094825
+    },
+    {
+        "id":  450,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Manaus",
+        "lat":  -3.192997,
+        "lng":  -60.005372
+    },
+    {
+        "id":  451,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Manaus",
+        "lat":  -3.212641,
+        "lng":  -60.023991
+    },
+    {
+        "id":  452,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Manaus",
+        "lat":  -3.149592,
+        "lng":  -59.927051
+    },
+    {
+        "id":  453,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Manaus",
+        "lat":  -3.07551,
+        "lng":  -60.02147
+    },
+    {
+        "id":  454,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Manaus",
+        "lat":  -3.152813,
+        "lng":  -59.997063
+    },
+    {
+        "id":  455,
+        "operator":  "Sample",
+        "technology":  "WCDMA",
+        "municipality":  "Manaus",
+        "lat":  -3.042915,
+        "lng":  -60.116795
+    },
+    {
+        "id":  456,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Manaus",
+        "lat":  -3.074074,
+        "lng":  -60.008626
+    },
+    {
+        "id":  457,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Manaus",
+        "lat":  -3.11411,
+        "lng":  -59.928857
+    },
+    {
+        "id":  458,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Manaus",
+        "lat":  -3.060833,
+        "lng":  -59.958498
+    },
+    {
+        "id":  459,
+        "operator":  "Sample",
+        "technology":  "LTE",
+        "municipality":  "Manaus",
+        "lat":  -3.179789,
+        "lng":  -59.983943
+    },
+    {
+        "id":  460,
+        "operator":  "Sample",
+        "technology":  "5G",
+        "municipality":  "Manaus",
+        "lat":  -3.056485,
+        "lng":  -60.005011
+    }
+]

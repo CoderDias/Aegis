@@ -1,0 +1,19 @@
+<KeyValueGrid Items="_items" />
+
+@code {
+    [Parameter] public AssetDto Asset { get; set; } = default!;
+
+    private IEnumerable<KeyValueGrid.KeyValueItem> _items = [];
+
+    protected override void OnParametersSet()
+    {
+        _items =
+        [
+            new("Nome", Asset.DisplayName),
+            new("Tipo", Asset.Type.ToString()),
+            new("Fonte", Asset.Source.ToString()),
+            new("Lat", Asset.Location?.Lat.ToString("F5")),
+            new("Lng", Asset.Location?.Lng.ToString("F5"))
+        ];
+    }
+}

@@ -1,0 +1,51 @@
+@inject AlertingService Alerting
+@inject WorkspaceState Workspace
+@inject CircuitFlightFeed FlightFeed
+@inject UiNotificationService Notifications
+@inject ILogger<GeofenceMonitor> Logger
+@implements IDisposable
+
+@code {
+    protected override void OnInitialized()
+    {
+        FlightFeed.SnapshotReceived += OnFlightSnapshot;
+        Workspace.Changed += OnWorkspaceChanged;
+    }
+
+    private async void OnFlightSnapshot(FlightSnapshot _) => await EvaluateAsync();
+
+    private async void OnWorkspaceChanged() => await EvaluateAsync();
+
+    private async Task EvaluateAsync()
+    {
+        if (Workspace.ActiveInvestigationId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var aircraft = FlightFeed.Latest?.Aircraft ?? [];
+            var alerts = await Alerting.EvaluateAsync(
+                Workspace.ActiveInvestigationId.Value,
+                aircraft,
+                Workspace.NewsRegionCache,
+                Workspace.ShodanRegionCache);
+
+            foreach (var alert in alerts)
+            {
+                Notifications.Show(alert.Message, NotificationLevel.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Geofence evaluation failed.");
+        }
+    }
+
+    public void Dispose()
+    {
+        FlightFeed.SnapshotReceived -= OnFlightSnapshot;
+        Workspace.Changed -= OnWorkspaceChanged;
+    }
+}

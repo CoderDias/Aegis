@@ -1,0 +1,402 @@
+@page "/settings"
+@rendermode InteractiveServer
+@using Aegis.Application.Dtos.Intel
+@using Aegis.Application.Dtos.Settings
+@using Aegis.Application.Settings
+@using Aegis.Infrastructure.Settings
+@inject IServiceScopeFactory ScopeFactory
+@inject IWebHostEnvironment Env
+@inject CircuitFlightFeed FlightFeed
+@inject IOptions<MapOptions> MapOptions
+@inject IOptions<OpenStreetMapOptions> OsmOptions
+@inject IOptions<FlightsOptions> FlightsOptions
+@inject IntegrationSettingsService IntegrationSettings
+@inject RssFeedService RssFeeds
+@inject UiNotificationService Notifications
+@inject IConfiguration Configuration
+
+<div class="aegis-page">
+    <h1 class="aegis-page__title">Configurações</h1>
+
+    <div class="aegis-panel" style="margin-bottom:16px">
+        <div class="aegis-panel__header">Status do sistema</div>
+        <div class="aegis-panel__body">
+            <KeyValueGrid Items="_healthItems" />
+        </div>
+    </div>
+
+    <div class="aegis-panel" style="margin-bottom:16px">
+        <div class="aegis-panel__header">Integrações</div>
+        <div class="aegis-panel__body">
+            <p style="font-size:var(--font-sm);color:var(--text-2);margin:0 0 12px">
+                Chaves de API ficam em <code>appsettings.json</code> ou User Secrets. Aqui você apenas liga ou desliga cada fonte.
+            </p>
+            @if (_integrations.Count == 0)
+            {
+                <EmptyState Title="Carregando..." Description="Aguarde um momento." Icon="▤" />
+            }
+            else
+            {
+                @foreach (var integration in _integrations)
+                {
+                    var row = integration;
+                    <div class="aegis-layer-row" style="margin-bottom:6px">
+                        <div>
+                            <div>@row.DisplayName</div>
+                            <div style="font-size:10px;color:var(--text-2)">
+                                @IntegrationStatusLabel(row)
+                            </div>
+                        </div>
+                        <button type="button"
+                                class="@($"aegis-switch {(row.Enabled ? "on" : "")}")"
+                                role="switch"
+                                aria-checked="@row.Enabled"
+                                aria-label="@row.DisplayName"
+                                disabled="@_busy"
+                                @onclick="() => ToggleIntegrationAsync(row)"></button>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="aegis-panel" style="margin-bottom:16px">
+        <div class="aegis-panel__header aegis-dialog__header--split">
+            <span>Feeds RSS</span>
+            <button type="button" class="aegis-btn aegis-btn--primary" disabled="@_busy" @onclick="OpenCreateFeed">Novo feed</button>
+        </div>
+        <div class="aegis-panel__body">
+            @if (!_rssMasterEnabled)
+            {
+                <p style="font-size:var(--font-sm);color:var(--warn);margin:0 0 12px">
+                    RSS desligado nas integrações — nenhum feed será consultado.
+                </p>
+            }
+            @if (_feeds.Count == 0)
+            {
+                <EmptyState Title="Nenhum feed" Description="Adicione um feed ou aguarde a criação dos padrões na primeira execução." Icon="▤" />
+            }
+            else
+            {
+                @foreach (var feed in _feeds)
+                {
+                    var item = feed;
+                    <div class="aegis-layer-row aegis-rss-row" style="margin-bottom:6px">
+                        <div style="min-width:0;padding-right:12px;flex:1">
+                            <div style="font-size:12px">@item.Title</div>
+                            <div style="font-size:10px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                @item.Url
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(item.DefaultRegionQuery))
+                            {
+                                <div style="font-size:10px;color:var(--text-2)">Região: @item.DefaultRegionQuery</div>
+                            }
+                            <div class="aegis-rss-row__tags">
+                                <span class="aegis-tag" title="Total vs Sincronizados">@item.TotalItems/@item.GeolocatedItems</span>
+                                <span class="aegis-tag" title="Última sincronização">@FormatLastSync(item.LastFetchedAt)</span>
+                            </div>
+                        </div>
+                        <div class="aegis-rss-row__actions">
+                            <button type="button"
+                                    class="aegis-btn aegis-btn--ghost aegis-btn--icon"
+                                    title="Editar"
+                                    disabled="@_busy"
+                                    @onclick="() => OpenEditFeed(item)">✎</button>
+                            <button type="button"
+                                    class="aegis-btn aegis-btn--ghost aegis-btn--icon"
+                                    title="Excluir"
+                                    disabled="@_busy"
+                                    @onclick="() => ConfirmDeleteFeed(item)">✕</button>
+                            <button type="button"
+                                    class="@($"aegis-switch {(item.Enabled ? "on" : "")}")"
+                                    role="switch"
+                                    aria-checked="@item.Enabled"
+                                    aria-label="@item.Title"
+                                    disabled="@_busy"
+                                    @onclick="() => ToggleFeedAsync(item)"></button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="aegis-panel" style="margin-bottom:16px">
+        <div class="aegis-panel__header">Mapa</div>
+        <div class="aegis-panel__body">
+            <KeyValueGrid Items="_mapItems" />
+        </div>
+    </div>
+
+    <div class="aegis-panel">
+        <div class="aegis-panel__header">Retenção e paths</div>
+        <div class="aegis-panel__body">
+            <KeyValueGrid Items="_retentionItems" />
+            <p style="font-size:var(--font-sm);color:var(--text-2);margin-top:12px">
+                Credenciais via User Secrets ou variáveis de ambiente:
+                <code>OpenSky__ClientId</code>, <code>OpenSky__ClientSecret</code>,
+                <code>AirStream__ApiToken</code>, <code>Shodan__ApiKey</code>, <code>Censys__ApiToken</code>
+            </p>
+        </div>
+    </div>
+</div>
+
+@if (_feedDialogOpen)
+{
+    <div class="aegis-dialog-backdrop" @onclick="CloseFeedDialog">
+        <div class="aegis-dialog" @onclick:stopPropagation="true">
+            <div class="aegis-dialog__header">@(_editingFeedId is null ? "Novo feed RSS" : "Editar feed RSS")</div>
+            <div class="aegis-dialog__body" style="display:flex;flex-direction:column;gap:10px">
+                <label style="font-size:var(--font-sm);color:var(--text-2)">Título *</label>
+                <input class="aegis-input" @bind="_feedTitle" />
+                <label style="font-size:var(--font-sm);color:var(--text-2)">URL *</label>
+                <input class="aegis-input" @bind="_feedUrl" placeholder="https://..." />
+                <label style="font-size:var(--font-sm);color:var(--text-2)">Região padrão (geocoding)</label>
+                <input class="aegis-input" @bind="_feedRegion" placeholder="Brasília, Brasil" />
+            </div>
+            <div class="aegis-dialog__footer">
+                <button type="button" class="aegis-btn" @onclick="CloseFeedDialog">Cancelar</button>
+                <button type="button"
+                        class="aegis-btn aegis-btn--primary"
+                        disabled="@(_busy || string.IsNullOrWhiteSpace(_feedTitle) || string.IsNullOrWhiteSpace(_feedUrl))"
+                        @onclick="SaveFeedAsync">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_confirmDeleteFeed is not null)
+{
+    <div class="aegis-dialog-backdrop" @onclick="CancelDeleteFeed">
+        <div class="aegis-dialog" @onclick:stopPropagation="true">
+            <div class="aegis-dialog__header">Excluir feed</div>
+            <div class="aegis-dialog__body">
+                <p>Excluir <strong>@_confirmDeleteFeed.Title</strong>? Itens de notícia deste feed permanecem no banco até próxima limpeza.</p>
+            </div>
+            <div class="aegis-dialog__footer">
+                <button type="button" class="aegis-btn" @onclick="CancelDeleteFeed">Cancelar</button>
+                <button type="button" class="aegis-btn aegis-btn--danger" @onclick="DeleteFeedConfirmedAsync">Excluir</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private IEnumerable<KeyValueGrid.KeyValueItem> _healthItems = [];
+    private IEnumerable<KeyValueGrid.KeyValueItem> _mapItems = [];
+    private IEnumerable<KeyValueGrid.KeyValueItem> _retentionItems = [];
+    private List<IntegrationSettingDto> _integrations = [];
+    private IReadOnlyList<RssFeedDto> _feeds = [];
+    private bool _rssMasterEnabled = true;
+    private bool _busy;
+    private bool _feedDialogOpen;
+    private Guid? _editingFeedId;
+    private string _feedTitle = "";
+    private string _feedUrl = "";
+    private string _feedRegion = "";
+    private RssFeedDto? _confirmDeleteFeed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var dbOk = false;
+        try
+        {
+            await using var scope = ScopeFactory.CreateAsyncScope();
+            var db = scope.ServiceProvider.GetRequiredService<AegisDbContext>();
+            dbOk = await db.Database.CanConnectAsync();
+        }
+        catch
+        {
+            dbOk = false;
+        }
+
+        _healthItems =
+        [
+            new("Versão", typeof(Program).Assembly.GetName().Version?.ToString() ?? "1.0"),
+            new("Ambiente", Env.EnvironmentName),
+            new("SQLite", dbOk ? "Conectado" : "Indisponível"),
+            new("OpenSky", FlightFeed.Latest is null ? "Sem dados" : "Recebendo"),
+            new("Endpoint", "/healthz")
+        ];
+
+        _integrations = (await IntegrationSettings.ListAsync()).ToList();
+        _rssMasterEnabled = _integrations.FirstOrDefault(i => i.Key == IntegrationKeys.Rss)?.Enabled ?? true;
+        _feeds = await RssFeeds.ListFeedsAsync();
+
+        var map = MapOptions.Value;
+        var osm = OsmOptions.Value;
+        _mapItems =
+        [
+            new("Centro padrão", $"{map.DefaultLat:F4}, {map.DefaultLng:F4}"),
+            new("Zoom padrão", map.DefaultZoom.ToString()),
+            new("Tiles", osm.TileUrl),
+            new("Fallback", osm.FallbackTileUrl)
+        ];
+
+        _retentionItems =
+        [
+            new("Retenção de voos", $"{FlightsOptions.Value.RetentionDays} dias"),
+            new("Máx. marcadores", FlightsOptions.Value.MaxMarkers.ToString()),
+            new("Banco", Configuration.GetConnectionString("DefaultConnection") ?? "—"),
+            new("Seed demo", Configuration["Database:SeedDemo"] ?? "false")
+        ];
+    }
+
+    private static string IntegrationStatusLabel(IntegrationSettingDto row)
+    {
+        if (row.Enabled && row.IsConfigured)
+        {
+            return "Ativo";
+        }
+
+        if (row.Enabled && !row.IsConfigured)
+        {
+            return "Ligado — configure a chave no appsettings";
+        }
+
+        if (!row.Enabled && row.IsConfigured)
+        {
+            return "Desligado";
+        }
+
+        return "Desligado — sem credenciais";
+    }
+
+    private static string FormatLastSync(DateTimeOffset? lastFetchedAt) =>
+        lastFetchedAt is null
+            ? "—"
+            : lastFetchedAt.Value.ToLocalTime().ToString("g");
+
+    private async Task ToggleIntegrationAsync(IntegrationSettingDto row)
+    {
+        if (_busy)
+        {
+            return;
+        }
+
+        _busy = true;
+        try
+        {
+            var enabled = !row.Enabled;
+            await IntegrationSettings.SetEnabledAsync(row.Key, enabled);
+            _integrations = (await IntegrationSettings.ListAsync()).ToList();
+            _rssMasterEnabled = _integrations.FirstOrDefault(i => i.Key == IntegrationKeys.Rss)?.Enabled ?? true;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task ToggleFeedAsync(RssFeedDto feed)
+    {
+        if (_busy)
+        {
+            return;
+        }
+
+        _busy = true;
+        try
+        {
+            var enabled = !feed.Enabled;
+            await RssFeeds.SetFeedEnabledAsync(feed.Id, enabled);
+            _feeds = await RssFeeds.ListFeedsAsync();
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private void OpenCreateFeed()
+    {
+        _editingFeedId = null;
+        _feedTitle = "";
+        _feedUrl = "";
+        _feedRegion = "";
+        _feedDialogOpen = true;
+    }
+
+    private void OpenEditFeed(RssFeedDto feed)
+    {
+        _editingFeedId = feed.Id;
+        _feedTitle = feed.Title;
+        _feedUrl = feed.Url;
+        _feedRegion = feed.DefaultRegionQuery ?? "";
+        _feedDialogOpen = true;
+    }
+
+    private void CloseFeedDialog()
+    {
+        _feedDialogOpen = false;
+        _editingFeedId = null;
+    }
+
+    private async Task SaveFeedAsync()
+    {
+        if (_busy || string.IsNullOrWhiteSpace(_feedTitle) || string.IsNullOrWhiteSpace(_feedUrl))
+        {
+            return;
+        }
+
+        _busy = true;
+        try
+        {
+            var region = string.IsNullOrWhiteSpace(_feedRegion) ? null : _feedRegion.Trim();
+            if (_editingFeedId is null)
+            {
+                await RssFeeds.AddFeedAsync(new CreateRssFeedRequest(_feedTitle.Trim(), _feedUrl.Trim(), region));
+            }
+            else
+            {
+                await RssFeeds.UpdateFeedAsync(
+                    _editingFeedId.Value,
+                    new UpdateRssFeedRequest(_feedTitle.Trim(), _feedUrl.Trim(), region));
+            }
+
+            _feeds = await RssFeeds.ListFeedsAsync();
+            CloseFeedDialog();
+            Notifications.Show("Feed RSS salvo.", NotificationLevel.Success);
+        }
+        catch (Exception ex)
+        {
+            var message = ex.InnerException?.Message ?? ex.Message;
+            Notifications.Show($"Erro ao salvar feed: {message}", NotificationLevel.Danger);
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private void ConfirmDeleteFeed(RssFeedDto feed) => _confirmDeleteFeed = feed;
+
+    private void CancelDeleteFeed() => _confirmDeleteFeed = null;
+
+    private async Task DeleteFeedConfirmedAsync()
+    {
+        if (_busy || _confirmDeleteFeed is null)
+        {
+            return;
+        }
+
+        _busy = true;
+        try
+        {
+            await RssFeeds.DeleteFeedAsync(_confirmDeleteFeed.Id);
+            Notifications.Show("Feed RSS excluído.", NotificationLevel.Success);
+            _confirmDeleteFeed = null;
+            _feeds = await RssFeeds.ListFeedsAsync();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show($"Erro ao excluir feed: {ex.Message}", NotificationLevel.Danger);
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}

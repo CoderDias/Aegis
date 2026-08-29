@@ -1,0 +1,470 @@
+﻿[
+    {
+        "id":  13194,
+        "callsign":  "ID13194",
+        "frequency":  "145.250000",
+        "location":  "",
+        "lat":  -20.7405851,
+        "lng":  -48.9100392,
+        "onAir":  true
+    },
+    {
+        "id":  14368,
+        "callsign":  "ID14368",
+        "frequency":  "145.310000",
+        "location":  "",
+        "lat":  -20.7942655,
+        "lng":  -40.8116994,
+        "onAir":  true
+    },
+    {
+        "id":  1139,
+        "callsign":  "ID1139",
+        "frequency":  "145.330000",
+        "location":  "",
+        "lat":  -23.56290054,
+        "lng":  -46.65470123,
+        "onAir":  true
+    },
+    {
+        "id":  13039,
+        "callsign":  "ID13039",
+        "frequency":  "145.400000",
+        "location":  "",
+        "lat":  -1.3988,
+        "lng":  -48.46976,
+        "onAir":  true
+    },
+    {
+        "id":  12455,
+        "callsign":  "ID12455",
+        "frequency":  "145.450000",
+        "location":  "",
+        "lat":  -22.1957895,
+        "lng":  -46.75606,
+        "onAir":  true
+    },
+    {
+        "id":  13174,
+        "callsign":  "ID13174",
+        "frequency":  "145.490000",
+        "location":  "",
+        "lat":  -20.7600069,
+        "lng":  -45.9185579,
+        "onAir":  true
+    },
+    {
+        "id":  1250,
+        "callsign":  "ID1250",
+        "frequency":  "146.610000",
+        "location":  "",
+        "lat":  -10.85029984,
+        "lng":  -37.13710022,
+        "onAir":  true
+    },
+    {
+        "id":  1386,
+        "callsign":  "ID1386",
+        "frequency":  "146.850000",
+        "location":  "",
+        "lat":  -22.88080025,
+        "lng":  -43.10390091,
+        "onAir":  true
+    },
+    {
+        "id":  13036,
+        "callsign":  "ID13036",
+        "frequency":  "146.910000",
+        "location":  "",
+        "lat":  -1.43215,
+        "lng":  -48.46104,
+        "onAir":  true
+    },
+    {
+        "id":  12818,
+        "callsign":  "ID12818",
+        "frequency":  "146.930000",
+        "location":  "",
+        "lat":  -22.7408457,
+        "lng":  -45.594391,
+        "onAir":  true
+    },
+    {
+        "id":  14092,
+        "callsign":  "ID14092",
+        "frequency":  "146.950000",
+        "location":  "",
+        "lat":  -12.9466403,
+        "lng":  -38.4222673,
+        "onAir":  true
+    },
+    {
+        "id":  1459,
+        "callsign":  "ID1459",
+        "frequency":  "146.970000",
+        "location":  "",
+        "lat":  -25.54710007,
+        "lng":  -54.58890152,
+        "onAir":  true
+    },
+    {
+        "id":  1458,
+        "callsign":  "ID1458",
+        "frequency":  "146.970000",
+        "location":  "",
+        "lat":  -22.5345993,
+        "lng":  -45.81869888,
+        "onAir":  true
+    },
+    {
+        "id":  12452,
+        "callsign":  "ID12452",
+        "frequency":  "147.000000",
+        "location":  "",
+        "lat":  -19.9166813,
+        "lng":  -43.9344931,
+        "onAir":  true
+    },
+    {
+        "id":  13178,
+        "callsign":  "ID13178",
+        "frequency":  "147.030000",
+        "location":  "",
+        "lat":  -20.402211,
+        "lng":  -43.5105574,
+        "onAir":  true
+    },
+    {
+        "id":  13152,
+        "callsign":  "ID13152",
+        "frequency":  "147.100000",
+        "location":  "",
+        "lat":  -22.3837126,
+        "lng":  -41.7827578,
+        "onAir":  true
+    },
+    {
+        "id":  12461,
+        "callsign":  "ID12461",
+        "frequency":  "147.150000",
+        "location":  "",
+        "lat":  -20.3477821,
+        "lng":  -40.2949528,
+        "onAir":  true
+    },
+    {
+        "id":  1546,
+        "callsign":  "ID1546",
+        "frequency":  "147.150000",
+        "location":  "",
+        "lat":  -23.7031002,
+        "lng":  -46.55239868,
+        "onAir":  false
+    },
+    {
+        "id":  14372,
+        "callsign":  "ID14372",
+        "frequency":  "147.180000",
+        "location":  "",
+        "lat":  -20.3625703,
+        "lng":  -40.6582081,
+        "onAir":  true
+    },
+    {
+        "id":  12454,
+        "callsign":  "ID12454",
+        "frequency":  "147.270000",
+        "location":  "",
+        "lat":  -22.2887261,
+        "lng":  -42.5340796,
+        "onAir":  true
+    },
+    {
+        "id":  12456,
+        "callsign":  "ID12456",
+        "frequency":  "147.300000",
+        "location":  "",
+        "lat":  -19.9166813,
+        "lng":  -43.9344931,
+        "onAir":  true
+    },
+    {
+        "id":  1596,
+        "callsign":  "ID1596",
+        "frequency":  "147.300000",
+        "location":  "",
+        "lat":  -23.56290054,
+        "lng":  -46.65470123,
+        "onAir":  true
+    },
+    {
+        "id":  1615,
+        "callsign":  "ID1615",
+        "frequency":  "147.360000",
+        "location":  "",
+        "lat":  -23.56290054,
+        "lng":  -46.65470123,
+        "onAir":  true
+    },
+    {
+        "id":  13701,
+        "callsign":  "ID13701",
+        "frequency":  "439.025000",
+        "location":  "",
+        "lat":  -23.388598,
+        "lng":  -45.661678,
+        "onAir":  true
+    },
+    {
+        "id":  1660,
+        "callsign":  "ID1660",
+        "frequency":  "439.100000",
+        "location":  "",
+        "lat":  -27.5977993,
+        "lng":  -48.5481987,
+        "onAir":  true
+    },
+    {
+        "id":  12458,
+        "callsign":  "ID12458",
+        "frequency":  "439.125000",
+        "location":  "",
+        "lat":  -19.4691377,
+        "lng":  -42.5489888,
+        "onAir":  false
+    },
+    {
+        "id":  9254,
+        "callsign":  "ID9254",
+        "frequency":  "439.200000",
+        "location":  "",
+        "lat":  -21.77872537,
+        "lng":  -48.18026149,
+        "onAir":  true
+    },
+    {
+        "id":  12457,
+        "callsign":  "ID12457",
+        "frequency":  "439.200000",
+        "location":  "",
+        "lat":  -27.1009343,
+        "lng":  -52.615699,
+        "onAir":  true
+    },
+    {
+        "id":  13172,
+        "callsign":  "ID13172",
+        "frequency":  "439.200000",
+        "location":  "",
+        "lat":  -22.0986608,
+        "lng":  -46.1898816,
+        "onAir":  true
+    },
+    {
+        "id":  14289,
+        "callsign":  "ID14289",
+        "frequency":  "439.250000",
+        "location":  "",
+        "lat":  -21.1694018,
+        "lng":  -47.8110855,
+        "onAir":  true
+    },
+    {
+        "id":  12224,
+        "callsign":  "ID12224",
+        "frequency":  "439.350000",
+        "location":  "",
+        "lat":  -23.02582,
+        "lng":  -49.16123,
+        "onAir":  true
+    },
+    {
+        "id":  12873,
+        "callsign":  "ID12873",
+        "frequency":  "439.425000",
+        "location":  "",
+        "lat":  -22.890094,
+        "lng":  -47.076907,
+        "onAir":  true
+    },
+    {
+        "id":  13163,
+        "callsign":  "ID13163",
+        "frequency":  "439.425000",
+        "location":  "",
+        "lat":  -22.5112498,
+        "lng":  -43.1779306,
+        "onAir":  true
+    },
+    {
+        "id":  13187,
+        "callsign":  "ID13187",
+        "frequency":  "439.475000",
+        "location":  "",
+        "lat":  -23.0174785,
+        "lng":  -43.4625904,
+        "onAir":  true
+    },
+    {
+        "id":  14093,
+        "callsign":  "ID14093",
+        "frequency":  "439.500000",
+        "location":  "",
+        "lat":  -12.872631,
+        "lng":  -38.306164,
+        "onAir":  false
+    },
+    {
+        "id":  13183,
+        "callsign":  "ID13183",
+        "frequency":  "439.500000",
+        "location":  "",
+        "lat":  -19.919052,
+        "lng":  -43.9386685,
+        "onAir":  true
+    },
+    {
+        "id":  12876,
+        "callsign":  "ID12876",
+        "frequency":  "439.525000",
+        "location":  "",
+        "lat":  -23.232574,
+        "lng":  -46.941012,
+        "onAir":  true
+    },
+    {
+        "id":  12459,
+        "callsign":  "ID12459",
+        "frequency":  "439.550000",
+        "location":  "",
+        "lat":  -21.7623644,
+        "lng":  -43.3436917,
+        "onAir":  true
+    },
+    {
+        "id":  1720,
+        "callsign":  "ID1720",
+        "frequency":  "439.550000",
+        "location":  "",
+        "lat":  -23.2166996,
+        "lng":  -44.7179985,
+        "onAir":  true
+    },
+    {
+        "id":  12460,
+        "callsign":  "ID12460",
+        "frequency":  "439.600000",
+        "location":  "",
+        "lat":  -23.3044524,
+        "lng":  -51.1695824,
+        "onAir":  true
+    },
+    {
+        "id":  13179,
+        "callsign":  "ID13179",
+        "frequency":  "439.600000",
+        "location":  "",
+        "lat":  -20.523549,
+        "lng":  -43.691394,
+        "onAir":  true
+    },
+    {
+        "id":  12453,
+        "callsign":  "ID12453",
+        "frequency":  "439.625000",
+        "location":  "",
+        "lat":  -24.9577771,
+        "lng":  -53.4595112,
+        "onAir":  true
+    },
+    {
+        "id":  12413,
+        "callsign":  "ID12413",
+        "frequency":  "439.625000",
+        "location":  "",
+        "lat":  -23.32786479,
+        "lng":  -47.05082103,
+        "onAir":  false
+    },
+    {
+        "id":  13143,
+        "callsign":  "ID13143",
+        "frequency":  "439.700000",
+        "location":  "",
+        "lat":  -21.2037367,
+        "lng":  -41.8912637,
+        "onAir":  true
+    },
+    {
+        "id":  13076,
+        "callsign":  "ID13076",
+        "frequency":  "439.725000",
+        "location":  "",
+        "lat":  -22.1205939,
+        "lng":  -51.3874076,
+        "onAir":  true
+    },
+    {
+        "id":  13035,
+        "callsign":  "ID13035",
+        "frequency":  "439.800000",
+        "location":  "",
+        "lat":  -1.45259,
+        "lng":  -48.45872,
+        "onAir":  true
+    },
+    {
+        "id":  1747,
+        "callsign":  "ID1747",
+        "frequency":  "439.825000",
+        "location":  "",
+        "lat":  -22.96260071,
+        "lng":  -47.00370026,
+        "onAir":  true
+    },
+    {
+        "id":  1749,
+        "callsign":  "ID1749",
+        "frequency":  "439.850000",
+        "location":  "",
+        "lat":  -22.88080025,
+        "lng":  -43.10390091,
+        "onAir":  true
+    },
+    {
+        "id":  14170,
+        "callsign":  "ID14170",
+        "frequency":  "439.875000",
+        "location":  "",
+        "lat":  -22.4107652,
+        "lng":  -47.5596215,
+        "onAir":  true
+    },
+    {
+        "id":  13186,
+        "callsign":  "ID13186",
+        "frequency":  "439.875000",
+        "location":  "",
+        "lat":  -22.865366,
+        "lng":  -43.5504557,
+        "onAir":  true
+    },
+    {
+        "id":  13037,
+        "callsign":  "ID13037",
+        "frequency":  "439.900000",
+        "location":  "",
+        "lat":  -1.14698,
+        "lng":  -48.46492,
+        "onAir":  true
+    },
+    {
+        "id":  10108,
+        "callsign":  "ID10108",
+        "frequency":  "439.925000",
+        "location":  "",
+        "lat":  -21.24500084,
+        "lng":  -45.23400116,
+        "onAir":  false
+    }
+]

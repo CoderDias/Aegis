@@ -1,0 +1,174 @@
+@using Aegis.Application.Dtos.Geo
+@using Aegis.Application.Dtos.Intel
+@using Aegis.Infrastructure.External.Censys
+@using Aegis.Infrastructure.External.HostDiscovery
+@inject DiscoveredHostRepository HostRepository
+@inject WorkspaceState Workspace
+@inject IGeocodingService Geocoding
+@inject IServiceScopeFactory ScopeFactory
+@inject ILogger<HostsPanel> Logger
+@implements IDisposable
+
+<div class="aegis-panel" style="border:none;background:transparent">
+    <div class="aegis-panel__header" style="padding:0 0 8px">
+        Hosts Censys (@_hosts.Count)
+        @if (!string.IsNullOrWhiteSpace(_countryLabel))
+        {
+            <span style="font-size:10px;color:var(--text-2);margin-left:6px">@_countryLabel</span>
+        }
+        <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px;margin-left:auto" disabled="@_loading" @onclick="ReloadAsync">
+            Atualizar
+        </button>
+    </div>
+
+    @if (_loading)
+    {
+        <LoadingSpinner Label="Carregando hosts..." />
+    }
+    else if (_hosts.Count == 0)
+    {
+        <EmptyState Title="Nenhum host" Description="Mova o mapa para um país ou aguarde a varredura Censys no centro da tela." Icon="▣" />
+    }
+    else
+    {
+        <div class="aegis-host-list">
+            @foreach (var host in _hosts)
+            {
+                <button type="button"
+                        class="aegis-host-row @(host.HasExploitableVuln ? "aegis-host-row--vuln" : "")"
+                        @onclick="() => SelectHost(host)">
+                    <div class="aegis-host-row__main">
+                        <span class="aegis-host-row__ip">@host.Ip</span>
+                        @if (host.Port is int port)
+                        {
+                            <span class="aegis-host-row__port">:@port</span>
+                        }
+                    </div>
+                    <div class="aegis-host-row__meta">
+                        @(host.Org ?? host.Product ?? "—") · @(host.City ?? host.Country ?? "—")
+                    </div>
+                    @if (host.Vulnerabilities?.Count > 0)
+                    {
+                        <div class="aegis-host-row__vulns">
+                            @foreach (var vuln in host.Vulnerabilities.Take(3))
+                            {
+                                <span class="aegis-vuln-tag @(vuln.HasExploit || vuln.IsKnownExploited ? "aegis-vuln-tag--danger" : "")">
+                                    @vuln.CveId
+                                </span>
+                            }
+                        </div>
+                    }
+                </button>
+            }
+        </div>
+    }
+
+    @if (_selected is not null)
+    {
+        <div class="aegis-host-detail">
+            <div class="aegis-host-detail__header">
+                <strong>@_selected.Ip</strong>
+                <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px" @onclick="CloseDetail">Fechar</button>
+            </div>
+            <ShodanDetail Host="_selected" />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback<ShodanHostDto> OnHostSelected { get; set; }
+
+    private IReadOnlyList<ShodanHostDto> _hosts = [];
+    private ShodanHostDto? _selected;
+    private bool _loading;
+    private string? _countryLabel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Workspace.ViewportChanged += OnViewportChanged;
+        Workspace.Changed += OnWorkspaceChanged;
+        await ReloadAsync();
+    }
+
+    public void Dispose()
+    {
+        Workspace.ViewportChanged -= OnViewportChanged;
+        Workspace.Changed -= OnWorkspaceChanged;
+    }
+
+    private async void OnViewportChanged() => await ReloadAsync();
+
+    private async void OnWorkspaceChanged()
+    {
+        if (Workspace.ShodanRegionCache.Count > 0)
+        {
+            _hosts = Workspace.ShodanRegionCache
+                .OrderByDescending(h => h.HasExploitableVuln)
+                .ThenBy(h => h.Ip, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+        try
+        {
+            if (Workspace.ShodanRegionCache.Count > 0)
+            {
+                _hosts = Workspace.ShodanRegionCache
+                    .OrderByDescending(h => h.HasExploitableVuln)
+                    .ThenBy(h => h.Ip, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+            }
+            else if (Workspace.Viewport is not null)
+            {
+                var context = await ViewportHostGeocoding.ResolveAsync(ScopeFactory, Workspace.Viewport, CancellationToken.None);
+                _countryLabel = context?.CountryCode;
+                if (context is not null)
+                {
+                    var entities = await HostRepository.ListByCountryAsync(context.CountryCode, 500);
+                    _hosts = entities.Select(HostDtoMapper.ToDto)
+                        .OrderByDescending(h => h.HasExploitableVuln)
+                        .ThenBy(h => h.Ip, StringComparer.OrdinalIgnoreCase)
+                        .ToList();
+                }
+                else
+                {
+                    var bbox = Workspace.Viewport;
+                    var inView = await HostRepository.ListInViewportAsync(
+                        string.Empty,
+                        bbox.South,
+                        bbox.North,
+                        bbox.West,
+                        bbox.East);
+                    _hosts = inView.Select(HostDtoMapper.ToDto).ToList();
+                }
+            }
+            else
+            {
+                _hosts = [];
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to load hosts panel.");
+            _hosts = [];
+        }
+        finally
+        {
+            _loading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SelectHost(ShodanHostDto host)
+    {
+        _selected = host;
+        await OnHostSelected.InvokeAsync(host);
+    }
+
+    private void CloseDetail() => _selected = null;
+}
+

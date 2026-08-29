@@ -1,0 +1,141 @@
+@inject InvestigationService InvestigationService
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+@implements IDisposable
+
+@if (Workspace.AlertsPanelOpen)
+{
+    <div class="aegis-dialog-backdrop" @onclick="Close">
+        <div class="aegis-dialog aegis-dialog--wide aegis-alerts-panel" @onclick:stopPropagation="true">
+            <div class="aegis-dialog__header aegis-dialog__header--split">
+                <span>Alertas — @(Workspace.ActiveInvestigationTitle ?? "Nenhuma investigação")</span>
+                <div class="aegis-alerts-panel__actions">
+                    @if (_alerts.Any(a => !a.IsRead))
+                    {
+                        <button type="button" class="aegis-btn aegis-btn--ghost" @onclick="MarkAllReadAsync">Marcar todos como lidos</button>
+                    }
+                    <button type="button" class="aegis-btn aegis-btn--ghost" @onclick="Close">Fechar</button>
+                </div>
+            </div>
+            <div class="aegis-dialog__body aegis-alerts-panel__body">
+                @if (Workspace.ActiveInvestigationId is null)
+                {
+                    <EmptyState Title="Sem investigação ativa" Description="Selecione uma investigação para ver os alertas de geofence." Icon="⚠" />
+                }
+                else if (_loading)
+                {
+                    <LoadingSpinner />
+                }
+                else if (_alerts.Count == 0)
+                {
+                    <EmptyState Title="Nenhum alerta" Description="Alertas de geofence aparecerão aqui quando forem disparados." Icon="✓" />
+                }
+                else
+                {
+                    <div class="aegis-alerts-list">
+                        @foreach (var alert in _alerts)
+                        {
+                            <button type="button"
+                                    class="aegis-alerts-list__item @(alert.IsRead ? "aegis-alerts-list__item--read" : "")"
+                                    @onclick="() => MarkReadAsync(alert)">
+                                <div class="aegis-alerts-list__meta">
+                                    <span class="aegis-alerts-list__time">@alert.OccurredAt.ToLocalTime().ToString("g")</span>
+                                    @if (!alert.IsRead)
+                                    {
+                                        <span class="aegis-alerts-list__badge">Novo</span>
+                                    }
+                                </div>
+                                <div class="aegis-alerts-list__message">@alert.Message</div>
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private IReadOnlyList<TimelineEventDto> _alerts = [];
+    private bool _loading;
+
+    protected override void OnInitialized()
+    {
+        Workspace.Changed += OnWorkspaceChanged;
+        _ = LoadAsync();
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        if (Workspace.AlertsPanelOpen)
+        {
+            _ = InvokeAsync(LoadAsync);
+        }
+    }
+
+    private async Task LoadAsync()
+    {
+        if (Workspace.ActiveInvestigationId is null)
+        {
+            _alerts = [];
+            return;
+        }
+
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            _alerts = await InvestigationService.GetAlertsAsync(Workspace.ActiveInvestigationId.Value);
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show($"Erro ao carregar alertas: {ex.Message}", NotificationLevel.Danger);
+            _alerts = [];
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task MarkReadAsync(TimelineEventDto alert)
+    {
+        if (Workspace.ActiveInvestigationId is null || alert.IsRead)
+        {
+            return;
+        }
+
+        try
+        {
+            await InvestigationService.MarkAlertReadAsync(Workspace.ActiveInvestigationId.Value, alert.Id);
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show($"Erro ao marcar alerta: {ex.Message}", NotificationLevel.Danger);
+        }
+    }
+
+    private async Task MarkAllReadAsync()
+    {
+        if (Workspace.ActiveInvestigationId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await InvestigationService.MarkAllAlertsReadAsync(Workspace.ActiveInvestigationId.Value);
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show($"Erro ao marcar alertas: {ex.Message}", NotificationLevel.Danger);
+        }
+    }
+
+    private void Close() => Workspace.CloseAlertsPanel();
+
+    public void Dispose() => Workspace.Changed -= OnWorkspaceChanged;
+}

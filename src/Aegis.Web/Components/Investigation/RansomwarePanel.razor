@@ -1,0 +1,97 @@
+@using Aegis.Application.Dtos.Intel
+@inject IRansomwareVictimCache RansomwareCache
+@inject WorkspaceState Workspace
+@implements IDisposable
+
+<div class="aegis-panel" style="border:none;background:transparent">
+    <div class="aegis-panel__header" style="padding:0 0 8px">
+        Ransomware (@_filtered.Count)
+        <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px;margin-left:auto" @onclick="ToggleFilter">
+            @(_filterByViewport ? "Tudo" : "Viewport")
+        </button>
+    </div>
+    @if (_filtered.Count == 0)
+    {
+        <EmptyState Title="Nenhuma vítima" Description="Feed ransomware.live atualiza a cada 30 min. Ative a camada Ransomware no mapa." Icon="☠" />
+    }
+    else
+    {
+        <div class="aegis-news-list">
+            @foreach (var item in _filtered)
+            {
+                <article class="aegis-news-item">
+                    <div class="aegis-news-item__meta">@item.Group · @item.Country · @item.DiscoveredAt.LocalDateTime.ToString("dd/MM HH:mm")</div>
+                    <a class="aegis-news-item__title" href="@item.Url" target="_blank" rel="noopener">@item.Victim</a>
+                    @if (!string.IsNullOrWhiteSpace(item.Activity))
+                    {
+                        <p class="aegis-news-item__summary">@item.Activity · @(item.Domain ?? "—")</p>
+                    }
+                </article>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private IReadOnlyList<RansomwareVictimDto> _items = [];
+    private IReadOnlyList<RansomwareVictimDto> _filtered = [];
+    private bool _filterByViewport = false;
+
+    protected override void OnInitialized()
+    {
+        RansomwareCache.Updated += OnCacheUpdated;
+        Workspace.ViewportChanged += OnViewportChanged;
+        Reload();
+    }
+
+    public void Dispose()
+    {
+        RansomwareCache.Updated -= OnCacheUpdated;
+        Workspace.ViewportChanged -= OnViewportChanged;
+    }
+
+    private void OnCacheUpdated()
+    {
+        Reload();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnViewportChanged()
+    {
+        ApplyFilter();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ToggleFilter()
+    {
+        _filterByViewport = !_filterByViewport;
+        ApplyFilter();
+    }
+
+    private void Reload()
+    {
+        _items = RansomwareCache.Get();
+        if (_items.Count == 0 && Workspace.RansomwareVictims.Count > 0)
+        {
+            _items = Workspace.RansomwareVictims;
+        }
+
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        if (!_filterByViewport || Workspace.Viewport is null)
+        {
+            _filtered = _items;
+            return;
+        }
+
+        var bbox = Workspace.Viewport;
+        _filtered = _items
+            .Where(v => v.Lat is not null && v.Lng is not null &&
+                        v.Lat >= bbox.South && v.Lat <= bbox.North &&
+                        v.Lng >= bbox.West && v.Lng <= bbox.East)
+            .ToList();
+    }
+}

@@ -1,0 +1,537 @@
+@using Aegis.Application.Abstractions
+@using Aegis.Application.Dtos.Osint
+@using Aegis.Application.Osint
+@using Aegis.Application.Services
+@inject IOsintBrazucaCatalog Catalog
+@inject IOsintSourceResolver SourceResolver
+@inject IOsintLinkHealthService LinkHealth
+@inject IBrasilApiClient BrasilApi
+@inject IRdapBrClient RdapBr
+@inject InvestigationService InvestigationService
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+@inject ProtectedLocalStorage LocalStorage
+@inject IJSRuntime Js
+@implements IDisposable
+
+<div class="aegis-panel aegis-osint-panel" style="border:none;background:transparent">
+    <div class="aegis-panel__header" style="padding:0 0 8px">
+        Fontes OSINT (@Catalog.TotalCount)
+        <span style="font-size:10px;color:var(--text-2);margin-left:6px">OSINT Brazuca</span>
+    </div>
+
+    @if (_showLgpdBanner)
+    {
+        <div class="aegis-osint-lgpd">
+            <strong>Uso responsável (LGPD)</strong>
+            <p>Consultas externas devem ter base legal documentada no caso. Evite coleta automatizada de PII sensível.</p>
+            <button type="button" class="aegis-btn aegis-btn--primary" style="font-size:11px" @onclick="AcknowledgeLgpdAsync">Entendi</button>
+        </div>
+    }
+
+    @if (HasContextValue(_context))
+    {
+        <div class="aegis-osint-context">
+            <div class="aegis-osint-context__title">Contexto detectado</div>
+            <div class="aegis-osint-context__tags">
+                @if (_context.Cnpj is not null) { <span class="aegis-tag">CNPJ @_context.Cnpj</span> }
+                @if (_context.Domain is not null) { <span class="aegis-tag">Domínio @_context.Domain</span> }
+                @if (_context.Ip is not null) { <span class="aegis-tag">IP @_context.Ip</span> }
+                @if (_context.Placa is not null) { <span class="aegis-tag">@_context.Placa</span> }
+            </div>
+        </div>
+
+        @if (_suggestions.Count > 0)
+        {
+            <div class="aegis-osint-section">
+                <div class="aegis-osint-section__title">Sugeridas para seleção</div>
+                @foreach (var source in _suggestions)
+                {
+                    <div class="aegis-osint-row">
+                        <div class="aegis-osint-row__main">
+                            <strong>@source.Fonte</strong>
+                            <div class="aegis-osint-row__meta">@source.Categoria</div>
+                        </div>
+                        <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px" @onclick="() => OpenSourceAsync(source)">Abrir</button>
+                    </div>
+                }
+            </div>
+        }
+
+        if (_context.Cnpj is not null)
+        {
+            <div class="aegis-osint-section">
+                <div class="aegis-osint-section__title">
+                    CNPJ (BrasilAPI)
+                    <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px;margin-left:auto" disabled="@_loadingCnpj" @onclick="LookupCnpjAsync">Consultar</button>
+                </div>
+                @if (_loadingCnpj)
+                {
+                    <LoadingSpinner Label="Consultando CNPJ..." />
+                }
+                else if (_cnpjResult is not null)
+                {
+                    <KeyValueGrid Items="_cnpjSummary" />
+                }
+
+                @if (_transparencyLinks.Count > 0)
+                {
+                    <div style="margin-top:8px">
+                        <div class="aegis-osint-section__title">Transparência (CNPJ)</div>
+                        @foreach (var link in _transparencyLinks)
+                        {
+                            <div class="aegis-osint-row">
+                                <div class="aegis-osint-row__main"><strong>@link.Label</strong></div>
+                                <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px" @onclick="() => OpenExternalLinkAsync(link.Label, link.Url)">Abrir</button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        @if (_dorks.Count > 0)
+        {
+            <div class="aegis-osint-section">
+                <div class="aegis-osint-section__title">Dorks sugeridos</div>
+                @foreach (var dork in _dorks)
+                {
+                    <div class="aegis-osint-row">
+                        <div class="aegis-osint-row__main"><code style="font-size:10px">@dork</code></div>
+                        <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px" @onclick="() => OpenDorkAsync(dork)">Buscar</button>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="aegis-osint-section">
+            <div class="aegis-osint-section__title">
+                CEP (BrasilAPI)
+                <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px;margin-left:auto" disabled="@_loadingCep" @onclick="LookupCepAsync">Consultar</button>
+            </div>
+            <input class="aegis-input" placeholder="00000000" @bind="_cepInput" />
+            @if (_loadingCep)
+            {
+                <LoadingSpinner Label="Consultando CEP..." />
+            }
+            else if (_cepResult is not null)
+            {
+                <KeyValueGrid Items="_cepSummary" />
+            }
+        </div>
+
+        @if (_context.Domain is not null && _context.Domain.EndsWith(".br", StringComparison.OrdinalIgnoreCase))
+        {
+            <div class="aegis-osint-section">
+                <div class="aegis-osint-section__title">
+                    Domínio .br (RDAP)
+                    <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px;margin-left:auto" disabled="@_loadingRdap" @onclick="LookupRdapAsync">Consultar</button>
+                </div>
+                @if (_loadingRdap)
+                {
+                    <LoadingSpinner Label="Consultando RDAP..." />
+                }
+                else if (_rdapResult is not null)
+                {
+                    <KeyValueGrid Items="_rdapSummary" />
+                }
+            </div>
+        }
+    }
+
+    <div class="aegis-osint-filters">
+        <input type="search"
+               class="aegis-input"
+               placeholder="Buscar fonte, categoria, URL..."
+               @bind="_searchText"
+               @bind:event="oninput"
+               @onkeyup="OnSearchChanged" />
+        <select class="aegis-input" @bind="_selectedCategory" @bind:after="RefreshResults">
+            <option value="">Todas categorias</option>
+            @foreach (var category in _categories)
+            {
+                <option value="@category">@category</option>
+            }
+        </select>
+        <select class="aegis-input" @bind="_selectedInput" @bind:after="RefreshResults">
+            <option value="">Qualquer input</option>
+            @foreach (var input in _inputTypes)
+            {
+                <option value="@input">@input</option>
+            }
+        </select>
+        <div style="display:flex;gap:6px;margin-top:6px">
+            <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px" disabled="@_checkingLinks" @onclick="CheckVisibleLinksAsync">Verificar links</button>
+            <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px" disabled="@_checkingLinks" @onclick="ExportBrokenLinksAsync">Exportar offline</button>
+        </div>
+    </div>
+
+    @if (_results.Count == 0)
+    {
+        <EmptyState Title="Nenhuma fonte" Description="Ajuste os filtros ou busque por palavra-chave." Icon="⌕" />
+    }
+    else
+    {
+        <div class="aegis-osint-list">
+            @foreach (var source in _results)
+            {
+                <div class="aegis-osint-row">
+                    <div class="aegis-osint-row__main">
+                        <strong>@source.Fonte</strong>
+                        @if (IsOffline(source.Url))
+                        {
+                            <span class="aegis-tag" style="margin-left:6px;color:#f85149">offline</span>
+                        }
+                        <div class="aegis-osint-row__meta">@source.Categoria · @string.Join(", ", source.Input)</div>
+                        @if (!string.IsNullOrWhiteSpace(source.Descricao))
+                        {
+                            <div class="aegis-osint-row__desc">@Truncate(source.Descricao, 120)</div>
+                        }
+                    </div>
+                    <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px" @onclick="() => OpenSourceAsync(source)">Abrir</button>
+                </div>
+            }
+        </div>
+    }
+
+    <OsintPublicSafetyPanel />
+    <OsintOfficialGazettePanel />
+</div>
+
+@code {
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    private const string LgpdStorageKey = "aegis_osint_lgpd_ack";
+
+    private string _searchText = string.Empty;
+    private string _selectedCategory = string.Empty;
+    private string _selectedInput = string.Empty;
+    private IReadOnlyList<string> _categories = [];
+    private IReadOnlyList<string> _inputTypes = [];
+    private IReadOnlyList<OsintSourceDto> _results = [];
+    private IReadOnlyList<OsintSourceDto> _suggestions = [];
+    private OsintContext _context = new();
+    private CnpjLookupDto? _cnpjResult;
+    private RdapDomainDto? _rdapResult;
+    private IEnumerable<KeyValueGrid.KeyValueItem> _cnpjSummary = [];
+    private IEnumerable<KeyValueGrid.KeyValueItem> _rdapSummary = [];
+    private IEnumerable<KeyValueGrid.KeyValueItem> _cepSummary = [];
+    private IReadOnlyList<string> _dorks = [];
+    private IReadOnlyList<(string Label, string Url)> _transparencyLinks = [];
+    private string _cepInput = string.Empty;
+    private CepLookupDto? _cepResult;
+    private bool _showLgpdBanner = true;
+    private bool _loadingCnpj;
+    private bool _loadingRdap;
+    private bool _loadingCep;
+    private bool _checkingLinks;
+    private Dictionary<string, OsintLinkHealthStatus> _healthByUrl = new(StringComparer.OrdinalIgnoreCase);
+
+    protected override async Task OnInitializedAsync()
+    {
+        Workspace.Changed += OnWorkspaceChanged;
+        _categories = Catalog.GetCategories();
+        _inputTypes = Catalog.GetInputTypes();
+        await LoadLgpdStateAsync();
+        RefreshContext();
+        RefreshResults();
+    }
+
+    private async Task LoadLgpdStateAsync()
+    {
+        try
+        {
+            var result = await LocalStorage.GetAsync<bool>(LgpdStorageKey);
+            _showLgpdBanner = result.Success != true || result.Value != true;
+        }
+        catch
+        {
+            _showLgpdBanner = true;
+        }
+    }
+
+    private async Task AcknowledgeLgpdAsync()
+    {
+        try
+        {
+            await LocalStorage.SetAsync(LgpdStorageKey, true);
+        }
+        catch
+        {
+        }
+
+        _showLgpdBanner = false;
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        _ = InvokeAsync(() =>
+        {
+            RefreshContext();
+            StateHasChanged();
+        });
+    }
+
+    private void RefreshContext()
+    {
+        _context = OsintContextExtractor.FromSelection(Workspace.Selection.Kind, Workspace.Selection.Payload);
+        _suggestions = SourceResolver.SuggestForContext(_context);
+        _dorks = OsintDorkGenerator.Generate(_context);
+        _transparencyLinks = _context.Cnpj is not null
+            ? OsintTransparencyLinks.ForCnpj(_context.Cnpj)
+            : [];
+        _cepInput = _context.Cep ?? _cepInput;
+        _cnpjResult = null;
+        _rdapResult = null;
+        _cepResult = null;
+        _cnpjSummary = [];
+        _rdapSummary = [];
+        _cepSummary = [];
+    }
+
+    private void OnSearchChanged(KeyboardEventArgs _) => RefreshResults();
+
+    private void RefreshResults()
+    {
+        _results = Catalog.Search(new OsintSearchQuery(
+            Text: string.IsNullOrWhiteSpace(_searchText) ? null : _searchText,
+            Categoria: string.IsNullOrWhiteSpace(_selectedCategory) ? null : _selectedCategory,
+            InputType: string.IsNullOrWhiteSpace(_selectedInput) ? null : _selectedInput,
+            Limit: 60));
+    }
+
+    private async Task OpenSourceAsync(OsintSourceDto source)
+    {
+        if (_showLgpdBanner)
+        {
+            Notifications.Show("Confirme o aviso LGPD antes de abrir fontes externas.", NotificationLevel.Warning);
+            return;
+        }
+
+        var url = SourceResolver.BuildUrl(source, _context);
+        await Js.InvokeVoidAsync("open", url, "_blank");
+
+        if (Workspace.ActiveInvestigationId is Guid investigationId)
+        {
+            try
+            {
+                await InvestigationService.RecordOsintSourceAccessAsync(
+                    investigationId,
+                    source.Fonte,
+                    url);
+                await OnChanged.InvokeAsync();
+            }
+            catch (Exception ex)
+            {
+                Notifications.Show(ex.Message, NotificationLevel.Warning);
+            }
+        }
+    }
+
+    private async Task LookupCnpjAsync()
+    {
+        if (_context.Cnpj is null)
+        {
+            return;
+        }
+
+        _loadingCnpj = true;
+        try
+        {
+            _cnpjResult = await BrasilApi.GetCnpjAsync(_context.Cnpj);
+            if (_cnpjResult is null)
+            {
+                Notifications.Show("CNPJ não encontrado ou API indisponível.", NotificationLevel.Warning);
+                _cnpjSummary = [];
+                return;
+            }
+
+            _cnpjSummary =
+            [
+                new("Razão social", _cnpjResult.RazaoSocial),
+                new("Fantasia", _cnpjResult.NomeFantasia ?? "—"),
+                new("Situação", _cnpjResult.SituacaoCadastral ?? "—"),
+                new("Endereço", FormatAddress(_cnpjResult)),
+                new("UF", _cnpjResult.Uf ?? "—"),
+                new("Coordenadas", _cnpjResult.Lat is not null && _cnpjResult.Lng is not null
+                    ? $"{_cnpjResult.Lat:F5}, {_cnpjResult.Lng:F5}"
+                    : "—")
+            ];
+        }
+        finally
+        {
+            _loadingCnpj = false;
+        }
+    }
+
+    private async Task LookupRdapAsync()
+    {
+        if (_context.Domain is null)
+        {
+            return;
+        }
+
+        _loadingRdap = true;
+        try
+        {
+            _rdapResult = await RdapBr.GetDomainAsync(_context.Domain);
+            if (_rdapResult is null)
+            {
+                Notifications.Show("Domínio não encontrado no RDAP ou API indisponível.", NotificationLevel.Warning);
+                _rdapSummary = [];
+                return;
+            }
+
+            _rdapSummary =
+            [
+                new("Status", _rdapResult.Status ?? "—"),
+                new("Registro", _rdapResult.RegistrationDate?.ToLocalTime().ToString("dd/MM/yyyy") ?? "—"),
+                new("Expira", _rdapResult.ExpirationDate?.ToLocalTime().ToString("dd/MM/yyyy") ?? "—"),
+                new("NS", _rdapResult.Nameservers.Count > 0 ? string.Join(", ", _rdapResult.Nameservers) : "—"),
+                new("Handle", _rdapResult.RegistrantHandle ?? "—")
+            ];
+        }
+        finally
+        {
+            _loadingRdap = false;
+        }
+    }
+
+    private async Task LookupCepAsync()
+    {
+        var cep = OsintContextExtractor.NormalizeCep(_cepInput);
+        if (cep is null)
+        {
+            Notifications.Show("Informe um CEP válido (8 dígitos).", NotificationLevel.Warning);
+            return;
+        }
+
+        _loadingCep = true;
+        try
+        {
+            _cepResult = await BrasilApi.GetCepAsync(cep);
+            if (_cepResult is null)
+            {
+                Notifications.Show("CEP não encontrado ou API indisponível.", NotificationLevel.Warning);
+                _cepSummary = [];
+                return;
+            }
+
+            _cepSummary =
+            [
+                new("Logradouro", _cepResult.Logradouro),
+                new("Bairro", _cepResult.Bairro),
+                new("Cidade/UF", $"{_cepResult.Municipio}/{_cepResult.Uf}"),
+                new("IBGE", _cepResult.Ibge ?? "—"),
+                new("Coordenadas", _cepResult.Lat is not null && _cepResult.Lng is not null
+                    ? $"{_cepResult.Lat:F5}, {_cepResult.Lng:F5}"
+                    : "—")
+            ];
+        }
+        finally
+        {
+            _loadingCep = false;
+        }
+    }
+
+    private async Task OpenDorkAsync(string dork)
+    {
+        var url = $"https://www.google.com/search?q={Uri.EscapeDataString(dork)}";
+        await OpenExternalLinkAsync($"Dork: {Truncate(dork, 40)}", url);
+    }
+
+    private async Task OpenExternalLinkAsync(string label, string url)
+    {
+        if (_showLgpdBanner)
+        {
+            Notifications.Show("Confirme o aviso LGPD antes de abrir fontes externas.", NotificationLevel.Warning);
+            return;
+        }
+
+        await Js.InvokeVoidAsync("open", url, "_blank");
+
+        if (Workspace.ActiveInvestigationId is Guid investigationId)
+        {
+            try
+            {
+                await InvestigationService.RecordOsintSourceAccessAsync(investigationId, label, url);
+                await OnChanged.InvokeAsync();
+            }
+            catch (Exception ex)
+            {
+                Notifications.Show(ex.Message, NotificationLevel.Warning);
+            }
+        }
+    }
+
+    private static string FormatAddress(CnpjLookupDto dto)
+    {
+        var parts = new[] { dto.Logradouro, dto.Numero, dto.Bairro, dto.Municipio, dto.Cep }
+            .Where(p => !string.IsNullOrWhiteSpace(p));
+        var text = string.Join(", ", parts);
+        return string.IsNullOrWhiteSpace(text) ? "—" : text;
+    }
+
+    private static string Truncate(string value, int max) =>
+        value.Length <= max ? value : value[..max] + "…";
+
+    private static bool HasContextValue(OsintContext context) =>
+        context.Cnpj is not null ||
+        context.Domain is not null ||
+        context.Ip is not null ||
+        context.Cep is not null ||
+        context.Cpf is not null ||
+        context.Placa is not null;
+
+    private bool IsOffline(string url) =>
+        _healthByUrl.TryGetValue(url, out var status) && !status.IsOnline;
+
+    private async Task CheckVisibleLinksAsync()
+    {
+        _checkingLinks = true;
+        try
+        {
+            _healthByUrl = (await LinkHealth.GetStatusesAsync(_results.Select(r => r.Url))).ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value,
+                StringComparer.OrdinalIgnoreCase);
+            Notifications.Show("Health-check concluído para fontes visíveis.", NotificationLevel.Success);
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Warning);
+        }
+        finally
+        {
+            _checkingLinks = false;
+        }
+    }
+
+    private async Task ExportBrokenLinksAsync()
+    {
+        _checkingLinks = true;
+        try
+        {
+            await LinkHealth.RefreshCatalogAsync();
+            var broken = await LinkHealth.GetBrokenLinksAsync();
+            var payload = new
+            {
+                generatedAt = DateTimeOffset.UtcNow,
+                source = "Aegis OSINT Brazuca health-check",
+                upstream = "https://github.com/osintbrazuca/osint-brazuca",
+                brokenLinks = broken
+            };
+            await Js.InvokeVoidAsync("aegisDownload.json", $"aegis-osint-offline-{DateTime.UtcNow:yyyyMMdd}.json", payload);
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Warning);
+        }
+        finally
+        {
+            _checkingLinks = false;
+        }
+    }
+
+    public void Dispose() => Workspace.Changed -= OnWorkspaceChanged;
+}

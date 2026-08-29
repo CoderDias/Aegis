@@ -1,0 +1,98 @@
+@inject FlightQueryService Flights
+@inject AssetService AssetService
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+@inject IJSRuntime Js
+
+@if (EffectiveMarker is null)
+{
+    <EmptyState Title="Nenhum voo selecionado" Description="Clique em uma aeronave no mapa." />
+}
+else
+{
+    <KeyValueGrid Items="_items" />
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="aegis-btn aegis-btn--primary" @onclick="AddToInvestigation" disabled="@(Workspace.ActiveInvestigationId is null)">
+            Adicionar à investigação
+        </button>
+    </div>
+    <FlightFilters />
+
+    <div class="aegis-osint-section" style="margin-top:12px">
+        <div class="aegis-osint-section__title">Consultas ANAC / RAB</div>
+        @foreach (var link in _aviationLinks)
+        {
+            <div class="aegis-osint-row">
+                <div class="aegis-osint-row__main"><strong>@link.Label</strong></div>
+                <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px" @onclick="() => OpenLink(link.Url)">Abrir</button>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public AircraftMarkerDto? Marker { get; set; }
+    [Parameter] public FlightRouteDto? Route { get; set; }
+
+    private AircraftMarkerDto? EffectiveMarker =>
+        Marker ?? Workspace.Selection.Payload as AircraftMarkerDto;
+
+    private IEnumerable<KeyValueGrid.KeyValueItem> _items = [];
+    private IReadOnlyList<(string Label, string Url)> _aviationLinks = [];
+
+    protected override void OnParametersSet()
+    {
+        var marker = EffectiveMarker;
+        if (marker is null)
+        {
+            _items = [];
+            _aviationLinks = [];
+            return;
+        }
+
+        _aviationLinks = OsintAviationLinks.ForAircraft(marker.Callsign, marker.Icao24);
+
+        var origin = Route?.Origin?.Label ?? "—";
+        var destination = Route?.Destination?.Label ?? "—";
+        var routeNote = Route switch
+        {
+            null => "Rota indisponível",
+            { IsEstimated: true } => "Rota estimada (track ADS-B)",
+            _ => "Rota filed (OpenSky)"
+        };
+
+        _items =
+        [
+            new("Callsign", marker.Callsign ?? "—"),
+            new("ICAO24", marker.Icao24),
+            new("Tipo", FlightCategoryClassifier.ToDisplayName(FlightCategoryClassifier.Classify(marker))),
+            new("Origem", origin),
+            new("Destino", destination),
+            new("Rota", routeNote),
+            new("Altitude", marker.BaroAltitude?.ToString("F0") + " m"),
+            new("Velocidade", marker.Velocity?.ToString("F0") + " m/s"),
+            new("Proa", marker.Heading?.ToString("F0") + "°"),
+            new("País", marker.OriginCountry ?? "—"),
+            new("No solo", marker.OnGround ? "Sim" : "Não"),
+            new("Último contato", marker.LastContact.ToLocalTime().ToString("g"))
+        ];
+    }
+
+    private async Task AddToInvestigation()
+    {
+        var marker = EffectiveMarker;
+        if (Workspace.ActiveInvestigationId is null || marker is null) return;
+
+        try
+        {
+            await AssetService.AddFromAircraftAsync(Workspace.ActiveInvestigationId.Value, marker.Icao24);
+            Notifications.Show("Aeronave adicionada à investigação.", NotificationLevel.Success);
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Danger);
+        }
+    }
+
+    private Task OpenLink(string url) => Js.InvokeVoidAsync("open", url, "_blank").AsTask();
+}

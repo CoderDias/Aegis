@@ -1,0 +1,181 @@
+@inject InvestigationService InvestigationService
+@inject GeofenceService GeofenceService
+@inject WorkspaceState Workspace
+@inject NavigationManager Navigation
+@inject UiNotificationService Notifications
+
+<div class="aegis-panel" style="border:none;border-bottom:1px solid var(--stroke);border-radius:0">
+    <div class="aegis-panel__header">
+        <span>Investigação ativa</span>
+        <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:11px" @onclick="ToggleList">▾</button>
+    </div>
+    @if (_expanded)
+    {
+        <div class="aegis-panel__body" style="padding:8px;max-height:240px;overflow:auto">
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+                <input class="aegis-input" placeholder="Nova investigação..." @bind="_newTitle" />
+                <div style="display:flex;gap:6px">
+                    <button type="button" class="aegis-btn aegis-btn--primary" style="flex:1" @onclick="CreateAsync" disabled="@string.IsNullOrWhiteSpace(_newTitle)">Criar</button>
+                    <button type="button" class="aegis-btn" style="flex:1" @onclick="CreateWithAreaAsync" disabled="@string.IsNullOrWhiteSpace(_newTitle)" title="Desenhe polígono ou círculo no mapa">Com área</button>
+                </div>
+            </div>
+            @if (_loading)
+            {
+                <div style="padding:8px"><LoadingSpinner /></div>
+            }
+            else if (_investigations.Count == 0)
+            {
+                <EmptyState Title="Nenhuma investigação" Description="Crie uma acima ou em Investigações." />
+            }
+            else
+            {
+                @foreach (var inv in _investigations)
+                {
+                    <div class="aegis-list-item @(Workspace.ActiveInvestigationId == inv.Id ? "selected" : "")">
+                        <div class="aegis-list-item__row" @onclick="() => Activate(inv)">
+                            <div>
+                                <div>@inv.Title</div>
+                                <div style="font-size:11px;color:var(--text-2)">@inv.Status · @inv.AssetCount assets</div>
+                            </div>
+                            <button type="button"
+                                    class="aegis-btn aegis-btn--ghost aegis-list-item__delete"
+                                    title="Excluir investigação"
+                                    @onclick:stopPropagation="true"
+                                    @onclick="() => ConfirmDelete(inv)">✕</button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+@if (_confirmDelete is not null)
+{
+    <div class="aegis-dialog-backdrop" @onclick="CancelDelete">
+        <div class="aegis-dialog" @onclick:stopPropagation="true">
+            <div class="aegis-dialog__header">Excluir investigação</div>
+            <div class="aegis-dialog__body">
+                <p>Excluir <strong>@_confirmDelete.Title</strong> permanentemente?</p>
+            </div>
+            <div class="aegis-dialog__footer">
+                <button type="button" class="aegis-btn" @onclick="CancelDelete">Cancelar</button>
+                <button type="button" class="aegis-btn aegis-btn--danger" @onclick="DeleteConfirmedAsync">Excluir</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private IReadOnlyList<InvestigationSummaryDto> _investigations = [];
+    private bool _expanded;
+    private bool _loading = true;
+    private string _newTitle = "";
+    private InvestigationSummaryDto? _confirmDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        try
+        {
+            _investigations = await InvestigationService.ListAsync(InvestigationStatus.Active);
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show($"Erro ao carregar investigações: {ex.Message}", NotificationLevel.Danger);
+            _investigations = [];
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void ToggleList() => _expanded = !_expanded;
+
+    private void Activate(InvestigationSummaryDto inv)
+    {
+        Workspace.ActiveInvestigationId = inv.Id;
+        Workspace.ActiveInvestigationTitle = inv.Title;
+        Workspace.NotifyChanged();
+        _expanded = false;
+    }
+
+    private async Task CreateAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newTitle))
+        {
+            return;
+        }
+
+        try
+        {
+            var created = await InvestigationService.CreateAsync(_newTitle.Trim(), null);
+            Workspace.ActiveInvestigationId = created.Id;
+            Workspace.ActiveInvestigationTitle = created.Title;
+            Workspace.NotifyChanged();
+            _newTitle = "";
+            Notifications.Show("Investigação criada.", NotificationLevel.Success);
+            await LoadAsync();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show($"Erro ao criar investigação: {ex.Message}", NotificationLevel.Danger);
+        }
+    }
+
+    private void CreateWithAreaAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newTitle))
+        {
+            return;
+        }
+
+        Workspace.BeginInvestigationGeofenceDraw(_newTitle.Trim());
+        _expanded = false;
+        Notifications.Show("Desenhe a área no mapa e confirme no painel inferior.", NotificationLevel.Info);
+    }
+
+    private void ConfirmDelete(InvestigationSummaryDto inv)
+    {
+        _confirmDelete = inv;
+        _expanded = true;
+    }
+
+    private void CancelDelete() => _confirmDelete = null;
+
+    private async Task DeleteConfirmedAsync()
+    {
+        if (_confirmDelete is null)
+        {
+            return;
+        }
+
+        var title = _confirmDelete.Title;
+        var id = _confirmDelete.Id;
+        try
+        {
+            await InvestigationService.DeleteAsync(id);
+            if (Workspace.ActiveInvestigationId == id)
+            {
+                Workspace.ActiveInvestigationId = null;
+                Workspace.ActiveInvestigationTitle = null;
+                Workspace.NotifyChanged();
+            }
+
+            Notifications.Show($"Investigação \"{title}\" excluída.", NotificationLevel.Success);
+            _confirmDelete = null;
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show($"Erro ao excluir: {ex.Message}", NotificationLevel.Danger);
+        }
+    }
+}

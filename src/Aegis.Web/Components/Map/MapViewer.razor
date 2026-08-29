@@ -1,0 +1,1515 @@
+@using Aegis.Application.Dtos.Flights
+@using Aegis.Application.Flights
+@using Aegis.Application.Abstractions
+@using Aegis.Application.Dtos.Geo
+@using Aegis.Application.Dtos.Intel
+@using Aegis.Application.Dtos.Investigations
+@using Aegis.Application.Dtos.Map
+@using Aegis.Application.Geo
+@using Aegis.Infrastructure.Data.Entities
+@using Aegis.Infrastructure.External.Censys
+@using Aegis.Infrastructure.External.GeoIntel
+@using Aegis.Infrastructure.External.Weather
+@using Aegis.Infrastructure.External.RansomwareLive
+@using Aegis.Infrastructure.External.HostDiscovery
+@using Aegis.Infrastructure.External.Overpass
+@using Aegis.Infrastructure.Intel
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Options
+@inject IJSRuntime Js
+@inject WorkspaceState Workspace
+@inject ViewportQueryService ViewportQuery
+@using Aegis.Infrastructure.Geo
+@using Aegis.Infrastructure.Background
+@using Microsoft.Extensions.Caching.Memory
+@inject DiscoveredHostRepository HostRepository
+@inject StaticGovernmentPoiCatalog StaticPoiCatalog
+@inject RepeaterBookCatalog RepeaterBookCatalog
+@inject AnatelErbCatalog AnatelErbCatalog
+@inject PublicCameraCatalog PublicCameraCatalog
+@inject BrazilPortCatalog BrazilPortCatalog
+@inject WeatherAlertAggregator WeatherAlerts
+@inject IOptions<MapOptions> MapOptions
+@inject IOptions<OpenStreetMapOptions> OsmOptions
+@inject IOptions<FlightsOptions> FlightsOptions
+@inject IViewportBroker ViewportBroker
+@inject IRansomwareVictimCache RansomwareCache
+@inject IGeoIntelCache GeoIntelCache
+@inject IRegionalPrefetchBroker RegionalPrefetch
+@inject IOptions<RegionalPrefetchOptions> RegionalPrefetchOptions
+@inject UsgsEarthquakeClient UsgsClient
+@inject RansomwareLiveClient RansomwareClient
+@inject IMemoryCache MemoryCache
+@inject IOptions<RssOptions> RssOptions
+@inject IServiceScopeFactory ScopeFactory
+@inject ILogger<MapViewer> Logger
+@implements IAsyncDisposable
+
+<div class="aegis-map" id="@_elementId" @key="_elementId"></div>
+
+@code {
+    [Parameter] public EventCallback<BoundingBoxDto> ViewportChanged { get; set; }
+    [Parameter] public EventCallback<CoordinateDto> MapClicked { get; set; }
+    [Parameter] public EventCallback<(string Kind, string Id, MapFeatureDto? Feature)> MarkerClicked { get; set; }
+    [Parameter] public EventCallback<(string Kind, string GeometryGeoJson)> DrawCompleted { get; set; }
+    [Parameter] public EventCallback MapReady { get; set; }
+
+    private readonly string _elementId = $"aegis-map-{Guid.NewGuid():N}";
+    private readonly string _circuitId = Guid.NewGuid().ToString("N");
+    private DotNetObjectReference<MapViewer>? _dotNetRef;
+    private bool _initialized;
+    private IReadOnlyList<AircraftMarkerDto> _aircraft = [];
+    private IReadOnlyList<MapFeatureDto> _features = [];
+    private Dictionary<string, MapFeatureDto> _featureIndex = new(StringComparer.OrdinalIgnoreCase);
+    private IReadOnlyList<object> _annotations = [];
+    private IReadOnlyList<object> _heatmapPoints = [];
+    private string? _lastRegionHash;
+    private string? _lastShodanRegionKey;
+    private string? _hostFocusIngestKey;
+    private readonly Dictionary<string, ShodanHostDto> _hostCacheByIp = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, DateTimeOffset> _hostRegionFetchedAt = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly TimeSpan HostRefreshInterval = TimeSpan.FromHours(24);
+    private IReadOnlyList<MapFeatureDto> _cachedFeatures = [];
+    private IReadOnlyList<NewsItemDto> _cachedNews = [];
+    private const string NewsGeoCacheKey = "aegis:news:geolocated";
+    private int _internalRefreshDepth;
+    private int _viewportRefreshGeneration;
+    private const int ZoomRadioShipsWeather = 7;
+    private const int ZoomOsmMedium = 8;
+    private const int ZoomDetailed = 9;
+
+    private bool IsRegionalIntelZoom => Workspace.Zoom >= ZoomRadioShipsWeather;
+    private bool IsOsmMediumZoom => Workspace.Zoom >= ZoomOsmMedium;
+    private bool IsDetailedZoom => Workspace.Zoom >= ZoomDetailed;
+
+    private bool NeedsOsmLayerQuery =>
+        (Workspace.Zoom >= ZoomRadioShipsWeather && (Workspace.Layers.RadioTowers || Workspace.Layers.Repeaters)) ||
+        (Workspace.Zoom >= ZoomOsmMedium && (
+            Workspace.Layers.Buildings ||
+            Workspace.Layers.AreasOfInterest ||
+            Workspace.Layers.Roads ||
+            Workspace.Layers.Erbs ||
+            Workspace.Layers.Ports)) ||
+        (Workspace.Zoom >= ZoomDetailed && Workspace.Layers.PublicCameras);
+
+    protected override void OnInitialized()
+    {
+        Workspace.Changed += OnWorkspaceChanged;
+        RansomwareCache.Updated += OnRansomwareCacheUpdated;
+        GeoIntelCache.Updated += OnGeoIntelCacheUpdated;
+        RegionalPrefetch.CountryUpdated += OnRegionalPrefetchUpdated;
+    }
+
+    private async void OnRegionalPrefetchUpdated(string countryCode)
+    {
+        if (_internalRefreshDepth > 0 || Workspace.Viewport is null || !Workspace.Layers.Shodan)
+        {
+            return;
+        }
+
+        try
+        {
+            var context = await ViewportHostGeocoding.ResolveAsync(ScopeFactory, Workspace.Viewport, CancellationToken.None);
+            if (context is null ||
+                !string.Equals(context.CountryCode, countryCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            await InvokeAsync(async () =>
+            {
+                await ReloadHostsFromPersistenceAsync(Workspace.Viewport!);
+
+                if (NeedsOsmLayerQuery)
+                {
+                    _lastRegionHash = null;
+                    var generation = Interlocked.Increment(ref _viewportRefreshGeneration);
+                    _ = RunSlowViewportRefreshAsync(Workspace.Viewport!, Workspace.Zoom, true, generation);
+                }
+
+                StateHasChanged();
+            });
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (Exception ex)
+        {
+            Logger.LogDebug(ex, "Regional prefetch map refresh failed.");
+        }
+    }
+
+    private async void OnGeoIntelCacheUpdated()
+    {
+        if (_internalRefreshDepth > 0 || Workspace.Viewport is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await InvokeAsync(async () =>
+            {
+                await ApplyGeoIntelToViewportAsync(Workspace.Viewport!);
+                StateHasChanged();
+            });
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (Exception ex)
+        {
+            Logger.LogDebug(ex, "GeoIntel cache refresh failed.");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_initialized)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            var map = MapOptions.Value;
+            var osm = OsmOptions.Value;
+
+            await Js.InvokeVoidAsync("aegisMap.init", _dotNetRef, _elementId, new
+            {
+                defaultLat = map.DefaultLat,
+                defaultLng = map.DefaultLng,
+                defaultZoom = map.DefaultZoom,
+                minZoom = map.MinZoom,
+                maxZoom = map.MaxZoom,
+                tileUrl = osm.TileUrl,
+                fallbackTileUrl = osm.FallbackTileUrl,
+                styleUrl = osm.StyleUrl,
+                attribution = osm.Attribution
+            });
+
+            _initialized = true;
+            ViewportBroker.ViewerConnected(_circuitId);
+        }
+    }
+
+    public async Task UpdateShodanAsync(IReadOnlyList<ShodanHostDto> hosts)
+    {
+        if (!_initialized) return;
+        Workspace.ShodanHosts = hosts;
+        await Js.InvokeVoidAsync("aegisMap.setShodan", _elementId, hosts.Select(h => new
+        {
+            id = h.Ip,
+            ip = h.Ip,
+            lat = h.Lat,
+            lng = h.Lng,
+            org = h.Org,
+            product = h.Product,
+            port = h.Port,
+            hostnames = h.Hostnames,
+            city = h.City,
+            country = h.Country,
+            transport = h.Transport,
+            vulnerable = h.HasExploitableVuln
+        }));
+    }
+
+    public async Task UpdateNewsMarkersAsync(IReadOnlyList<NewsItemDto> items)
+    {
+        if (!_initialized) return;
+        var geolocated = items.Where(i => i.Lat is not null && i.Lng is not null).ToList();
+        await Js.InvokeVoidAsync("aegisMap.setNews", _elementId, geolocated.Select(n => new
+        {
+            id = n.Id.ToString(),
+            lat = n.Lat,
+            lng = n.Lng,
+            title = n.Title,
+            summary = HtmlTextHelper.TruncatePlain(HtmlTextHelper.StripHtml(n.Summary), 200),
+            imageUrl = n.ImageUrl
+        }));
+    }
+
+    public async Task UpdateRansomwareMarkersAsync(IReadOnlyList<RansomwareVictimDto> victims)
+    {
+        if (!_initialized) return;
+        var items = victims.Where(v => v.Lat is not null && v.Lng is not null).ToList();
+        await Js.InvokeVoidAsync("aegisMap.setRansomware", _elementId, items.Select(v => new
+        {
+            id = v.Url,
+            lat = v.Lat,
+            lng = v.Lng,
+            victim = v.Victim,
+            group = v.Group,
+            country = v.Country ?? "—",
+            activity = v.Activity ?? "—",
+            discovered = v.DiscoveredAt.ToString("g")
+        }));
+    }
+
+    public async Task SetViewAsync(double lat, double lng, int zoom) =>
+        await Js.InvokeVoidAsync("aegisMap.setView", _elementId, lat, lng, zoom);
+
+    public async Task FitBoundsAsync(BoundingBoxDto bbox) =>
+        await Js.InvokeVoidAsync("aegisMap.fitBounds", _elementId, bbox.South, bbox.West, bbox.North, bbox.East);
+
+    public async Task UpdateAircraftAsync(IReadOnlyList<AircraftMarkerDto> aircraft)
+    {
+        _aircraft = aircraft;
+        if (!_initialized) return;
+
+        var max = FlightsOptions.Value.MaxMarkers;
+        var items = aircraft;
+        if (aircraft.Count > max)
+        {
+            items = aircraft.Take(max).ToList();
+        }
+
+        await Js.InvokeVoidAsync("aegisMap.setAircraft", _elementId, items.Select(a =>
+        {
+            var category = FlightCategoryClassifier.Classify(a);
+            return new
+            {
+                icao24 = a.Icao24,
+                lat = a.Lat,
+                lng = a.Lng,
+                heading = a.Heading,
+                pulse = false,
+                callsign = a.Callsign,
+                altitude = a.BaroAltitude,
+                velocity = a.Velocity,
+                country = a.OriginCountry,
+                onGround = a.OnGround,
+                category = FlightCategoryClassifier.ToKey(category)
+            };
+        }));
+    }
+
+    public async Task UpdateSeismicAsync(IReadOnlyList<GeoMarkerDto> markers)
+    {
+        if (!_initialized) return;
+        var visible = markers.Where(m => SeismicDisplayPolicy.IsVisibleOnMap(m)).ToList();
+        await Js.InvokeVoidAsync("aegisMap.setGeoMarkers", _elementId, "seismic", visible.Select(m => new
+        {
+            id = m.Id,
+            lat = m.Lat,
+            lng = m.Lng,
+            title = m.Title,
+            subtitle = m.Subtitle,
+            detail = m.Detail,
+            time = m.Timestamp?.ToString("g"),
+            opacity = SeismicDisplayPolicy.ComputeOpacity(m)
+        }));
+    }
+
+    public async Task UpdateShipsAsync(IReadOnlyList<GeoMarkerDto> markers)
+    {
+        if (!_initialized) return;
+        if (!Workspace.Layers.Ships || !IsRegionalIntelZoom)
+        {
+            markers = [];
+        }
+
+        await Js.InvokeVoidAsync("aegisMap.setGeoMarkers", _elementId, "ships", markers.Select(m => new
+        {
+            id = m.Id,
+            lat = m.Lat,
+            lng = m.Lng,
+            title = m.Title,
+            subtitle = m.Subtitle,
+            detail = m.Detail
+        }));
+    }
+
+    public async Task UpdateWeatherAlertsAsync(IReadOnlyList<GeoMarkerDto> markers)
+    {
+        if (!_initialized) return;
+        if (!Workspace.Layers.WeatherAlerts || !IsRegionalIntelZoom)
+        {
+            markers = [];
+        }
+
+        await Js.InvokeVoidAsync("aegisMap.setGeoMarkers", _elementId, "alerts", markers.Select(m => new
+        {
+            id = m.Id,
+            lat = m.Lat,
+            lng = m.Lng,
+            title = m.Title,
+            subtitle = m.Subtitle,
+            detail = m.Detail,
+            time = m.Timestamp?.ToLocalTime().ToString("g"),
+            validUntil = m.ValidUntil?.ToLocalTime().ToString("g"),
+            source = m.Source,
+            severity = m.Severity,
+            region = m.Region,
+            eventType = m.EventType,
+            instructions = m.Instructions,
+            risks = m.Risks,
+            opacity = Math.Clamp(m.Weight / 3.0, 0.55, 1.0)
+        }));
+    }
+
+    public async Task UpdateInpeOverlayAsync(bool enabled)
+    {
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.setInpeOverlay", _elementId, enabled && Workspace.Layers.InpeOverlay && IsRegionalIntelZoom);
+    }
+
+    public async Task UpdateFeaturesAsync(IReadOnlyList<MapFeatureDto> features)
+    {
+        features = FilterFeatures(features);
+        _features = features;
+        _featureIndex = features.ToDictionary(
+            f => $"{f.OsmType}/{f.OsmId}",
+            f => f,
+            StringComparer.OrdinalIgnoreCase);
+        PublishHeatmapOverlayPoints(features);
+        if (!_initialized) return;
+
+        await Js.InvokeVoidAsync("aegisMap.setFeatures", _elementId, features.Select(f => new
+        {
+            id = $"{f.OsmType}/{f.OsmId}",
+            name = f.Name,
+            category = f.Category,
+            kind = MapFeatureLayers.ResolveKind(f),
+            geometry = f.GeometryGeoJson,
+            url = f.Tags.GetValueOrDefault("url"),
+            operatorName = f.Tags.GetValueOrDefault("operator"),
+            technology = f.Tags.GetValueOrDefault("technology"),
+            city = f.Tags.GetValueOrDefault("addr:city"),
+            state = f.Tags.GetValueOrDefault("addr:state")
+        }));
+    }
+
+    public async Task UpdateAnnotationsAsync(IEnumerable<object> annotations)
+    {
+        _annotations = annotations.ToList();
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.setAnnotations", _elementId, _annotations);
+    }
+
+    public async Task UpdateHeatmapAsync(IEnumerable<object> points)
+    {
+        _heatmapPoints = points.ToList();
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.setHeatmap", _elementId, _heatmapPoints);
+    }
+
+    public async Task SetSelectionAsync(string? id)
+    {
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.setSelection", _elementId, id);
+    }
+
+    public async Task SetFlightRouteAsync(FlightRouteDto? route)
+    {
+        if (!_initialized) return;
+
+        if (route is null)
+        {
+            await Js.InvokeVoidAsync("aegisMap.setFlightRoute", _elementId, null);
+            return;
+        }
+
+        await Js.InvokeVoidAsync("aegisMap.setFlightRoute", _elementId, new
+        {
+            origin = route.Origin is null ? null : new
+            {
+                icao = route.Origin.Icao,
+                label = route.Origin.Label,
+                lat = route.Origin.Lat,
+                lng = route.Origin.Lng
+            },
+            destination = route.Destination is null ? null : new
+            {
+                icao = route.Destination.Icao,
+                label = route.Destination.Label,
+                lat = route.Destination.Lat,
+                lng = route.Destination.Lng
+            },
+            path = route.Path.Select(p => new { lat = p.Lat, lng = p.Lng }),
+            flownTrack = route.FlownTrack?.Select(p => new { lat = p.Lat, lng = p.Lng }),
+            isEstimated = route.IsEstimated
+        });
+    }
+
+    public async Task EnterDrawModeAsync(string kind, bool autoComplete = true)
+    {
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.enterDrawMode", _elementId, kind, autoComplete);
+    }
+
+    public async Task UpdateGeofencesAsync(IReadOnlyList<GeofenceDto> geofences)
+    {
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.setGeofences", _elementId, geofences.Select(g => new
+        {
+            id = g.Id.ToString(),
+            name = g.Name,
+            enabled = g.IsEnabled,
+            geometry = g.GeometryJson
+        }));
+    }
+
+    public async Task CancelDrawAsync()
+    {
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.cancelDraw", _elementId);
+    }
+
+    public async Task CompletePolygonDrawAsync()
+    {
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.completePolygonDraw", _elementId);
+    }
+
+    public async Task CompleteLineDrawAsync()
+    {
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.completeLineDraw", _elementId);
+    }
+
+    public async Task SetDrawPreviewAsync(string kind, string geometryGeoJson)
+    {
+        if (!_initialized) return;
+        await Js.InvokeVoidAsync("aegisMap.applyDrawPreview", _elementId, kind, geometryGeoJson);
+    }
+
+    private async Task RunSlowViewportRefreshAsync(
+        BoundingBoxDto bbox,
+        int zoom,
+        bool needsOsmQuery,
+        int generation)
+    {
+        try
+        {
+            var tasks = new List<Task>();
+
+            if (needsOsmQuery)
+            {
+                var regionHash = ViewportQueryService.ComputeRegionHash(bbox, zoom, Workspace.Layers.ToDto());
+                if (regionHash != _lastRegionHash)
+                {
+                    _lastRegionHash = regionHash;
+                    tasks.Add(RefreshOsmFeaturesAsync(bbox, zoom));
+                }
+            }
+
+            if (Workspace.Layers.News && ShouldRefreshNewsCache())
+            {
+                tasks.Add(RefreshNewsCacheAsync(bbox));
+            }
+
+            tasks.Add(RefreshShodanLayerAsync(bbox));
+
+            if (tasks.Count > 0)
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+
+            if (generation != Volatile.Read(ref _viewportRefreshGeneration))
+            {
+                return;
+            }
+
+            await InvokeAsync(async () =>
+            {
+                await PaintCachedLayersAsync(bbox);
+                StateHasChanged();
+            });
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (Exception ex)
+        {
+            Logger.LogDebug(ex, "Background viewport refresh failed.");
+        }
+    }
+
+    private async Task EnsureIntelBootstrapAsync()
+    {
+        if (Workspace.Layers.Seismic && GeoIntelCache.GetSeismic().Count == 0)
+        {
+            try
+            {
+                var seismic = await UsgsClient.FetchRecentAsync();
+                if (seismic.Count > 0)
+                {
+                    GeoIntelCache.SetSeismic(seismic);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogDebug(ex, "USGS bootstrap failed.");
+            }
+        }
+
+        if (Workspace.Layers.Ransomware && RansomwareCache.Get().Count == 0)
+        {
+            try
+            {
+                var victims = await RansomwareClient.GetRecentVictimsAsync();
+                if (victims.Count > 0)
+                {
+                    RansomwareCache.Set(victims);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogDebug(ex, "Ransomware bootstrap failed.");
+            }
+        }
+
+        if (Workspace.Layers.WeatherAlerts && GeoIntelCache.GetWeatherAlerts().Count == 0)
+        {
+            try
+            {
+                var alerts = await WeatherAlerts.FetchActiveAsync();
+                if (alerts.Count > 0)
+                {
+                    GeoIntelCache.SetWeatherAlerts(alerts);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogDebug(ex, "Weather alerts bootstrap failed.");
+            }
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnViewportChanged(ViewportPayload payload)
+    {
+        try
+        {
+            var bbox = new BoundingBoxDto(payload.South, payload.West, payload.North, payload.East);
+            Workspace.SetViewport(bbox, payload.Zoom);
+            ReportActiveLayers(bbox);
+
+            await ViewportChanged.InvokeAsync(bbox);
+
+            await PaintCachedLayersAsync(bbox);
+
+            var needsOsmQuery = NeedsOsmLayerQuery;
+            var generation = Interlocked.Increment(ref _viewportRefreshGeneration);
+            _ = RunSlowViewportRefreshAsync(bbox, payload.Zoom, needsOsmQuery, generation);
+        }
+        catch (JSDisconnectedException)
+        {
+            // circuit encerrado
+        }
+        catch (Exception ex)
+        {
+            Logger.LogDebug(ex, "Viewport update failed.");
+        }
+    }
+
+    private async void OnRansomwareCacheUpdated()
+    {
+        if (_internalRefreshDepth > 0 || Workspace.Viewport is null || !Workspace.Layers.Ransomware)
+        {
+            return;
+        }
+
+        try
+        {
+            await InvokeAsync(async () =>
+            {
+                await ApplyRansomwareToViewportAsync(Workspace.Viewport!);
+                StateHasChanged();
+            });
+        }
+        catch (JSDisconnectedException)
+        {
+            // circuit encerrado
+        }
+        catch (Exception ex)
+        {
+            Logger.LogDebug(ex, "Ransomware cache refresh failed.");
+        }
+    }
+
+    private async void OnWorkspaceChanged()
+    {
+        if (_internalRefreshDepth > 0 || Workspace.Viewport is null)
+        {
+            return;
+        }
+
+        try
+        {
+            ReportActiveLayers(Workspace.Viewport);
+
+            _lastRegionHash = null;
+            var needsOsmQuery = NeedsOsmLayerQuery;
+
+            await PaintCachedLayersAsync(Workspace.Viewport);
+
+            if (!Workspace.Layers.Shodan)
+            {
+                _lastShodanRegionKey = null;
+                _hostCacheByIp.Clear();
+                _hostRegionFetchedAt.Clear();
+                await UpdateShodanAsync([]);
+            }
+
+            if (needsOsmQuery || Workspace.Layers.Shodan)
+            {
+                var generation = Interlocked.Increment(ref _viewportRefreshGeneration);
+                _ = RunSlowViewportRefreshAsync(Workspace.Viewport, Workspace.Zoom, needsOsmQuery, generation);
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // circuit encerrado
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Layer refresh failed.");
+        }
+    }
+
+    private async Task RefreshOsmFeaturesAsync(BoundingBoxDto bbox, int zoom)
+    {
+        _internalRefreshDepth++;
+        try
+        {
+            var result = await ViewportQuery.QueryAsync(new ViewportQueryRequest(
+                bbox,
+                zoom,
+                Workspace.Layers.ToDto() with { Shodan = false, News = false, Ransomware = false },
+                Workspace.FlightFilters));
+
+            _cachedFeatures = result.Features;
+
+            if (NeedsOsmLayerQuery)
+            {
+                await UpdateFeaturesAsync(_cachedFeatures);
+            }
+            else
+            {
+                await UpdateFeaturesAsync([]);
+            }
+
+            if (Workspace.Layers.Ransomware)
+            {
+                await ApplyRansomwareToViewportAsync(bbox);
+            }
+            else
+            {
+                await UpdateRansomwareMarkersAsync([]);
+            }
+        }
+        finally
+        {
+            _internalRefreshDepth--;
+        }
+    }
+
+    private async Task RefreshNewsCacheAsync(BoundingBoxDto bbox)
+    {
+        _internalRefreshDepth++;
+        try
+        {
+            await EnsureNewsCacheAsync();
+            Workspace.NewsRegionCache = _cachedNews;
+            await ApplyNewsToViewportAsync(bbox);
+            Workspace.NotifyChanged();
+        }
+        finally
+        {
+            _internalRefreshDepth--;
+        }
+    }
+
+    private bool ShouldRefreshNewsCache() =>
+        !MemoryCache.TryGetValue(NewsGeoCacheKey, out IReadOnlyList<NewsItemDto>? cached) ||
+        cached is null ||
+        cached.Count == 0;
+
+    private async Task EnsureNewsCacheAsync()
+    {
+        if (!ShouldRefreshNewsCache() &&
+            MemoryCache.TryGetValue(NewsGeoCacheKey, out IReadOnlyList<NewsItemDto>? existing) &&
+            existing is not null)
+        {
+            _cachedNews = existing;
+            Workspace.NewsRegionCache = _cachedNews;
+            return;
+        }
+
+        _cachedNews = await ViewportQuery.GetGeolocatedNewsAsync();
+        var ttl = TimeSpan.FromMinutes(Math.Clamp(RssOptions.Value.NewsCacheMinutes, 1, 120));
+        MemoryCache.Set(NewsGeoCacheKey, _cachedNews, ttl);
+        Workspace.NewsRegionCache = _cachedNews;
+    }
+
+    private async Task ApplyNewsToViewportAsync(BoundingBoxDto bbox)
+    {
+        if (!Workspace.Layers.News)
+        {
+            await UpdateNewsMarkersAsync([]);
+            return;
+        }
+
+        if (_cachedNews.Count == 0)
+        {
+            await EnsureNewsCacheAsync();
+        }
+
+        // Notícias geo não dependem de zoom — exibe todas as geolocalizadas (como ransomware).
+        var visibleNews = _cachedNews
+            .Where(n => n.Lat is not null && n.Lng is not null)
+            .ToList();
+        await UpdateNewsMarkersAsync(visibleNews);
+    }
+
+    private async Task ApplyRansomwareToViewportAsync(BoundingBoxDto bbox)
+    {
+        if (!Workspace.Layers.Ransomware)
+        {
+            await UpdateRansomwareMarkersAsync([]);
+            Workspace.RansomwareVictims = [];
+            return;
+        }
+
+        var visible = RansomwareCache.Get()
+            .Where(v => v.Lat is not null && v.Lng is not null)
+            .ToList();
+
+        Workspace.RansomwareVictims = visible;
+        await UpdateRansomwareMarkersAsync(visible);
+    }
+
+    private async Task RefreshShodanLayerAsync(BoundingBoxDto bbox)
+    {
+        if (!Workspace.Layers.Shodan)
+        {
+            if (_hostCacheByIp.Count > 0)
+            {
+                _hostCacheByIp.Clear();
+                _hostRegionFetchedAt.Clear();
+                _lastShodanRegionKey = null;
+                _hostFocusIngestKey = null;
+                await UpdateShodanAsync([]);
+            }
+
+            return;
+        }
+
+        await EnsureHostCacheAsync(bbox);
+        await ApplyShodanToViewportAsync(bbox);
+
+        if (RegionalPrefetchOptions.Value.Enabled)
+        {
+            var countryCode = _hostFocusIngestKey?.Split(':')[0];
+            if (string.IsNullOrWhiteSpace(countryCode))
+            {
+                var ctx = await ViewportHostGeocoding.ResolveAsync(ScopeFactory, bbox, CancellationToken.None);
+                countryCode = ctx?.CountryCode;
+            }
+
+            return;
+        }
+
+        var regionKey = _hostFocusIngestKey ?? ComputeHostFocusKey(bbox);
+        var shouldRefresh = !_hostRegionFetchedAt.TryGetValue(regionKey, out var lastFetch) ||
+                            DateTimeOffset.UtcNow - lastFetch > HostRefreshInterval;
+
+        if (!shouldRefresh)
+        {
+            return;
+        }
+
+        _lastShodanRegionKey = regionKey;
+        _internalRefreshDepth++;
+        try
+        {
+            var result = await ViewportQuery.QueryAsync(new ViewportQueryRequest(
+                bbox,
+                Workspace.Zoom,
+                new MapLayerState(false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false),
+                Workspace.FlightFilters));
+
+            MergeHostsIntoCache(result.ShodanHosts);
+            _hostRegionFetchedAt[regionKey] = DateTimeOffset.UtcNow;
+            Workspace.NotifyChanged();
+
+            await ApplyShodanToViewportAsync(bbox);
+        }
+        finally
+        {
+            _internalRefreshDepth--;
+        }
+    }
+
+    private async Task ReloadHostsFromPersistenceAsync(BoundingBoxDto bbox)
+    {
+        _hostCacheByIp.Clear();
+        await EnsureHostCacheAsync(bbox);
+        await ApplyShodanToViewportAsync(bbox);
+    }
+
+    private async Task ApplyShodanToViewportAsync(BoundingBoxDto bbox)
+    {
+        if (!Workspace.Layers.Shodan)
+        {
+            await UpdateShodanAsync([]);
+            return;
+        }
+
+        await UpdateShodanAsync(GetVisibleHosts(bbox));
+    }
+
+    private void MergeHostsIntoCache(IEnumerable<ShodanHostDto> hosts)
+    {
+        foreach (var host in hosts)
+        {
+            _hostCacheByIp[host.Ip] = host;
+        }
+
+        Workspace.ShodanRegionCache = _hostCacheByIp.Values.ToList();
+    }
+
+    private IReadOnlyList<ShodanHostDto> GetVisibleHosts(BoundingBoxDto bbox)
+    {
+        if (_hostCacheByIp.Count == 0)
+        {
+            return [];
+        }
+
+        if (Workspace.Zoom <= 7)
+        {
+            return _hostCacheByIp.Values.ToList();
+        }
+
+        return _hostCacheByIp.Values
+            .Where(h => h.Lat >= bbox.South && h.Lat <= bbox.North &&
+                        h.Lng >= bbox.West && h.Lng <= bbox.East)
+            .ToList();
+    }
+
+    private async Task PaintCachedLayersAsync(BoundingBoxDto bbox)
+    {
+        await EnsureIntelBootstrapAsync();
+
+        if (Workspace.Layers.News)
+        {
+            await EnsureNewsCacheAsync();
+        }
+
+        if (Workspace.Layers.Shodan)
+        {
+            await EnsureHostCacheAsync(bbox);
+        }
+
+        if (Workspace.Layers.AreasOfInterest && Workspace.Zoom >= ZoomOsmMedium)
+        {
+            MergeStaticPoisIntoFeatureCache(bbox);
+        }
+
+        if (Workspace.Layers.Repeaters && Workspace.Zoom >= ZoomRadioShipsWeather)
+        {
+            MergeRepeaterBookIntoFeatureCache(bbox);
+        }
+
+        if (Workspace.Layers.Erbs && Workspace.Zoom >= ZoomOsmMedium)
+        {
+            MergeErbsIntoFeatureCache(bbox);
+        }
+
+        if (Workspace.Layers.PublicCameras && Workspace.Zoom >= ZoomDetailed)
+        {
+            MergeCamerasIntoFeatureCache(bbox);
+        }
+
+        if (Workspace.Layers.Ports && Workspace.Zoom >= ZoomOsmMedium)
+        {
+            MergePortsIntoFeatureCache(bbox);
+        }
+
+        var tasks = new List<Task>();
+
+        if (NeedsOsmLayerQuery)
+        {
+            tasks.Add(UpdateFeaturesAsync(_cachedFeatures));
+        }
+        else
+        {
+            tasks.Add(UpdateFeaturesAsync([]));
+        }
+
+        if (Workspace.Layers.News)
+        {
+            tasks.Add(ApplyNewsToViewportAsync(bbox));
+        }
+        else
+        {
+            tasks.Add(UpdateNewsMarkersAsync([]));
+        }
+
+        if (Workspace.Layers.Ransomware)
+        {
+            tasks.Add(ApplyRansomwareToViewportAsync(bbox));
+        }
+        else
+        {
+            Workspace.RansomwareVictims = [];
+            tasks.Add(UpdateRansomwareMarkersAsync([]));
+        }
+
+        if (Workspace.Layers.Shodan)
+        {
+            tasks.Add(ApplyShodanToViewportAsync(bbox));
+        }
+
+        tasks.Add(ApplyGeoIntelToViewportAsync(bbox));
+
+        await Task.WhenAll(tasks);
+    }
+
+    private async Task ApplyGeoIntelToViewportAsync(BoundingBoxDto bbox)
+    {
+        var tasks = new List<Task>(2);
+
+        if (Workspace.Layers.Seismic)
+        {
+            tasks.Add(UpdateSeismicAsync(GeoIntelCache.GetSeismic()));
+        }
+        else
+        {
+            tasks.Add(UpdateSeismicAsync([]));
+        }
+
+        if (Workspace.Layers.WeatherAlerts && IsRegionalIntelZoom)
+        {
+            tasks.Add(UpdateWeatherAlertsAsync(FilterGeoMarkersByViewport(GeoIntelCache.GetWeatherAlerts(), bbox)));
+        }
+        else
+        {
+            tasks.Add(UpdateWeatherAlertsAsync([]));
+        }
+
+        if (Workspace.Layers.Ships && IsRegionalIntelZoom)
+        {
+            tasks.Add(UpdateShipsAsync(FilterGeoMarkersByViewport(GeoIntelCache.GetShips(), bbox)));
+        }
+        else
+        {
+            tasks.Add(UpdateShipsAsync([]));
+        }
+
+        tasks.Add(UpdateInpeOverlayAsync(Workspace.Layers.InpeOverlay && IsRegionalIntelZoom));
+
+        await Task.WhenAll(tasks);
+    }
+
+    private IReadOnlyList<GeoMarkerDto> FilterGeoMarkersByViewport(IReadOnlyList<GeoMarkerDto> markers, BoundingBoxDto bbox)
+    {
+        return markers
+            .Where(m => m.Lat >= bbox.South && m.Lat <= bbox.North &&
+                        m.Lng >= bbox.West && m.Lng <= bbox.East)
+            .ToList();
+    }
+
+    private void MergeStaticPoisIntoFeatureCache(BoundingBoxDto bbox)
+    {
+        if (!Workspace.Layers.AreasOfInterest)
+        {
+            return;
+        }
+
+        var merged = _cachedFeatures.ToDictionary(
+            f => $"{f.OsmType}/{f.OsmId}",
+            f => f,
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var poi in StaticPoiCatalog.GetInViewport(bbox))
+        {
+            merged.TryAdd($"{poi.OsmType}/{poi.OsmId}", poi);
+        }
+
+        _cachedFeatures = merged.Values.ToList();
+    }
+
+    private void MergeRepeaterBookIntoFeatureCache(BoundingBoxDto bbox)
+    {
+        if (!Workspace.Layers.Repeaters)
+        {
+            return;
+        }
+
+        var merged = _cachedFeatures.ToDictionary(
+            f => $"{f.OsmType}/{f.OsmId}",
+            f => f,
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var repeater in RepeaterBookCatalog.GetInViewport(bbox))
+        {
+            merged.TryAdd($"{repeater.OsmType}/{repeater.OsmId}", repeater);
+        }
+
+        _cachedFeatures = merged.Values.ToList();
+    }
+
+    private void MergeErbsIntoFeatureCache(BoundingBoxDto bbox)
+    {
+        var merged = _cachedFeatures.ToDictionary(
+            f => $"{f.OsmType}/{f.OsmId}",
+            f => f,
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var erb in AnatelErbCatalog.GetInViewport(bbox))
+        {
+            merged.TryAdd($"{erb.OsmType}/{erb.OsmId}", erb);
+        }
+
+        _cachedFeatures = merged.Values.ToList();
+    }
+
+    private void MergeCamerasIntoFeatureCache(BoundingBoxDto bbox)
+    {
+        var merged = _cachedFeatures.ToDictionary(
+            f => $"{f.OsmType}/{f.OsmId}",
+            f => f,
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var camera in PublicCameraCatalog.GetInViewport(bbox))
+        {
+            merged.TryAdd($"{camera.OsmType}/{camera.OsmId}", camera);
+        }
+
+        _cachedFeatures = merged.Values.ToList();
+    }
+
+    private void MergePortsIntoFeatureCache(BoundingBoxDto bbox)
+    {
+        var merged = _cachedFeatures.ToDictionary(
+            f => $"{f.OsmType}/{f.OsmId}",
+            f => f,
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var port in BrazilPortCatalog.GetInViewport(bbox))
+        {
+            merged.TryAdd($"{port.OsmType}/{port.OsmId}", port);
+        }
+
+        _cachedFeatures = merged.Values.ToList();
+    }
+
+    private async Task EnsureHostCacheAsync(BoundingBoxDto bbox)
+    {
+        if (_hostCacheByIp.Count == 0 && Workspace.ShodanRegionCache.Count > 0)
+        {
+            MergeHostsIntoCache(Workspace.ShodanRegionCache);
+        }
+
+        if (_hostCacheByIp.Count > 0)
+        {
+            return;
+        }
+
+        var context = await ViewportHostGeocoding.ResolveAsync(ScopeFactory, bbox, CancellationToken.None);
+        if (context is not null)
+        {
+            _hostFocusIngestKey = context.IngestKey;
+            var countryHosts = await HostRepository.ListByCountryAsync(context.CountryCode, 500);
+            if (countryHosts.Count > 0)
+            {
+                MergeHostsIntoCache(countryHosts.Select(HostDtoMapper.ToDto));
+                return;
+            }
+        }
+
+        var persisted = await HostRepository.ListInViewportAsync(
+            string.Empty,
+            bbox.South,
+            bbox.North,
+            bbox.West,
+            bbox.East);
+
+        if (persisted.Count > 0)
+        {
+            MergeHostsIntoCache(persisted.Select(HostDtoMapper.ToDto));
+            return;
+        }
+
+        if (context is not null)
+        {
+            return;
+        }
+
+        context = await ViewportHostGeocoding.ResolveAsync(ScopeFactory, bbox, CancellationToken.None);
+        if (context is not null)
+        {
+            _hostFocusIngestKey = context.IngestKey;
+        }
+    }
+
+    private static ShodanHostDto MapPersistedHost(DiscoveredHostEntity entity) => HostDtoMapper.ToDto(entity);
+
+    [JSInvokable]
+    public async Task OnMapClick(CoordinatePayload payload)
+    {
+        await MapClicked.InvokeAsync(new CoordinateDto(payload.Lat, payload.Lng));
+    }
+
+    [JSInvokable]
+    public async Task OnMarkerClick(MarkerPayload payload)
+    {
+        var kind = ResolveClickKind(payload);
+        var feature = ResolveFeatureForClick(payload.Id, kind, payload);
+
+        await MarkerClicked.InvokeAsync((kind, payload.Id, feature));
+    }
+
+    private static string ResolveClickKind(MarkerPayload payload)
+    {
+        if (payload.Kind is "public_camera" or "erb" or "port")
+        {
+            return payload.Kind;
+        }
+
+        if (payload.Id.StartsWith("brazuca-camera/", StringComparison.OrdinalIgnoreCase))
+        {
+            return "public_camera";
+        }
+
+        if (payload.Id.StartsWith("anatel-erb/", StringComparison.OrdinalIgnoreCase))
+        {
+            return "erb";
+        }
+
+        if (payload.Id.StartsWith("brazuca-port/", StringComparison.OrdinalIgnoreCase))
+        {
+            return "port";
+        }
+
+        return payload.Kind;
+    }
+
+    private MapFeatureDto? ResolveFeatureForClick(string id, string kind, MarkerPayload payload)
+    {
+        if (_featureIndex.TryGetValue(id, out var indexed))
+        {
+            return indexed;
+        }
+
+        if (kind is not ("public_camera" or "erb" or "port"))
+        {
+            var cached = _cachedFeatures.FirstOrDefault(f =>
+                string.Equals($"{f.OsmType}/{f.OsmId}", id, StringComparison.OrdinalIgnoreCase));
+            if (cached is not null)
+            {
+                return cached;
+            }
+
+            return null;
+        }
+
+        var fromCache = _cachedFeatures.FirstOrDefault(f =>
+            string.Equals($"{f.OsmType}/{f.OsmId}", id, StringComparison.OrdinalIgnoreCase));
+        if (fromCache is not null)
+        {
+            return fromCache;
+        }
+
+        var catalog = kind switch
+        {
+            "public_camera" => PublicCameraCatalog.TryGetByCompositeId(id),
+            "erb" => AnatelErbCatalog.TryGetByCompositeId(id),
+            "port" => BrazilPortCatalog.TryGetByCompositeId(id),
+            _ => null
+        };
+        if (catalog is not null)
+        {
+            return catalog;
+        }
+
+        return BuildFallbackFeature(id, kind, payload);
+    }
+
+    private static MapFeatureDto? BuildFallbackFeature(string id, string kind, MarkerPayload payload)
+    {
+        var slash = id.IndexOf('/');
+        if (slash <= 0 || slash >= id.Length - 1 || !long.TryParse(id[(slash + 1)..], out var osmId))
+        {
+            return null;
+        }
+
+        var osmType = id[..slash];
+        var expectedType = kind switch
+        {
+            "public_camera" => "brazuca-camera",
+            "erb" => "anatel-erb",
+            "port" => "brazuca-port",
+            _ => osmType
+        };
+
+        if (!string.Equals(osmType, expectedType, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var tags = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["source"] = expectedType
+        };
+
+        if (!string.IsNullOrWhiteSpace(payload.Name))
+        {
+            tags["name"] = payload.Name;
+        }
+
+        if (!string.IsNullOrWhiteSpace(payload.Url))
+        {
+            tags["url"] = payload.Url;
+        }
+
+        if (!string.IsNullOrWhiteSpace(payload.Operator))
+        {
+            tags["operator"] = payload.Operator;
+        }
+
+        if (!string.IsNullOrWhiteSpace(payload.Technology))
+        {
+            tags["technology"] = payload.Technology;
+        }
+
+        if (!string.IsNullOrWhiteSpace(payload.City))
+        {
+            tags["addr:city"] = payload.City;
+        }
+
+        if (!string.IsNullOrWhiteSpace(payload.State))
+        {
+            tags["addr:state"] = payload.State;
+        }
+
+        var lat = payload.Lat ?? 0;
+        var lng = payload.Lng ?? 0;
+        var geometry = payload.Lat is not null && payload.Lng is not null
+            ? $$"""{"type":"Point","coordinates":[{{lng.ToString(System.Globalization.CultureInfo.InvariantCulture)}},{{lat.ToString(System.Globalization.CultureInfo.InvariantCulture)}}]}"""
+            : null;
+
+        return new MapFeatureDto(
+            expectedType,
+            osmId,
+            payload.Name,
+            payload.Category,
+            new CoordinateDto(lat, lng),
+            geometry,
+            tags);
+    }
+
+    [JSInvokable]
+    public Task OnDrawReady(string kind, string geometryGeoJson)
+    {
+        Workspace.PendingDrawKind = kind;
+        Workspace.PendingDrawGeometryJson = geometryGeoJson;
+        Workspace.DrawModeActive = false;
+        Workspace.DrawKind = null;
+        Workspace.NotifyChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public Task OnDrawCancelled()
+    {
+        Workspace.DrawModeActive = false;
+        Workspace.DrawKind = null;
+        Workspace.DrawPointCount = 0;
+        Workspace.NotifyChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public Task OnDrawPointCountChanged(int count)
+    {
+        Workspace.DrawPointCount = count;
+        Workspace.NotifyChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public async Task OnDrawCompleted(string kind, string geometryGeoJson)
+    {
+        if (string.IsNullOrWhiteSpace(kind) || string.IsNullOrWhiteSpace(geometryGeoJson))
+        {
+            return;
+        }
+
+        await DrawCompleted.InvokeAsync((kind, geometryGeoJson));
+    }
+
+    [JSInvokable]
+    public async Task OnReady()
+    {
+        if (_aircraft.Count > 0)
+        {
+            await UpdateAircraftAsync(_aircraft);
+        }
+
+        await Js.InvokeVoidAsync("aegisMap.invalidateSize", _elementId);
+
+        if (Workspace.Viewport is not null)
+        {
+            ReportActiveLayers(Workspace.Viewport);
+            await EnsureIntelBootstrapAsync();
+            await PaintCachedLayersAsync(Workspace.Viewport);
+        }
+        else
+        {
+            ReportActiveLayers(new BoundingBoxDto(
+                MapOptions.Value.DefaultLat - 1,
+                MapOptions.Value.DefaultLng - 1,
+                MapOptions.Value.DefaultLat + 1,
+                MapOptions.Value.DefaultLng + 1));
+        }
+
+        await MapReady.InvokeAsync();
+    }
+
+    private void ReportActiveLayers(BoundingBoxDto bbox)
+    {
+        ViewportBroker.Report(
+            Aegis.Domain.ValueObjects.BoundingBox.Create(bbox.South, bbox.West, bbox.North, bbox.East),
+            Aegis.Domain.ValueObjects.ZoomLevel.Create(Workspace.Zoom),
+            Workspace.Layers.ToDto());
+    }
+
+    private void PublishHeatmapOverlayPoints(IReadOnlyList<MapFeatureDto> features)
+    {
+        var points = new List<(double Lat, double Lng, double Weight)>();
+        foreach (var feature in features)
+        {
+            var weight = MapFeatureLayers.IsRadioTower(feature) ? 1.4
+                : MapFeatureLayers.IsRepeater(feature) ? 1.3
+                : MapFeatureLayers.IsPoi(feature) ? 1.1
+                : MapFeatureLayers.IsBuilding(feature) ? 0.7
+                : 0.5;
+            points.Add((feature.Centroid.Lat, feature.Centroid.Lng, weight));
+        }
+
+        if (HeatmapPointsEqual(Workspace.HeatmapOverlayPoints, points))
+        {
+            return;
+        }
+
+        Workspace.HeatmapOverlayPoints = points;
+        if (Workspace.Layers.Heatmap)
+        {
+            Workspace.NotifyHeatmapOverlayChanged();
+        }
+    }
+
+    private static bool HeatmapPointsEqual(
+        IReadOnlyList<(double Lat, double Lng, double Weight)> current,
+        IReadOnlyList<(double Lat, double Lng, double Weight)> next)
+    {
+        if (current.Count != next.Count)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < current.Count; i++)
+        {
+            var a = current[i];
+            var b = next[i];
+            if (Math.Abs(a.Lat - b.Lat) > 0.000001 ||
+                Math.Abs(a.Lng - b.Lng) > 0.000001 ||
+                Math.Abs(a.Weight - b.Weight) > 0.000001)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private IReadOnlyList<MapFeatureDto> FilterFeatures(IReadOnlyList<MapFeatureDto> features)
+    {
+        var list = new List<MapFeatureDto>();
+        foreach (var feature in features)
+        {
+            if (Workspace.Layers.RadioTowers && IsRegionalIntelZoom && MapFeatureLayers.IsRadioTower(feature))
+            {
+                list.Add(feature);
+            }
+            else if (Workspace.Layers.Repeaters && IsRegionalIntelZoom && MapFeatureLayers.IsRepeater(feature))
+            {
+                list.Add(feature);
+            }
+            else if (Workspace.Layers.Erbs && IsOsmMediumZoom && MapFeatureLayers.IsErb(feature))
+            {
+                list.Add(feature);
+            }
+            else if (Workspace.Layers.PublicCameras && IsDetailedZoom && MapFeatureLayers.IsPublicCamera(feature))
+            {
+                list.Add(feature);
+            }
+            else if (Workspace.Layers.Ports && IsOsmMediumZoom && MapFeatureLayers.IsPort(feature))
+            {
+                list.Add(feature);
+            }
+            else if (Workspace.Layers.Roads && IsOsmMediumZoom && MapFeatureLayers.IsRoad(feature))
+            {
+                list.Add(feature);
+            }
+            else if (Workspace.Layers.Buildings && IsOsmMediumZoom && MapFeatureLayers.IsBuilding(feature))
+            {
+                list.Add(feature);
+            }
+            else if (Workspace.Layers.AreasOfInterest && IsOsmMediumZoom && MapFeatureLayers.IsPoi(feature))
+            {
+                list.Add(feature);
+            }
+        }
+
+        return list
+            .DistinctBy(f => $"{f.OsmType}/{f.OsmId}")
+            .ToList();
+    }
+
+    private static string ComputeHostFocusKey(BoundingBoxDto bbox)
+    {
+        var focus = ViewportHostFocus.BuildFocusBbox(bbox);
+        var lat = (focus.South + focus.North) / 2;
+        var lng = (focus.West + focus.East) / 2;
+        return $"{lat:F2}:{lng:F2}";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Workspace.Changed -= OnWorkspaceChanged;
+        RansomwareCache.Updated -= OnRansomwareCacheUpdated;
+        GeoIntelCache.Updated -= OnGeoIntelCacheUpdated;
+        RegionalPrefetch.CountryUpdated -= OnRegionalPrefetchUpdated;
+        ViewportBroker.ViewerDisconnected(_circuitId);
+
+        if (_initialized)
+        {
+            try
+            {
+                await Js.InvokeVoidAsync("aegisMap.destroy", _elementId);
+            }
+            catch (JSDisconnectedException)
+            {
+                // circuit já desconectado
+            }
+        }
+
+        _dotNetRef?.Dispose();
+    }
+
+    public sealed record ViewportPayload(double South, double West, double North, double East, int Zoom);
+    public sealed record CoordinatePayload(double Lat, double Lng);
+    public sealed record MarkerPayload(
+        string Kind,
+        string Id,
+        string? Name = null,
+        string? Category = null,
+        string? Url = null,
+        string? Operator = null,
+        string? Technology = null,
+        string? City = null,
+        string? State = null,
+        double? Lat = null,
+        double? Lng = null);
+}

@@ -1,0 +1,24 @@
+@inject WorkspaceState Workspace
+
+@if (Workspace.ActiveInvestigationId is null)
+{
+    <EmptyState Title="Timeline indisponível" Description="Selecione uma investigação ativa." />
+}
+else if (Events.Count == 0)
+{
+    <EmptyState Title="Sem eventos" Description="Ações na investigação aparecerão aqui." />
+}
+else
+{
+    @foreach (var evt in Events.OrderByDescending(e => e.OccurredAt))
+    {
+        <div class="aegis-timeline-item">
+            <time>@evt.OccurredAt.ToLocalTime().ToString("HH:mm:ss")</time>
+            <span>@evt.Message</span>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public IReadOnlyList<TimelineEventDto> Events { get; set; } = [];
+}

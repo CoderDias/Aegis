@@ -1,0 +1,44 @@
+@inject WorkspaceState Workspace
+@implements IDisposable
+
+<div class="aegis-panel" style="margin-top:12px;border:none">
+    <div class="aegis-panel__header">Filtros de voo</div>
+    <div class="aegis-panel__body">
+        <label style="font-size:var(--font-sm);color:var(--text-2)">Callsign contém</label>
+        <input class="aegis-input" @bind="_callsign" @bind:after="Apply" />
+
+        <label style="font-size:var(--font-sm);color:var(--text-2);margin-top:8px;display:block">País de origem</label>
+        <input class="aegis-input" @bind="_country" @bind:after="Apply" />
+
+        <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:var(--font-sm)">
+            <input type="checkbox" @bind="_onGround" @bind:after="Apply" />
+            Apenas no solo
+        </label>
+    </div>
+</div>
+
+@code {
+    private string? _callsign;
+    private string? _country;
+    private bool _onGround;
+
+    protected override void OnInitialized()
+    {
+        _callsign = Workspace.FlightFilters.CallsignContains;
+        _country = Workspace.FlightFilters.OriginCountry;
+        _onGround = Workspace.FlightFilters.OnGround ?? false;
+    }
+
+    private void Apply()
+    {
+        Workspace.FlightFilters = Workspace.FlightFilters with
+        {
+            CallsignContains = string.IsNullOrWhiteSpace(_callsign) ? null : _callsign,
+            OriginCountry = string.IsNullOrWhiteSpace(_country) ? null : _country,
+            OnGround = _onGround ? true : null
+        };
+        Workspace.NotifyChanged();
+    }
+
+    public void Dispose() { }
+}

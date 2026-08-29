@@ -1,0 +1,25 @@
+services:
+  aegis:
+    build:
+      context: .
+      dockerfile: src/Aegis.Web/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - aegis-data:/app/App_Data
+    env_file:
+      - .env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Database__MigrateOnStartup: "true"
+      Database__SeedDemo: "false"
+      OpenSky__ClientId: ${OPEN_SKY_CLIENT_ID:-}
+      OpenSky__ClientSecret: ${OPEN_SKY_CLIENT_SECRET:-}
+      AirStream__ApiToken: ${ADSB_FI_API_TOKEN:-}
+      Shodan__ApiKey: ${SHODAN_API_KEY:-}
+      Censys__ApiToken: ${CENSYS_API_TOKEN:-}
+      GeoIntel__AisStreamApiKey: ${AISSTREAM_API_KEY:-}
+    restart: unless-stopped
+
+volumes:
+  aegis-data:

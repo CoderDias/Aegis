@@ -1,0 +1,48 @@
+@inject NavigationManager Navigation
+@inject UiNotificationService Notifications
+@inject WorkspaceState Workspace
+
+<nav class="aegis-nav" aria-label="Navegação principal">
+    <NavLink class="aegis-nav__item" href="/" Match="NavLinkMatch.All" title="Mapa">
+        <span aria-hidden="true">🗺</span>
+        <span class="aegis-nav__tooltip">Mapa</span>
+    </NavLink>
+    <NavLink class="aegis-nav__item" href="/investigations" title="Investigações">
+        <span aria-hidden="true">📁</span>
+        <span class="aegis-nav__tooltip">Investigações</span>
+    </NavLink>
+    <button type="button" class="aegis-nav__item" title="Camadas" @onclick="FocusLayers">
+        <span aria-hidden="true">◫</span>
+        <span class="aegis-nav__tooltip">Camadas</span>
+    </button>
+    <button type="button" class="aegis-nav__item" title="Alertas" @onclick="ShowAlerts">
+        <span aria-hidden="true">⚠</span>
+        <span class="aegis-nav__tooltip">Alertas</span>
+    </button>
+    <NavLink class="aegis-nav__item" href="/settings" title="Configurações">
+        <span aria-hidden="true">⚙</span>
+        <span class="aegis-nav__tooltip">Configurações</span>
+    </NavLink>
+</nav>
+
+@code {
+    private void FocusLayers()
+    {
+        if (!Navigation.Uri.EndsWith('/'))
+        {
+            Navigation.NavigateTo("/");
+        }
+        Notifications.Show("Use o painel Camadas no canto superior direito do mapa.", NotificationLevel.Info);
+    }
+
+    private void ShowAlerts()
+    {
+        var path = Navigation.ToBaseRelativePath(Navigation.Uri);
+        if (path is not ("" or "/"))
+        {
+            Navigation.NavigateTo("/");
+        }
+
+        Workspace.OpenAlertsPanel();
+    }
+}

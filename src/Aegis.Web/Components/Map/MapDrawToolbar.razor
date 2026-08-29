@@ -1,0 +1,76 @@
+@inject WorkspaceState Workspace
+@implements IDisposable
+
+@if (Workspace.DrawModeActive)
+{
+    <div class="aegis-draw-toolbar aegis-map-overlay aegis-map-overlay--left">
+        @if (Workspace.DrawKind == "circle")
+        {
+            <span class="aegis-draw-toolbar__hint">Clique no centro do círculo</span>
+        }
+        else if (Workspace.DrawKind is "polygon" or "line")
+        {
+            <span class="aegis-draw-toolbar__hint">Duplo clique no último ponto para fechar</span>
+        }
+        <button type="button" class="aegis-btn aegis-btn--icon @(Workspace.DrawKind == "pin" ? "active" : "")" title="Marcador" @onclick='() => StartDraw("pin")'>📍</button>
+        <button type="button" class="aegis-btn aegis-btn--icon @(Workspace.DrawKind == "line" ? "active" : "")" title="Linha" @onclick='() => StartDraw("line")'>／</button>
+        <button type="button" class="aegis-btn aegis-btn--icon @(Workspace.DrawKind == "polygon" ? "active" : "")" title="Polígono" @onclick='() => StartDraw("polygon")'>⬠</button>
+        <button type="button" class="aegis-btn aegis-btn--icon @(Workspace.DrawKind == "circle" ? "active" : "")" title="Círculo" @onclick='() => StartDraw("circle")'>◯</button>
+        <button type="button" class="aegis-btn aegis-btn--icon" title="Cancelar" @onclick="CancelDraw">✕</button>
+    </div>
+}
+else
+{
+    <div class="aegis-map-overlay aegis-map-overlay--left">
+        <button type="button" class="aegis-btn" @onclick="EnableDraw">Desenhar</button>
+    </div>
+}
+
+@code {
+    [Parameter] public MapViewer? Map { get; set; }
+
+    protected override void OnInitialized() => Workspace.Changed += StateHasChanged;
+    public void Dispose() => Workspace.Changed -= StateHasChanged;
+
+    private void EnableDraw()
+    {
+        Workspace.BeginAnnotationDraw();
+        Workspace.DrawModeActive = true;
+        Workspace.DrawKind = "polygon";
+        Workspace.NotifyChanged();
+        _ = Map?.EnterDrawModeAsync("polygon", autoComplete: false);
+    }
+
+    private void StartDraw(string kind)
+    {
+        if (Workspace.DrawPurpose == DrawPurpose.InvestigationGeofence &&
+            kind is not ("polygon" or "circle"))
+        {
+            return;
+        }
+
+        Workspace.DrawKind = kind;
+        Workspace.NotifyChanged();
+        var autoComplete = kind == "pin";
+        _ = Map?.EnterDrawModeAsync(kind, autoComplete);
+    }
+
+    private async Task CancelDraw()
+    {
+        Workspace.DrawModeActive = false;
+        Workspace.DrawKind = null;
+        Workspace.ClearPendingCircleCenter();
+        Workspace.PendingDrawKind = null;
+        Workspace.PendingDrawGeometryJson = null;
+        if (Workspace.DrawPurpose == DrawPurpose.InvestigationGeofence)
+        {
+            Workspace.ClearDrawPurpose();
+        }
+
+        Workspace.NotifyChanged();
+        if (Map is not null)
+        {
+            await Map.CancelDrawAsync();
+        }
+    }
+}

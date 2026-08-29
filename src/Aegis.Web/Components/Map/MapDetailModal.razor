@@ -1,0 +1,122 @@
+@using Aegis.Infrastructure.External.Overpass
+@using Aegis.Infrastructure.Geo
+@inject AssetService AssetService
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+@inject IJSRuntime Js
+
+@if (Visible && Model is not null)
+{
+    <div class="aegis-dialog-backdrop" @onclick="Close">
+        <div class="aegis-dialog @(IsCamera && SupportsEmbed ? "aegis-dialog--wide" : "")" @onclick:stopPropagation="true">
+            <div class="aegis-dialog__header aegis-dialog__header--split">
+                <div>
+                    <span class="aegis-tag">@Model.Badge</span>
+                    <span>@Model.Title</span>
+                </div>
+                <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:11px" @onclick="Close">Fechar</button>
+            </div>
+            <div class="aegis-dialog__body">
+                @if (IsCamera && Model.Feature is not null)
+                {
+                    @if (!string.IsNullOrWhiteSpace(CameraUrl) && SupportsEmbed && IsSnapshot)
+                    {
+                        <div class="aegis-camera-frame aegis-camera-frame--snapshot">
+                            <img src="@CameraUrl" alt="@Model.Title" loading="lazy" referrerpolicy="no-referrer" />
+                        </div>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(CameraUrl) && SupportsEmbed)
+                    {
+                        <div class="aegis-camera-frame">
+                            <iframe src="@CameraUrl" title="@Model.Title" loading="lazy" referrerpolicy="no-referrer"
+                                    allow="autoplay; encrypted-media; picture-in-picture"
+                                    sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+                        </div>
+                    }
+                }
+
+                @if (Model.Fields.Count > 0)
+                {
+                    <KeyValueGrid Items="_gridItems" />
+                }
+            </div>
+            <div class="aegis-dialog__footer">
+                @if (!string.IsNullOrWhiteSpace(Model.ExternalUrl))
+                {
+                    <button type="button" class="aegis-btn" @onclick="OpenExternalAsync">Abrir fonte</button>
+                }
+                <button type="button" class="aegis-btn aegis-btn--primary"
+                        disabled="@(Workspace.ActiveInvestigationId is null || _saving)"
+                        @onclick="AddToInvestigationAsync">
+                    Adicionar ao caso
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public MapDetailViewModel? Model { get; set; }
+    [Parameter] public EventCallback OnClosed { get; set; }
+
+    private bool _saving;
+
+    private IEnumerable<KeyValueGrid.KeyValueItem> _gridItems =>
+        Model?.Fields.Select(f => new KeyValueGrid.KeyValueItem(f.Label, f.Value)) ?? [];
+
+    private bool IsCamera => Model?.Feature is not null && MapFeatureLayers.IsPublicCamera(Model.Feature);
+    private string? CameraUrl => Model?.Feature?.Tags.GetValueOrDefault("url");
+    private string? LinkType => Model?.Feature?.Tags.GetValueOrDefault("link_type");
+    private bool IsSnapshot => LinkType == "snapshot";
+    private bool SupportsEmbed => PublicCameraLinkClassifier.SupportsIframe(LinkType ?? "portal");
+
+    private Task Close() => OnClosed.InvokeAsync();
+
+    private Task OpenExternalAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Model?.ExternalUrl))
+        {
+            return Task.CompletedTask;
+        }
+
+        return Js.InvokeVoidAsync("open", Model.ExternalUrl, "_blank").AsTask();
+    }
+
+    private async Task AddToInvestigationAsync()
+    {
+        if (Workspace.ActiveInvestigationId is null || Model is null || _saving)
+        {
+            return;
+        }
+
+        _saving = true;
+        try
+        {
+            await AssetService.AddFromMapSelectionAsync(
+                Workspace.ActiveInvestigationId.Value,
+                Model.Kind,
+                Model.Id,
+                Model.Title,
+                Model.Location,
+                Model.Feature,
+                Model.Aircraft,
+                Model.Host,
+                Model.News,
+                Model.Ransomware,
+                Model.GeoMarker,
+                Model.MetadataJson);
+
+            Notifications.Show("Item adicionado ao caso.", NotificationLevel.Success);
+            await Close();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Danger);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

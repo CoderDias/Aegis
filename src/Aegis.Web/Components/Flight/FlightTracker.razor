@@ -1,0 +1,120 @@
+@inject CircuitFlightFeed FlightFeed
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+@inject IOptions<FlightsOptions> FlightsOptions
+@inject ILogger<FlightTracker> Logger
+@implements IDisposable
+
+@code {
+    [Parameter] public MapViewer? Map { get; set; }
+
+    protected override void OnInitialized()
+    {
+        FlightFeed.SnapshotReceived += OnSnapshot;
+        Workspace.Changed += OnWorkspaceLayersChanged;
+        Workspace.ViewportChanged += OnViewportChanged;
+    }
+
+    public void RefreshFromLatest()
+    {
+        if (FlightFeed.Latest is not null)
+        {
+            OnSnapshot(FlightFeed.Latest);
+        }
+    }
+
+    private void OnViewportChanged()
+    {
+        RefreshFromLatest();
+    }
+
+    private void OnWorkspaceLayersChanged()
+    {
+        RefreshFromLatest();
+    }
+
+    private async void OnSnapshot(FlightSnapshot snapshot)
+    {
+        try
+        {
+            if (!Workspace.Layers.Aircraft || Map is null)
+            {
+                if (Map is not null && !Workspace.Layers.Aircraft)
+                {
+                    await Map.UpdateAircraftAsync([]);
+                }
+
+                return;
+            }
+
+            var aircraft = ApplyFilters(snapshot.Aircraft);
+            aircraft = ApplyViewportFilter(aircraft);
+
+            var max = FlightsOptions.Value.MaxMarkers;
+            if (aircraft.Count > max)
+            {
+                Notifications.Show($"Mostrando {max} de {aircraft.Count} aeronaves (limite do mapa).", NotificationLevel.Warning);
+                aircraft = PrioritizeAircraft(aircraft, max);
+            }
+
+            await Map.UpdateAircraftAsync(aircraft);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (JSDisconnectedException)
+        {
+            // circuit encerrado
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Flight snapshot update failed.");
+        }
+    }
+
+    private IReadOnlyList<AircraftMarkerDto> ApplyViewportFilter(IReadOnlyList<AircraftMarkerDto> aircraft)
+    {
+        if (Workspace.Viewport is null || Workspace.Zoom <= 7)
+        {
+            return aircraft;
+        }
+
+        var v = Workspace.Viewport;
+        return aircraft
+            .Where(a => a.Lat >= v.South && a.Lat <= v.North && a.Lng >= v.West && a.Lng <= v.East)
+            .ToList();
+    }
+
+    private static IReadOnlyList<AircraftMarkerDto> PrioritizeAircraft(IReadOnlyList<AircraftMarkerDto> aircraft, int max)
+    {
+        var onGround = aircraft.Where(a => a.OnGround).ToList();
+        var airborne = aircraft.Where(a => !a.OnGround).ToList();
+        var result = new List<AircraftMarkerDto>(max);
+        result.AddRange(onGround.Take(max));
+        if (result.Count < max)
+        {
+            result.AddRange(airborne.Take(max - result.Count));
+        }
+
+        return result;
+    }
+
+    private IReadOnlyList<AircraftMarkerDto> ApplyFilters(IReadOnlyList<AircraftMarkerDto> aircraft)
+    {
+        var f = Workspace.FlightFilters;
+        return aircraft.Where(a =>
+            (f.MinAltitude is null || (a.BaroAltitude ?? 0) >= f.MinAltitude) &&
+            (f.MaxAltitude is null || (a.BaroAltitude ?? double.MaxValue) <= f.MaxAltitude) &&
+            (f.MinVelocity is null || (a.Velocity ?? 0) >= f.MinVelocity) &&
+            (f.MaxVelocity is null || (a.Velocity ?? double.MaxValue) <= f.MaxVelocity) &&
+            (f.OnGround is null || a.OnGround == f.OnGround) &&
+            (string.IsNullOrWhiteSpace(f.CallsignContains) || (a.Callsign?.Contains(f.CallsignContains, StringComparison.OrdinalIgnoreCase) ?? false)) &&
+            (string.IsNullOrWhiteSpace(f.OriginCountry) || string.Equals(a.OriginCountry, f.OriginCountry, StringComparison.OrdinalIgnoreCase))
+        ).ToList();
+    }
+
+    public void Dispose()
+    {
+        FlightFeed.SnapshotReceived -= OnSnapshot;
+        Workspace.Changed -= OnWorkspaceLayersChanged;
+        Workspace.ViewportChanged -= OnViewportChanged;
+    }
+}

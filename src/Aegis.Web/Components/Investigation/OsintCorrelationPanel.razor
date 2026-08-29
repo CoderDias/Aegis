@@ -1,0 +1,85 @@
+@using Aegis.Application.Abstractions
+@using Aegis.Application.Dtos.Osint
+@using Aegis.Application.Dtos.Investigations
+@using Aegis.Application.Services
+@inject InvestigationService InvestigationService
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+
+@if (_hits.Count > 0)
+{
+    <div class="aegis-osint-section">
+        <div class="aegis-osint-section__title">
+            Correlações detectadas
+            @if (Workspace.ActiveInvestigationId is not null)
+            {
+                <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px;margin-left:auto" disabled="@_saving" @onclick="RecordTimelineAsync">
+                    Registrar na timeline
+                </button>
+            }
+        </div>
+        <p class="aegis-osint-playbook-hint">Matches automáticos entre assets, hosts e notícias do viewport.</p>
+        @foreach (var hit in _hits)
+        {
+            <div class="aegis-osint-row">
+                <div class="aegis-osint-row__main">
+                    <strong>@hit.MatchType: @hit.Value</strong>
+                    <div class="aegis-osint-row__meta">@DescribeSource(hit)</div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public IReadOnlyList<AssetDto> InvestigationAssets { get; set; } = [];
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    private IReadOnlyList<OsintCorrelationHit> _hits = [];
+    private bool _saving;
+
+    protected override void OnParametersSet()
+    {
+        _hits = OsintCorrelationService.FindHits(
+            InvestigationAssets,
+            Workspace.ShodanRegionCache.Concat(Workspace.ShodanHosts).ToList(),
+            Workspace.NewsRegionCache.ToList());
+    }
+
+    private async Task RecordTimelineAsync()
+    {
+        if (Workspace.ActiveInvestigationId is null || _hits.Count == 0)
+        {
+            return;
+        }
+
+        _saving = true;
+        try
+        {
+            var summary = string.Join("; ", _hits.Take(8).Select(h => $"{h.MatchType} {h.Value} ↔ {h.SourceLabel}"));
+            var message = $"Correlação OSINT: {summary}";
+            await InvestigationService.AddNoteAsync(Workspace.ActiveInvestigationId.Value, message);
+            Notifications.Show("Correlações registradas na timeline.", NotificationLevel.Success);
+            await OnChanged.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Warning);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private static string DescribeSource(OsintCorrelationHit hit) => hit.SourceKind switch
+    {
+        "asset" => $"Asset: {hit.SourceLabel}",
+        "host" => $"Host: {hit.SourceLabel}",
+        "news" => $"Notícia: {Truncate(hit.SourceLabel, 60)}",
+        _ => hit.SourceLabel
+    };
+
+    private static string Truncate(string value, int max) =>
+        value.Length <= max ? value : value[..max] + "…";
+}

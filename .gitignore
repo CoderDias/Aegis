@@ -1,0 +1,29 @@
+## Build
+bin/
+obj/
+out/
+
+## IDE
+.vs/
+.vscode/
+*.user
+*.suo
+
+## App data
+App_Data/
+logs/
+*.db
+*.db-shm
+*.db-wal
+
+## Secrets / local config (use *.example como template)
+.env
+src/Aegis.Web/appsettings.json
+src/Aegis.Web/appsettings.Development.json
+
+## Temp
+.tmp/
+
+## OS
+Thumbs.db
+.DS_Store

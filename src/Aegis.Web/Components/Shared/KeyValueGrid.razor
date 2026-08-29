@@ -1,0 +1,13 @@
+<dl class="aegis-kv-grid">
+    @foreach (var item in Items)
+    {
+        <dt>@item.Label</dt>
+        <dd>@item.Value</dd>
+    }
+</dl>
+
+@code {
+    [Parameter] public IEnumerable<KeyValueItem> Items { get; set; } = [];
+
+    public sealed record KeyValueItem(string Label, string? Value);
+}

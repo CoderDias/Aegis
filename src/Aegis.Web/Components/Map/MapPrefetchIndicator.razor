@@ -1,0 +1,73 @@
+@using Aegis.Infrastructure.Background
+@inject IRegionalPrefetchBroker Prefetch
+@inject IOptions<RegionalPrefetchOptions> PrefetchOptions
+@implements IDisposable
+
+@if (PrefetchOptions.Value.Enabled && _summary.CountriesTotal > 0)
+{
+    <div class="aegis-topbar__prefetch @PhaseClass" title="Cache regional em background (Overpass, hosts, Shodan)">
+        <span class="aegis-topbar__prefetch-dot"></span>
+        <span class="aegis-topbar__prefetch-label">Prefetch</span>
+        @if (!string.IsNullOrEmpty(_summary.ActiveCountryCode))
+        {
+            <span class="aegis-topbar__prefetch-country">@_summary.ActiveCountryCode</span>
+        }
+        <span class="aegis-topbar__prefetch-bar" aria-hidden="true">
+            <span class="aegis-topbar__prefetch-fill" style="width:@($"{ProgressPercent:F0}")%"></span>
+        </span>
+        <span class="aegis-topbar__prefetch-stat" title="Prontos / aquecendo / total · tiles Overpass">
+            @PhaseLabel · @_summary.CountriesWarm+@_summary.CountriesWarming/@_summary.CountriesTotal · @_summary.OverpassTilesCached/@Math.Max(_summary.OverpassTilesTotal, 1) tiles
+        </span>
+    </div>
+}
+
+@code {
+    private RegionalPrefetchSummaryDto _summary = new(null, RegionalPrefetchPhase.Queued, 0, 0, 0, 0, 0, 0, 0);
+    private System.Threading.Timer? _timer;
+
+    private double ProgressPercent => Math.Clamp(_summary.OverallProgress * 100, 0, 100);
+
+    private string PhaseClass => _summary.ActivePhase switch
+    {
+        RegionalPrefetchPhase.Warming => "aegis-topbar__prefetch--warming",
+        RegionalPrefetchPhase.Warm => "aegis-topbar__prefetch--warm",
+        RegionalPrefetchPhase.Refreshing => "aegis-topbar__prefetch--refreshing",
+        _ => "aegis-topbar__prefetch--queued"
+    };
+
+    private string PhaseLabel => _summary.ActivePhase switch
+    {
+        RegionalPrefetchPhase.Warming => "Aquecendo",
+        RegionalPrefetchPhase.Warm => "Pronto",
+        RegionalPrefetchPhase.Refreshing => "Atualizando",
+        _ => "Fila"
+    };
+
+    protected override void OnInitialized()
+    {
+        RefreshSummary();
+        Prefetch.CountryUpdated += OnPrefetchUpdated;
+        _timer = new System.Threading.Timer(_ => _ = InvokeAsync(() =>
+        {
+            RefreshSummary();
+            StateHasChanged();
+        }), null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+    }
+
+    private void OnPrefetchUpdated(string countryCode)
+    {
+        _ = InvokeAsync(() =>
+        {
+            RefreshSummary();
+            StateHasChanged();
+        });
+    }
+
+    private void RefreshSummary() => _summary = Prefetch.GetSummary();
+
+    public void Dispose()
+    {
+        Prefetch.CountryUpdated -= OnPrefetchUpdated;
+        _timer?.Dispose();
+    }
+}

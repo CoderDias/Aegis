@@ -1,0 +1,95 @@
+@inject AnnotationService Annotations
+@inject GeofenceService Geofences
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+
+@if (Visible)
+{
+    <div class="aegis-dialog-backdrop" @onclick="Cancel">
+        <div class="aegis-dialog" @onclick:stopPropagation="true">
+            <div class="aegis-dialog__header">Salvar desenho</div>
+            <div class="aegis-dialog__body">
+                <label style="font-size:var(--font-sm);color:var(--text-2)">Nome / rótulo</label>
+                <input class="aegis-input" @bind="_label" placeholder="Ex.: Perímetro norte" />
+                <label style="font-size:var(--font-sm);color:var(--text-2);margin-top:12px;display:block">
+                    <input type="checkbox" @bind="_asGeofence" />
+                    Usar como área monitorada (alertas de voos, notícias e IoT)
+                </label>
+            </div>
+            <div class="aegis-dialog__footer">
+                <button type="button" class="aegis-btn" @onclick="Cancel">Cancelar</button>
+                <button type="button" class="aegis-btn aegis-btn--primary" @onclick="SaveAsync" disabled="@string.IsNullOrWhiteSpace(_label)">Salvar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public string DrawKind { get; set; } = "";
+    [Parameter] public string GeometryGeoJson { get; set; } = "";
+    [Parameter] public Guid InvestigationId { get; set; }
+    [Parameter] public EventCallback OnSaved { get; set; }
+    [Parameter] public EventCallback OnCancelled { get; set; }
+
+    private string _label = "Área monitorada";
+    private bool _asGeofence = true;
+
+    protected override void OnParametersSet()
+    {
+        if (Visible)
+        {
+            _label = _asGeofence ? "Área monitorada" : "Anotação";
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (Workspace.ActiveInvestigationId is null && InvestigationId == Guid.Empty)
+        {
+            Notifications.Show("Selecione uma investigação ativa.", NotificationLevel.Warning);
+            return;
+        }
+
+        var investigationId = Workspace.ActiveInvestigationId ?? InvestigationId;
+
+        try
+        {
+            if (_asGeofence)
+            {
+                await Geofences.AddFromDrawAsync(investigationId, _label.Trim(), DrawKind, GeometryGeoJson);
+                Notifications.Show("Área monitorada salva. Alertas ativos.", NotificationLevel.Success);
+            }
+            else
+            {
+                var kind = DrawKind switch
+                {
+                    "pin" => AnnotationKind.Pin,
+                    "line" => AnnotationKind.Line,
+                    "polygon" => AnnotationKind.Polygon,
+                    "circle" => AnnotationKind.Circle,
+                    _ => AnnotationKind.Polygon
+                };
+
+                await Annotations.AddFromDrawAsync(
+                    investigationId,
+                    kind,
+                    GeometryGeoJson,
+                    _label.Trim(),
+                    "#3ec6e0");
+                Notifications.Show("Anotação salva.", NotificationLevel.Success);
+            }
+
+            await OnSaved.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Danger);
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await OnCancelled.InvokeAsync();
+    }
+}

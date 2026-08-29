@@ -1,0 +1,172 @@
+@page "/investigations"
+@rendermode InteractiveServer
+@inject InvestigationService InvestigationService
+@inject WorkspaceState Workspace
+@inject NavigationManager Navigation
+@inject UiNotificationService Notifications
+
+<div class="aegis-page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h1 class="aegis-page__title" style="margin:0">Investigações</h1>
+        <button type="button" class="aegis-btn aegis-btn--primary" @onclick="() => _showCreate = true">Nova investigação</button>
+    </div>
+
+    @if (_loading)
+    {
+        <LoadingSpinner />
+    }
+    else if (_investigations.Count == 0)
+    {
+        <EmptyState Title="Nenhuma investigação" Description="Crie a primeira investigação para começar." Icon="📁" />
+    }
+    else
+    {
+        <table class="aegis-table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Status</th>
+                    <th>Assets</th>
+                    <th>Atualizado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var inv in _investigations)
+                {
+                    <tr>
+                        <td>@inv.Title</td>
+                        <td class="mono">@inv.Status</td>
+                        <td class="mono">@inv.AssetCount</td>
+                        <td class="mono">@inv.UpdatedAt.ToLocalTime().ToString("g")</td>
+                        <td>
+                            <button type="button" class="aegis-btn" @onclick="() => Open(inv)">Abrir</button>
+                            @if (inv.Status != InvestigationStatus.Archived)
+                            {
+                                <button type="button" class="aegis-btn" @onclick="() => Archive(inv)">Arquivar</button>
+                            }
+                            <button type="button" class="aegis-btn aegis-btn--danger" @onclick="() => ConfirmDelete(inv)">Excluir</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@if (_showCreate)
+{
+    <div class="aegis-dialog-backdrop" @onclick="CancelCreate">
+        <div class="aegis-dialog" @onclick:stopPropagation="true">
+            <div class="aegis-dialog__header">Nova investigação</div>
+            <div class="aegis-dialog__body">
+                <label style="font-size:var(--font-sm);color:var(--text-2)">Título *</label>
+                <input class="aegis-input" @bind="_newTitle" />
+            </div>
+            <div class="aegis-dialog__footer">
+                <button type="button" class="aegis-btn" @onclick="CancelCreate">Cancelar</button>
+                <button type="button" class="aegis-btn aegis-btn--primary" @onclick="Create" disabled="@string.IsNullOrWhiteSpace(_newTitle)">Criar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_confirmDelete is not null)
+{
+    <div class="aegis-dialog-backdrop" @onclick="CancelDelete">
+        <div class="aegis-dialog" @onclick:stopPropagation="true">
+            <div class="aegis-dialog__header">Excluir investigação</div>
+            <div class="aegis-dialog__body">
+                <p>Excluir permanentemente <strong>@_confirmDelete.Title</strong>? Esta ação não pode ser desfeita.</p>
+            </div>
+            <div class="aegis-dialog__footer">
+                <button type="button" class="aegis-btn" @onclick="CancelDelete">Cancelar</button>
+                <button type="button" class="aegis-btn aegis-btn--danger" @onclick="DeleteConfirmedAsync">Excluir</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private IReadOnlyList<InvestigationSummaryDto> _investigations = [];
+    private bool _loading = true;
+    private bool _showCreate;
+    private string _newTitle = string.Empty;
+    private InvestigationSummaryDto? _confirmDelete;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        _investigations = await InvestigationService.ListAsync();
+        _loading = false;
+    }
+
+    private void Open(InvestigationSummaryDto inv)
+    {
+        Workspace.ActiveInvestigationId = inv.Id;
+        Workspace.ActiveInvestigationTitle = inv.Title;
+        Workspace.NotifyChanged();
+        Navigation.NavigateTo("/");
+    }
+
+    private async Task Archive(InvestigationSummaryDto inv)
+    {
+        await InvestigationService.ChangeStatusAsync(inv.Id, InvestigationStatus.Archived);
+        Notifications.Show($"Investigação \"{inv.Title}\" arquivada.", NotificationLevel.Info);
+        await LoadAsync();
+    }
+
+    private async Task Create()
+    {
+        var created = await InvestigationService.CreateAsync(_newTitle.Trim(), null);
+        Workspace.ActiveInvestigationId = created.Id;
+        Workspace.ActiveInvestigationTitle = created.Title;
+        Workspace.NotifyChanged();
+        _showCreate = false;
+        _newTitle = string.Empty;
+        Notifications.Show("Investigação criada e definida como ativa.", NotificationLevel.Success);
+        await LoadAsync();
+        Navigation.NavigateTo("/");
+    }
+
+    private void CancelCreate()
+    {
+        _showCreate = false;
+        _newTitle = string.Empty;
+    }
+
+    private void ConfirmDelete(InvestigationSummaryDto inv) => _confirmDelete = inv;
+
+    private void CancelDelete() => _confirmDelete = null;
+
+    private async Task DeleteConfirmedAsync()
+    {
+        if (_confirmDelete is null)
+        {
+            return;
+        }
+
+        var title = _confirmDelete.Title;
+        var id = _confirmDelete.Id;
+        try
+        {
+            await InvestigationService.DeleteAsync(id);
+            if (Workspace.ActiveInvestigationId == id)
+            {
+                Workspace.ActiveInvestigationId = null;
+                Workspace.ActiveInvestigationTitle = null;
+                Workspace.NotifyChanged();
+            }
+
+            Notifications.Show($"Investigação \"{title}\" excluída.", NotificationLevel.Success);
+            _confirmDelete = null;
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show($"Erro ao excluir: {ex.Message}", NotificationLevel.Danger);
+        }
+    }
+}

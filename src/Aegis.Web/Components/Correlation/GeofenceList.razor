@@ -1,0 +1,69 @@
+@inject GeofenceService GeofenceService
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+
+@if (Geofences.Count == 0)
+{
+    <EmptyState Title="Sem áreas monitoradas" Description="Use Com área ao criar investigação ou desenhe no mapa e marque como geofence." />
+}
+else
+{
+    <div style="margin-top:12px">
+        @foreach (var fence in Geofences)
+        {
+            var f = fence;
+            <div class="aegis-list-item">
+                <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+                    <span style="flex:1">@f.Name</span>
+                    <div style="display:flex;gap:4px;align-items:center">
+                        <button type="button"
+                                class="@($"aegis-switch {(f.IsEnabled ? "on" : "")}")"
+                                role="switch"
+                                aria-checked="@f.IsEnabled"
+                                title="@(f.IsEnabled ? "Desativar" : "Ativar")"
+                                @onclick="() => ToggleAsync(f.Id)"></button>
+                        <button type="button"
+                                class="aegis-btn aegis-btn--ghost"
+                                style="font-size:11px;color:var(--danger)"
+                                title="Remover"
+                                @onclick="() => RemoveAsync(f.Id)">✕</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public IReadOnlyList<GeofenceDto> Geofences { get; set; } = [];
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    private async Task ToggleAsync(Guid geofenceId)
+    {
+        if (Workspace.ActiveInvestigationId is null) return;
+        try
+        {
+            await GeofenceService.ToggleAsync(Workspace.ActiveInvestigationId.Value, geofenceId);
+            await OnChanged.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Danger);
+        }
+    }
+
+    private async Task RemoveAsync(Guid geofenceId)
+    {
+        if (Workspace.ActiveInvestigationId is null) return;
+        try
+        {
+            await GeofenceService.RemoveAsync(Workspace.ActiveInvestigationId.Value, geofenceId);
+            Notifications.Show("Geofence removida.", NotificationLevel.Success);
+            await OnChanged.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Danger);
+        }
+    }
+}

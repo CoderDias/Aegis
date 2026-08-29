@@ -1,0 +1,17 @@
+@inject WorkspaceState Workspace
+@implements IDisposable
+
+<div class="aegis-zoom-badge" title="Nível de zoom do mapa">
+    Zoom @Workspace.Zoom
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Workspace.ViewportChanged += OnViewportChanged;
+    }
+
+    private void OnViewportChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Workspace.ViewportChanged -= OnViewportChanged;
+}

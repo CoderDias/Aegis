@@ -1,0 +1,671 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@implements IDisposable
+@inject WorkspaceState Workspace
+@inject InvestigationService InvestigationService
+@inject IGeocodingService Geocoding
+@inject FlightQueryService Flights
+@inject CircuitFlightFeed FlightFeed
+@inject UiNotificationService Notifications
+@inject ProtectedLocalStorage LocalStorage
+@inject IGeoIntelCache GeoIntel
+@inject IJSRuntime Js
+@using Aegis.Infrastructure.External.Overpass
+
+<div class="aegis-workspace">
+    <div class="aegis-workspace__map">
+        <MapViewer @ref="_map"
+                   MapReady="OnMapReady"
+                   MapClicked="HandleMapClick"
+                   MarkerClicked="HandleMarkerClick"
+                   DrawCompleted="HandleDrawCompleted" />
+        <MapSearchBox Map="_map" />
+        <MapLayerToggle />
+        <MapDrawPanel Map="_map"
+                      OnConfirmInvestigation="ConfirmInvestigationDrawAsync"
+                      OnConfirmArea="ConfirmDrawAreaAsync"
+                      OnCancelPending="CancelPendingDrawAsync" />
+        <MapZoomIndicator />
+        <FlightTracker Map="_map" @ref="_flightTracker" />
+        <GeofenceMonitor />
+    </div>
+
+    <div class="aegis-inspector-resize" id="aegis-inspector-resize" title="Arrastar para redimensionar"></div>
+
+    <aside class="aegis-workspace__inspector">
+        <InvestigationSwitcher />
+        <div class="aegis-tabs">
+            <button type="button" class="aegis-tab @(Workspace.ActiveTab == InspectorTab.Case ? "active" : "")" @onclick="() => SetTab(InspectorTab.Case)">Caso</button>
+            <button type="button" class="aegis-tab @(Workspace.ActiveTab == InspectorTab.Flight ? "active" : "")" @onclick="() => SetTab(InspectorTab.Flight)">Voo</button>
+            <button type="button" class="aegis-tab @(Workspace.ActiveTab == InspectorTab.News ? "active" : "")" @onclick="() => SetTab(InspectorTab.News)">Notícias</button>
+            <button type="button" class="aegis-tab @(Workspace.ActiveTab == InspectorTab.Ransomware ? "active" : "")" @onclick="() => SetTab(InspectorTab.Ransomware)">Ransomware</button>
+            <button type="button" class="aegis-tab @(Workspace.ActiveTab == InspectorTab.Hosts ? "active" : "")" @onclick="() => SetTab(InspectorTab.Hosts)">Hosts</button>
+            <button type="button" class="aegis-tab @(Workspace.ActiveTab == InspectorTab.Osint ? "active" : "")" @onclick="() => SetTab(InspectorTab.Osint)">OSINT</button>
+        </div>
+        <div class="aegis-inspector-content">
+            @if (Workspace.Selection.IsEmpty && Workspace.ActiveTab is not InspectorTab.Case and not InspectorTab.News and not InspectorTab.Flight and not InspectorTab.Ransomware and not InspectorTab.Hosts and not InspectorTab.Osint)
+            {
+                <EmptyState Title="Nenhum objeto selecionado" Description="Selecione um objeto no mapa." Icon="◎" />
+            }
+            else
+            {
+                @switch (Workspace.ActiveTab)
+                {
+                    case InspectorTab.Case:
+                        <InvestigationPanel />
+                        @if (_entities.Count > 0)
+                        {
+                            <EntityTable Entities="_entities" />
+                        }
+                        <GeofenceList Geofences="_geofences" OnChanged="RefreshInvestigationContextAsync" />
+                        break;
+                    case InspectorTab.Flight:
+                        <FlightDetail Marker="_selectedAircraft" Route="_selectedFlightRoute" />
+                        break;
+                    case InspectorTab.News:
+                        <NewsPanel />
+                        break;
+                    case InspectorTab.Ransomware:
+                        <RansomwarePanel />
+                        break;
+                    case InspectorTab.Hosts:
+                        <HostsPanel OnHostSelected="HandleHostPanelSelectedAsync" />
+                        break;
+                    case InspectorTab.Osint:
+                        <OsintSourcesPanel OnChanged="RefreshInvestigationContextAsync" />
+                        <OsintCorrelationPanel InvestigationAssets="_investigationAssets" OnChanged="RefreshInvestigationContextAsync" />
+                        break;
+                }
+            }
+        </div>
+    </aside>
+
+    <div class="aegis-workspace__timeline @(!Workspace.TimelineExpanded ? "aegis-workspace__timeline--collapsed" : "")">
+        <div class="aegis-timeline-header">
+            <span>Timeline — @(Workspace.ActiveInvestigationTitle ?? "sem investigação")</span>
+            <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:11px" @onclick="ToggleTimeline">
+                @(Workspace.TimelineExpanded ? "Recolher" : "Expandir")
+            </button>
+        </div>
+        @if (Workspace.TimelineExpanded)
+        {
+            <div class="aegis-timeline-feed">
+                <TimelineFeed Events="_timeline" />
+            </div>
+        }
+    </div>
+</div>
+
+<DrawSaveDialog Visible="_showDrawSave"
+                DrawKind="_pendingDrawKind"
+                GeometryGeoJson="_pendingDrawGeometry"
+                InvestigationId="Workspace.ActiveInvestigationId ?? Guid.Empty"
+                OnSaved="OnDrawSaved"
+                OnCancelled="OnDrawSaveCancelled" />
+
+<MapDetailModal Visible="_showDetailModal"
+                Model="_detailModel"
+                OnClosed="CloseDetailModal" />
+
+@code {
+    [SupplyParameterFromQuery(Name = "investigation")]
+    public Guid? InvestigationQuery { get; set; }
+
+    private MapViewer? _map;
+    private FlightTracker? _flightTracker;
+    private AircraftMarkerDto? _selectedAircraft;
+    private FlightRouteDto? _selectedFlightRoute;
+    private string? _selectedAircraftId;
+    private ShodanHostDto? _selectedShodan;
+    private IReadOnlyList<TimelineEventDto> _timeline = [];
+    private IReadOnlyList<GeofenceDto> _geofences = [];
+    private IReadOnlyList<EntityTable.EntityRow> _entities = [];
+    private IReadOnlyList<AssetDto> _investigationAssets = [];
+    private int _heatPointCount;
+    private Guid? _lastInvestigationId;
+    private bool _lastHeatmapLayer;
+    private bool _showDrawSave;
+    private string _pendingDrawKind = "";
+    private string _pendingDrawGeometry = "";
+    private bool _showDetailModal;
+    private MapDetailViewModel? _detailModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Workspace.Changed += OnWorkspaceChanged;
+        Workspace.HeatmapOverlayChanged += OnHeatmapOverlayChanged;
+        Workspace.ViewportChanged += OnViewportChangedForHeatmap;
+        Workspace.StartGeofenceDrawRequested += OnStartGeofenceDraw;
+        GeoIntel.Updated += OnGeoIntelUpdated;
+
+        if (InvestigationQuery is not null)
+        {
+            var detail = await InvestigationService.GetAsync(InvestigationQuery.Value);
+            if (detail is not null)
+            {
+                Workspace.ActiveInvestigationId = detail.Id;
+                Workspace.ActiveInvestigationTitle = detail.Title;
+            }
+        }
+        else
+        {
+            await RestoreActiveInvestigationAsync();
+        }
+
+        await RefreshInvestigationContextAsync();
+        _lastInvestigationId = Workspace.ActiveInvestigationId;
+        _lastHeatmapLayer = Workspace.Layers.Heatmap;
+    }
+
+    private async Task OnMapReady()
+    {
+        _flightTracker?.RefreshFromLatest();
+        await Js.InvokeVoidAsync("aegisLayout.initInspectorResize", "aegis-inspector-resize");
+        await RefreshInvestigationContextAsync();
+        _lastInvestigationId = Workspace.ActiveInvestigationId;
+        _lastHeatmapLayer = Workspace.Layers.Heatmap;
+    }
+
+    private async void OnHeatmapOverlayChanged()
+    {
+        if (!Workspace.Layers.Heatmap)
+        {
+            return;
+        }
+
+        try
+        {
+            await RefreshHeatmapAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // circuit encerrado
+        }
+    }
+
+    private async void OnGeoIntelUpdated()
+    {
+        if (!Workspace.Layers.Heatmap)
+        {
+            return;
+        }
+
+        try
+        {
+            await RefreshHeatmapAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    private async void OnViewportChangedForHeatmap()
+    {
+        if (!Workspace.Layers.Heatmap)
+        {
+            return;
+        }
+
+        try
+        {
+            await RefreshHeatmapAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    private async Task RefreshHeatmapAsync()
+    {
+        if (_map is null)
+        {
+            return;
+        }
+
+        if (!Workspace.Layers.Heatmap || Workspace.Zoom < 7)
+        {
+            _heatPointCount = 0;
+            await _map.UpdateHeatmapAsync([]);
+            return;
+        }
+
+        var points = HeatmapBuilder.Build(
+            Workspace,
+            GeoIntel,
+            FlightFeed.Latest,
+            _investigationAssets,
+            Workspace.Viewport,
+            Workspace.Zoom);
+        _heatPointCount = points.Count;
+        await _map.UpdateHeatmapAsync(points);
+    }
+
+    private async Task HandleHostPanelSelectedAsync(ShodanHostDto host)
+    {
+        _selectedShodan = host;
+        Workspace.Select("shodan", host.Ip, host);
+        if (_map is not null)
+        {
+            await _map.SetViewAsync(host.Lat, host.Lng, Math.Max(Workspace.Zoom, 10));
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void OnStartGeofenceDraw()
+    {
+        Workspace.DrawModeActive = true;
+        Workspace.DrawKind = "polygon";
+        if (_map is not null)
+        {
+            await _map.EnterDrawModeAsync("polygon", autoComplete: false);
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleMapClick(CoordinateDto coord)
+    {
+        if (Workspace.DrawModeActive)
+        {
+            return;
+        }
+
+        var geocode = await Geocoding.ReverseAsync(coord);
+        _detailModel = MapDetailBuilder.BuildMapClick(coord, geocode);
+        _showDetailModal = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleMarkerClick((string Kind, string Id, MapFeatureDto? Feature) payload)
+    {
+        if (Workspace.DrawModeActive)
+        {
+            return;
+        }
+
+        var model = await MapDetailBuilder.BuildMarkerAsync(
+            payload.Kind,
+            payload.Id,
+            payload.Feature,
+            Workspace,
+            Flights,
+            GeoIntel,
+            FlightFeed);
+
+        if (model is null)
+        {
+            return;
+        }
+
+        _detailModel = model;
+        _showDetailModal = true;
+
+        if (payload.Kind == "aircraft")
+        {
+            _selectedAircraft = model.Aircraft;
+            _selectedAircraftId = payload.Id;
+            if (_selectedAircraft is not null)
+            {
+                _selectedFlightRoute = await Flights.GetRouteAsync(_selectedAircraft);
+                await _map!.SetSelectionAsync(payload.Id);
+                await _map.SetFlightRouteAsync(_selectedFlightRoute);
+            }
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private Task CloseDetailModal()
+    {
+        _showDetailModal = false;
+        _detailModel = null;
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private AircraftMarkerDto? ResolveAircraft(string icao24)
+    {
+        var normalized = icao24.Trim();
+        return FlightFeed.Latest?.Aircraft
+            .FirstOrDefault(a => string.Equals(a.Icao24, normalized, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private async Task ClearAircraftSelectionAsync(bool clearWorkspace = true)
+    {
+        _selectedAircraftId = null;
+        _selectedAircraft = null;
+        _selectedFlightRoute = null;
+
+        if (_map is not null)
+        {
+            await _map.SetSelectionAsync(null);
+            await _map.SetFlightRouteAsync(null);
+        }
+
+        if (clearWorkspace && Workspace.Selection.Kind == "aircraft")
+        {
+            Workspace.ClearSelection();
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleDrawCompleted((string Kind, string GeometryGeoJson) payload)
+    {
+        Workspace.DrawModeActive = false;
+        Workspace.DrawKind = null;
+
+        if (Workspace.DrawPurpose == DrawPurpose.InvestigationGeofence)
+        {
+            if (payload.Kind is not ("polygon" or "circle"))
+            {
+                Workspace.NotifyChanged();
+                return;
+            }
+
+            Workspace.PendingDrawKind = payload.Kind;
+            Workspace.PendingDrawGeometryJson = payload.GeometryGeoJson;
+            Workspace.NotifyChanged();
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        if (Workspace.ActiveInvestigationId is null)
+        {
+            Workspace.ClearDrawPurpose();
+            Workspace.NotifyChanged();
+            Notifications.Show("Crie ou selecione uma investigação para salvar desenhos.", NotificationLevel.Warning);
+            return;
+        }
+
+        if (payload.Kind is not ("polygon" or "circle" or "pin" or "line"))
+        {
+            Workspace.ClearDrawPurpose();
+            Workspace.NotifyChanged();
+            return;
+        }
+
+        Workspace.PendingDrawKind = payload.Kind;
+        Workspace.PendingDrawGeometryJson = payload.GeometryGeoJson;
+        Workspace.NotifyChanged();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ConfirmDrawAreaAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Workspace.PendingDrawGeometryJson) ||
+            string.IsNullOrWhiteSpace(Workspace.PendingDrawKind))
+        {
+            return;
+        }
+
+        if (Workspace.ActiveInvestigationId is null)
+        {
+            Notifications.Show("Crie ou selecione uma investigação para salvar desenhos.", NotificationLevel.Warning);
+            return;
+        }
+
+        _pendingDrawKind = Workspace.PendingDrawKind;
+        _pendingDrawGeometry = Workspace.PendingDrawGeometryJson;
+        _showDrawSave = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task CancelPendingDrawAsync()
+    {
+        Workspace.PendingDrawKind = null;
+        Workspace.PendingDrawGeometryJson = null;
+        Workspace.ClearPendingCircleCenter();
+        Workspace.ClearDrawPurpose();
+        Workspace.DrawModeActive = false;
+        Workspace.DrawKind = null;
+        Workspace.NotifyChanged();
+
+        if (_map is not null)
+        {
+            await _map.CancelDrawAsync();
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ConfirmInvestigationDrawAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Workspace.PendingDrawGeometryJson) ||
+            string.IsNullOrWhiteSpace(Workspace.PendingDrawKind))
+        {
+            return;
+        }
+
+        await CompleteInvestigationGeofenceDrawAsync(
+            (Workspace.PendingDrawKind, Workspace.PendingDrawGeometryJson));
+
+        Workspace.PendingDrawKind = null;
+        Workspace.PendingDrawGeometryJson = null;
+        Workspace.DrawModeActive = false;
+        Workspace.DrawKind = null;
+        Workspace.NotifyChanged();
+        if (_map is not null)
+        {
+            await _map.CancelDrawAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task CancelInvestigationDrawAsync()
+    {
+        await CancelPendingDrawAsync();
+    }
+
+    private async Task CompleteInvestigationGeofenceDrawAsync((string Kind, string GeometryGeoJson) payload)
+    {
+        var title = Workspace.PendingInvestigationTitle;
+        Workspace.ClearDrawPurpose();
+        Workspace.NotifyChanged();
+
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            Notifications.Show("Título da investigação não informado.", NotificationLevel.Warning);
+            return;
+        }
+
+        if (payload.Kind is not ("polygon" or "circle"))
+        {
+            Notifications.Show("Desenhe um polígono ou círculo para definir a área.", NotificationLevel.Warning);
+            return;
+        }
+
+        try
+        {
+            var created = await InvestigationService.CreateWithGeofenceAsync(
+                title,
+                null,
+                payload.Kind,
+                payload.GeometryGeoJson);
+            Workspace.ActiveInvestigationId = created.Id;
+            Workspace.ActiveInvestigationTitle = created.Title;
+            Notifications.Show("Investigação criada com área monitorada. Alertas ativos.", NotificationLevel.Success);
+            await RefreshInvestigationContextAsync();
+            _lastInvestigationId = created.Id;
+            Workspace.NotifyChanged();
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Danger);
+        }
+    }
+
+    private async Task OnDrawSaved()
+    {
+        _showDrawSave = false;
+        Workspace.PendingDrawKind = null;
+        Workspace.PendingDrawGeometryJson = null;
+        Workspace.ClearPendingCircleCenter();
+        Workspace.ClearDrawPurpose();
+        Workspace.DrawModeActive = false;
+        Workspace.DrawKind = null;
+
+        if (_map is not null)
+        {
+            await _map.CancelDrawAsync();
+        }
+
+        await RefreshInvestigationContextAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private Task OnDrawSaveCancelled()
+    {
+        _showDrawSave = false;
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private void SetTab(InspectorTab tab)
+    {
+        Workspace.ActiveTab = tab;
+        Workspace.NotifyChanged();
+    }
+
+    private void ToggleTimeline()
+    {
+        Workspace.TimelineExpanded = !Workspace.TimelineExpanded;
+        Workspace.NotifyChanged();
+    }
+
+    private async void OnWorkspaceChanged()
+    {
+        var investigationChanged = Workspace.ActiveInvestigationId != _lastInvestigationId;
+        var heatmapChanged = Workspace.Layers.Heatmap != _lastHeatmapLayer;
+
+        if (investigationChanged || heatmapChanged)
+        {
+            await RefreshInvestigationContextAsync();
+            _lastInvestigationId = Workspace.ActiveInvestigationId;
+            _lastHeatmapLayer = Workspace.Layers.Heatmap;
+        }
+        else if (Workspace.Layers.Heatmap)
+        {
+            await RefreshHeatmapAsync();
+        }
+
+        if (investigationChanged)
+        {
+            await PersistActiveInvestigationAsync();
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RefreshInvestigationContextAsync()
+    {
+        if (Workspace.ActiveInvestigationId is null)
+        {
+            _timeline = [];
+            _geofences = [];
+            _entities = [];
+            _investigationAssets = [];
+            _heatPointCount = 0;
+            if (_map is not null)
+            {
+                await _map.UpdateHeatmapAsync([]);
+                await _map.UpdateGeofencesAsync([]);
+                await _map.UpdateAnnotationsAsync([]);
+            }
+
+            return;
+        }
+
+        try
+        {
+            var detail = await InvestigationService.GetAsync(Workspace.ActiveInvestigationId.Value);
+            if (detail is null)
+            {
+                return;
+            }
+
+            _timeline = detail.Timeline;
+            _geofences = detail.Geofences;
+            _investigationAssets = detail.Assets;
+            _entities = detail.Assets.Select(a => new EntityTable.EntityRow(
+                a.DisplayName,
+                a.Type.ToString(),
+                a.Source.ToString())).ToList();
+
+            if (_map is null)
+            {
+                return;
+            }
+
+            await _map.UpdateGeofencesAsync(_geofences);
+            await RefreshHeatmapAsync();
+
+            await _map.UpdateAnnotationsAsync(detail.Annotations.Select(a => new
+            {
+                geometry = a.GeometryJson,
+                color = a.Color
+            }));
+        }
+        catch (Exception)
+        {
+            _timeline = [];
+            _geofences = [];
+            _entities = [];
+            _investigationAssets = [];
+        }
+    }
+
+    public void Dispose()
+    {
+        Workspace.Changed -= OnWorkspaceChanged;
+        Workspace.HeatmapOverlayChanged -= OnHeatmapOverlayChanged;
+        Workspace.ViewportChanged -= OnViewportChangedForHeatmap;
+        Workspace.StartGeofenceDrawRequested -= OnStartGeofenceDraw;
+        GeoIntel.Updated -= OnGeoIntelUpdated;
+    }
+
+    private async Task RestoreActiveInvestigationAsync()
+    {
+        try
+        {
+            var result = await LocalStorage.GetAsync<Guid>("aegis_active_investigation");
+            if (result.Success && result.Value != Guid.Empty)
+            {
+                var detail = await InvestigationService.GetAsync(result.Value);
+                if (detail is not null)
+                {
+                    Workspace.ActiveInvestigationId = detail.Id;
+                    Workspace.ActiveInvestigationTitle = detail.Title;
+                }
+                else
+                {
+                    await LocalStorage.DeleteAsync("aegis_active_investigation");
+                }
+            }
+        }
+        catch
+        {
+            // ProtectedLocalStorage pode falhar em prerender
+        }
+    }
+
+    private async Task PersistActiveInvestigationAsync()
+    {
+        try
+        {
+            if (Workspace.ActiveInvestigationId is not null)
+            {
+                await LocalStorage.SetAsync("aegis_active_investigation", Workspace.ActiveInvestigationId.Value);
+            }
+            else
+            {
+                await LocalStorage.DeleteAsync("aegis_active_investigation");
+            }
+        }
+        catch
+        {
+            // Prerender / circuit desconectado
+        }
+    }
+}

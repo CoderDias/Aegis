@@ -1,0 +1,32 @@
+@if (Entities.Count == 0)
+{
+    <EmptyState Title="Sem entidades correlacionadas" Description="Assets e features aparecerão aqui." />
+}
+else
+{
+    <table class="aegis-table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Tipo</th>
+                <th>Fonte</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entity in Entities)
+            {
+                <tr>
+                    <td>@entity.Name</td>
+                    <td class="mono">@entity.Type</td>
+                    <td class="mono">@entity.Source</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter] public IReadOnlyList<EntityRow> Entities { get; set; } = [];
+
+    public sealed record EntityRow(string Name, string Type, string Source);
+}

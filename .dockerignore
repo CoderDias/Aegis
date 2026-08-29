@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+**/.vs/
+**/App_Data/
+**/logs/
+*.db
+*.db-shm
+*.db-wal

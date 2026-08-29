@@ -1,0 +1,138 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=App_Data/aegis.db"
+  },
+  "Database": {
+    "MigrateOnStartup": true,
+    "SeedDemo": false
+  },
+  "OpenSky": {
+    "BaseUrl": "https://opensky-network.org/api",
+    "ClientId": "YOUR_OPEN_SKY_CLIENT_ID",
+    "ClientSecret": "YOUR_OPEN_SKY_CLIENT_SECRET",
+    "PollingIntervalSeconds": 15,
+    "RateLimitPerMinute": 30,
+    "OnDemandTimeoutSeconds": 10
+  },
+  "AirStream": {
+    "BaseUrl": "https://opendata.adsb.fi/api",
+    "ApiToken": "YOUR_ADSB_FI_API_TOKEN",
+    "RadiusNm": 50,
+    "Enabled": true
+  },
+  "Shodan": {
+    "ApiKey": "YOUR_SHODAN_API_KEY",
+    "MaxResults": 100,
+    "Enabled": false
+  },
+  "Censys": {
+    "ApiToken": "YOUR_CENSYS_API_TOKEN",
+    "Enabled": false,
+    "MaxMonthlyQueries": 250,
+    "SearchPageSize": 100,
+    "CidrBatchSize": 8,
+    "MaxCensysLookupsPerRequest": 4,
+    "ProbeTtlHours": 24,
+    "AllowSearchApi": true,
+    "OrganizationId": null
+  },
+  "HostDiscovery": {
+    "Enabled": true,
+    "MaxSamplesPerRegion": 12,
+    "PortScanTimeoutMs": 1200,
+    "MaxConcurrentPortProbes": 6,
+    "MaxConcurrentHosts": 8,
+    "UseInternetDb": true,
+    "UseTcpProbe": true,
+    "GeolocationDelayMs": 1400,
+    "CommonPorts": [80, 443, 8080, 8443, 554, 37777, 8000, 8888, 21, 22, 23, 161, 502, 9100]
+  },
+  "Rss": {
+    "PollingIntervalMinutes": 30,
+    "MaxItemsPerFeed": 30,
+    "GeocodeBatchSize": 40,
+    "MaxNewsMarkers": 2000,
+    "NewsCacheMinutes": 15,
+    "DefaultFeeds": [
+      { "Title": "G1 — Brasil", "Url": "https://g1.globo.com/rss/g1/", "RegionQuery": "Brasília, Brasil" },
+      { "Title": "Agência Brasil", "Url": "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml", "RegionQuery": "Brasília, Brasil" }
+    ]
+  },
+  "Nominatim": {
+    "BaseUrl": "https://nominatim.openstreetmap.org",
+    "UserAgent": "Aegis-OSINT/1.0 (local; contact: you@example.com)",
+    "CacheDays": 7,
+    "MinSearchLength": 3,
+    "MaxResults": 5
+  },
+  "Overpass": {
+    "BaseUrl": "https://overpass.kumi.systems/api/interpreter",
+    "FallbackBaseUrl": "https://overpass-api.de/api/interpreter",
+    "MinZoom": 4,
+    "MaxBboxAreaDeg2": 0.25,
+    "MaxFeatures": 2000,
+    "RequestTimeoutSeconds": 12,
+    "MaxConcurrentRequests": 4,
+    "MinRequestIntervalMs": 200
+  },
+  "GeoIntel": {
+    "Enabled": true,
+    "AisHubUsername": "",
+    "AisStreamApiKey": "YOUR_AISSTREAM_API_KEY",
+    "SeismicMinMagnitude": 2.5,
+    "PollIntervalMinutes": 5,
+    "SeismicCacheMinutes": 15,
+    "ShipsCacheMinutes": 5,
+    "MaxShipMarkers": 2000,
+    "UseOsmShipFallback": true
+  },
+  "RepeaterBook": {
+    "Enabled": true,
+    "StateId": "BR",
+    "RefreshHours": 168
+  },
+  "Map": {
+    "DefaultLat": -15.7934,
+    "DefaultLng": -47.8822,
+    "DefaultZoom": 5,
+    "MaxZoom": 20,
+    "MinZoom": 2
+  },
+  "OpenStreetMap": {
+    "StyleUrl": "https://tiles.openfreemap.org/styles/dark",
+    "TileUrl": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "FallbackTileUrl": "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
+    "Attribution": "&copy; OpenStreetMap contributors &copy; OpenFreeMap"
+  },
+  "Cache": {
+    "FlightDataTtlMinutes": 2,
+    "GeocodeTtlDays": 7,
+    "OverpassTtlSeconds": 3600,
+    "ShodanTileTtlMinutes": 30,
+    "ShodanRegionTtlHours": 24
+  },
+  "Flights": {
+    "RetentionDays": 7,
+    "MaxMarkers": 3000
+  },
+  "RegionalPrefetch": {
+    "Enabled": true,
+    "CountryCodes": [],
+    "OverpassFetchZoom": 8,
+    "OverpassTilesPerBatch": 2,
+    "HostIngestBatchesPerCycle": 1,
+    "ShodanRegionsPerBatch": 1,
+    "BatchDelayMs": 2500,
+    "IdleDelayMs": 8000,
+    "RefreshIntervalHours": 12
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Polly": "Error",
+      "Microsoft.Extensions.Http.Resilience": "Error"
+    }
+  },
+  "AllowedHosts": "*"
+}

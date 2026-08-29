@@ -1,0 +1,20 @@
+{
+  "Database": {
+    "SeedDemo": true
+  },
+  "GeoIntel": {
+    "AisStreamApiKey": "YOUR_AISSTREAM_API_KEY"
+  },
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.EntityFrameworkCore": "Warning",
+        "Microsoft.Extensions.Http.Resilience": "Error",
+        "Polly": "Error",
+        "System.Net.Http.HttpClient": "Warning"
+      }
+    }
+  }
+}

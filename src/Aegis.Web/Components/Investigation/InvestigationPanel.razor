@@ -1,0 +1,152 @@
+@using Aegis.Application.Osint
+@inject InvestigationService InvestigationService
+@inject WorkspaceState Workspace
+@inject InvestigationExportService ExportService
+@inject UiNotificationService Notifications
+@inject IJSRuntime Js
+@implements IDisposable
+
+@if (Workspace.ActiveInvestigationId is null)
+{
+    <EmptyState Title="Nenhuma investigação ativa" Description="Selecione ou crie uma investigação." Icon="📁" />
+}
+else if (_loadFailed)
+{
+    <EmptyState Title="Erro ao carregar" Description="Não foi possível carregar a investigação. Tente selecionar novamente." Icon="⚠" />
+}
+else if (_detail is null)
+{
+    <div style="padding:12px"><LoadingSpinner /></div>
+}
+else
+{
+    <KeyValueGrid Items="_summary" />
+    @if (!string.IsNullOrEmpty(_detail.Description))
+    {
+        <p style="font-size:var(--font-sm);color:var(--text-1);margin-top:12px">@_detail.Description</p>
+    }
+
+    <div style="display:flex;gap:6px;margin:10px 0">
+        <button type="button" class="aegis-btn aegis-btn--primary" style="font-size:11px" disabled="@_exporting" @onclick="ExportJsonAsync">
+            Exportar caso (JSON)
+        </button>
+    </div>
+
+    <AssetList AssetsList="_detail.Assets" InvestigationId="_detail.Id" OnChanged="ReloadFromAssetsAsync" />
+    <OsintPlaybookPanel />
+}
+
+@code {
+    private InvestigationDetailDto? _detail;
+    private bool _loadFailed;
+    private bool _exporting;
+    private Guid? _loadedInvestigationId;
+    private IEnumerable<KeyValueGrid.KeyValueItem> _summary = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Workspace.Changed += OnWorkspaceChanged;
+        await LoadAsync(force: true);
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        if (Workspace.ActiveInvestigationId == _loadedInvestigationId)
+        {
+            return;
+        }
+
+        _ = InvokeAsync(async () =>
+        {
+            await LoadAsync(force: true);
+            StateHasChanged();
+        });
+    }
+
+    private async Task LoadAsync(bool force = false)
+    {
+        if (!force && Workspace.ActiveInvestigationId == _loadedInvestigationId && _detail is not null)
+        {
+            return;
+        }
+
+        if (Workspace.ActiveInvestigationId is null)
+        {
+            _detail = null;
+            _loadFailed = false;
+            _loadedInvestigationId = null;
+            return;
+        }
+
+        _loadFailed = false;
+        try
+        {
+            _detail = await InvestigationService.GetAsync(Workspace.ActiveInvestigationId.Value);
+            _loadedInvestigationId = Workspace.ActiveInvestigationId;
+            if (_detail is null)
+            {
+                _loadFailed = true;
+                return;
+            }
+
+            _summary =
+            [
+                new("Título", _detail.Title),
+                new("Status", _detail.Status.ToString()),
+                new("Assets", _detail.Assets.Count.ToString()),
+                new("Anotações", _detail.Annotations.Count.ToString()),
+                new("Cercas", _detail.Geofences.Count.ToString())
+            ];
+        }
+        catch (Exception)
+        {
+            _detail = null;
+            _loadFailed = true;
+            _loadedInvestigationId = null;
+        }
+    }
+
+    private async Task ExportJsonAsync()
+    {
+        if (_detail is null)
+        {
+            return;
+        }
+
+        _exporting = true;
+        try
+        {
+            var correlations = OsintCorrelationService.FindHits(
+                _detail.Assets,
+                Workspace.ShodanRegionCache.Concat(Workspace.ShodanHosts).ToList(),
+                Workspace.NewsRegionCache.ToList());
+
+            var viewport = Workspace.Viewport;
+            var document = ExportService.Build(
+                _detail,
+                correlations,
+                viewport?.South,
+                viewport?.West,
+                viewport?.North,
+                viewport?.East,
+                Workspace.Zoom);
+
+            var json = ExportService.ToJson(document);
+            var filename = $"aegis-caso-{_detail.Id:N}-{DateTime.UtcNow:yyyyMMdd}.json";
+            await Js.InvokeVoidAsync("aegisDownload.json", filename, json);
+            Notifications.Show("Export JSON gerado.", NotificationLevel.Success);
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Warning);
+        }
+        finally
+        {
+            _exporting = false;
+        }
+    }
+
+    private Task ReloadFromAssetsAsync() => LoadAsync(force: true);
+
+    public void Dispose() => Workspace.Changed -= OnWorkspaceChanged;
+}

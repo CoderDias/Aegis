@@ -1,0 +1,43 @@
+@inject WorkspaceState Workspace
+@implements IDisposable
+
+<div class="aegis-panel aegis-layer-toggle aegis-map-overlay aegis-map-overlay--top-right">
+    <div class="aegis-panel__header">Camadas</div>
+    <div class="aegis-panel__body">
+        @RenderRow("Aeronaves", Workspace.Layers.Aircraft, v => { Workspace.Layers.Aircraft = v; Workspace.NotifyChanged(); })
+        @RenderRow("Edifícios", Workspace.Layers.Buildings, v => { Workspace.Layers.Buildings = v; Workspace.NotifyChanged(); })
+        @RenderRow("Estradas", Workspace.Layers.Roads, v => { Workspace.Layers.Roads = v; Workspace.NotifyChanged(); })
+        @RenderRow("POIs", Workspace.Layers.AreasOfInterest, v => { Workspace.Layers.AreasOfInterest = v; Workspace.NotifyChanged(); })
+        @RenderRow("Shodan / Hosts", Workspace.Layers.Shodan, v => { Workspace.Layers.Shodan = v; Workspace.NotifyChanged(); })
+        @RenderRow("Notícias (geo)", Workspace.Layers.News, v => { Workspace.Layers.News = v; Workspace.NotifyChanged(); })
+        @RenderRow("Ransomware", Workspace.Layers.Ransomware, v => { Workspace.Layers.Ransomware = v; Workspace.NotifyChanged(); })
+        @RenderRow("Navios (AIS)", Workspace.Layers.Ships, v => { Workspace.Layers.Ships = v; Workspace.NotifyChanged(); })
+        @RenderRow("Sismos (USGS)", Workspace.Layers.Seismic, v => { Workspace.Layers.Seismic = v; Workspace.NotifyChanged(); })
+        @RenderRow("Torres rádio", Workspace.Layers.RadioTowers, v => { Workspace.Layers.RadioTowers = v; Workspace.NotifyChanged(); })
+        @RenderRow("Repetidoras", Workspace.Layers.Repeaters, v => { Workspace.Layers.Repeaters = v; Workspace.NotifyChanged(); })
+        @RenderRow("ERB / ANATEL", Workspace.Layers.Erbs, v => { Workspace.Layers.Erbs = v; Workspace.NotifyChanged(); })
+        @RenderRow("Câmeras públicas", Workspace.Layers.PublicCameras, v => { Workspace.Layers.PublicCameras = v; Workspace.NotifyChanged(); })
+        @RenderRow("Portos / ANTAQ", Workspace.Layers.Ports, v => { Workspace.Layers.Ports = v; Workspace.NotifyChanged(); })
+        @RenderRow("Alertas meteorológicos", Workspace.Layers.WeatherAlerts, v => { Workspace.Layers.WeatherAlerts = v; Workspace.NotifyChanged(); })
+        @RenderRow("INPE / focos 24h", Workspace.Layers.InpeOverlay, v => { Workspace.Layers.InpeOverlay = v; Workspace.NotifyChanged(); })
+        @RenderRow("Mapa de calor", Workspace.Layers.Heatmap, v => { Workspace.Layers.Heatmap = v; Workspace.NotifyChanged(); })
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized() => Workspace.Changed += StateHasChanged;
+    public void Dispose() => Workspace.Changed -= StateHasChanged;
+
+    private RenderFragment RenderRow(string label, bool value, Action<bool> onToggle) => __builder =>
+    {
+        <div class="aegis-layer-row">
+            <span>@label</span>
+            <button type="button"
+                    class="@($"aegis-switch {(value ? "on" : "")}")"
+                    role="switch"
+                    aria-checked="@value"
+                    aria-label="@label"
+                    @onclick="() => onToggle(!value)"></button>
+        </div>;
+    };
+}

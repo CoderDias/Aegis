@@ -1,0 +1,131 @@
+@inject WorkspaceState Workspace
+@implements IDisposable
+
+@if (Workspace.DrawModeActive || !string.IsNullOrEmpty(Workspace.PendingDrawGeometryJson))
+{
+    <div class="aegis-map-overlay aegis-map-overlay--bottom-center aegis-draw-panel">
+        @if (Workspace.DrawModeActive)
+        {
+            <div class="aegis-draw-panel__row">
+                @if (Workspace.DrawPurpose != DrawPurpose.InvestigationGeofence)
+                {
+                    <button type="button" class="aegis-btn aegis-btn--icon @(Workspace.DrawKind == "pin" ? "active" : "")" title="Marcador" @onclick='() => StartDraw("pin")'>📍</button>
+                    <button type="button" class="aegis-btn aegis-btn--icon @(Workspace.DrawKind == "line" ? "active" : "")" title="Linha" @onclick='() => StartDraw("line")'>／</button>
+                }
+                <button type="button" class="aegis-btn aegis-btn--icon @(Workspace.DrawKind == "polygon" ? "active" : "")" title="Polígono" @onclick='() => StartDraw("polygon")'>⬠</button>
+                <button type="button" class="aegis-btn aegis-btn--icon @(Workspace.DrawKind == "circle" ? "active" : "")" title="Círculo" @onclick='() => StartDraw("circle")'>◯</button>
+                <span class="aegis-draw-panel__hint">@DrawHint</span>
+                @if (Workspace.DrawKind == "polygon" && Workspace.DrawPointCount >= 3)
+                {
+                    <button type="button" class="aegis-btn aegis-btn--primary" @onclick="CompletePolygonAsync">Concluir polígono</button>
+                }
+                @if (Workspace.DrawKind == "line" && Workspace.DrawPointCount >= 2)
+                {
+                    <button type="button" class="aegis-btn aegis-btn--primary" @onclick="CompleteLineAsync">Concluir linha</button>
+                }
+                <button type="button" class="aegis-btn" @onclick="CancelDraw">Cancelar</button>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(Workspace.PendingDrawGeometryJson))
+        {
+            <div class="aegis-draw-panel__row">
+                <span class="aegis-draw-panel__hint">Área definida</span>
+                @if (Workspace.DrawPurpose == DrawPurpose.InvestigationGeofence)
+                {
+                    <button type="button" class="aegis-btn aegis-btn--primary" @onclick="OnConfirmInvestigation">Criar investigação</button>
+                }
+                else
+                {
+                    <button type="button" class="aegis-btn aegis-btn--primary" @onclick="OnConfirmArea">Criar área monitorada</button>
+                }
+                <button type="button" class="aegis-btn" @onclick="OnCancelPending">Descartar</button>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="aegis-map-overlay aegis-map-overlay--bottom-left">
+        <button type="button" class="aegis-btn aegis-btn--ghost" @onclick="EnableDraw">Desenhar área</button>
+    </div>
+}
+
+@code {
+    [Parameter] public MapViewer? Map { get; set; }
+    [Parameter] public EventCallback OnConfirmInvestigation { get; set; }
+    [Parameter] public EventCallback OnConfirmArea { get; set; }
+    [Parameter] public EventCallback OnCancelPending { get; set; }
+
+    private string DrawHint => Workspace.DrawKind switch
+    {
+        "circle" => "Clique no centro · informe o raio (km)",
+        "polygon" => Workspace.DrawPointCount >= 3
+            ? $"{Workspace.DrawPointCount} pontos · clique Concluir polígono"
+            : $"{Workspace.DrawPointCount} pontos · clique no mapa para adicionar vértices",
+        "line" => Workspace.DrawPointCount >= 2
+            ? $"{Workspace.DrawPointCount} pontos · clique Concluir linha"
+            : $"{Workspace.DrawPointCount} pontos · clique no mapa para traçar",
+        _ => "Clique no mapa"
+    };
+
+    protected override void OnInitialized() => Workspace.Changed += StateHasChanged;
+    public void Dispose() => Workspace.Changed -= StateHasChanged;
+
+    private void EnableDraw()
+    {
+        Workspace.BeginAnnotationDraw();
+        Workspace.DrawModeActive = true;
+        Workspace.DrawKind = "polygon";
+        Workspace.DrawPointCount = 0;
+        Workspace.NotifyChanged();
+        _ = Map?.EnterDrawModeAsync("polygon", autoComplete: false);
+    }
+
+    private void StartDraw(string kind)
+    {
+        if (Workspace.DrawPurpose == DrawPurpose.InvestigationGeofence &&
+            kind is not ("polygon" or "circle"))
+        {
+            return;
+        }
+
+        Workspace.DrawKind = kind;
+        Workspace.DrawPointCount = 0;
+        Workspace.PendingDrawKind = null;
+        Workspace.PendingDrawGeometryJson = null;
+        Workspace.NotifyChanged();
+        var autoComplete = kind == "pin";
+        _ = Map?.EnterDrawModeAsync(kind, autoComplete);
+    }
+
+    private async Task CompletePolygonAsync()
+    {
+        if (Map is not null)
+        {
+            await Map.CompletePolygonDrawAsync();
+        }
+    }
+
+    private async Task CompleteLineAsync()
+    {
+        if (Map is not null)
+        {
+            await Map.CompleteLineDrawAsync();
+        }
+    }
+
+    private async Task CancelDraw()
+    {
+        Workspace.ResetDrawSession();
+        if (Workspace.DrawPurpose == DrawPurpose.InvestigationGeofence)
+        {
+            Workspace.ClearDrawPurpose();
+        }
+
+        Workspace.NotifyChanged();
+        if (Map is not null)
+        {
+            await Map.CancelDrawAsync();
+        }
+    }
+}

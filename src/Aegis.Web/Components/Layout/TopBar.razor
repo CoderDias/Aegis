@@ -1,0 +1,58 @@
+@inject WorkspaceState Workspace
+@inject CircuitFlightFeed FlightFeed
+@using Aegis.Application.Dtos.Flights
+@implements IDisposable
+
+<header class="aegis-topbar">
+    <div class="aegis-topbar__section">
+        <span class="aegis-topbar__brand">AEGIS</span>
+        <span>|</span>
+        <span>@(Workspace.ActiveInvestigationTitle ?? "Nenhuma investigação ativa")</span>
+    </div>
+    <div class="aegis-topbar__section aegis-topbar__section--center">
+        <MapPrefetchIndicator />
+    </div>
+    <div class="aegis-topbar__section">
+        <div class="aegis-topbar__status">
+            <span class="aegis-status-dot @SourceStatusClass"></span>
+            <span>@SourceStatusText</span>
+        </div>
+        @if (_dataAgeSeconds is not null)
+        {
+            <span>Dados defasados (@(_dataAgeSeconds)s)</span>
+        }
+        <span class="aegis-topbar__clock">@_utcClock UTC</span>
+    </div>
+</header>
+
+@code {
+    private string _utcClock = "--:--:--";
+    private int? _dataAgeSeconds;
+    private System.Threading.Timer? _timer;
+
+    private string SourceStatusClass => FlightFeed.Latest is null ? "aegis-status-dot--warn" : "aegis-status-dot--ok";
+    private string SourceStatusText => FlightFeed.Latest is null ? "Sem conexão com OpenSky" : "OpenSky ativo";
+
+    protected override void OnInitialized()
+    {
+        _timer = new System.Threading.Timer(_ =>
+        {
+            _utcClock = DateTime.UtcNow.ToString("HH:mm:ss");
+            if (FlightFeed.Latest is not null)
+            {
+                _dataAgeSeconds = (int)(DateTimeOffset.UtcNow - FlightFeed.Latest.CapturedAt).TotalSeconds;
+            }
+            InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+
+        FlightFeed.SnapshotReceived += OnSnapshot;
+    }
+
+    private void OnSnapshot(FlightSnapshot _) => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+        FlightFeed.SnapshotReceived -= OnSnapshot;
+    }
+}

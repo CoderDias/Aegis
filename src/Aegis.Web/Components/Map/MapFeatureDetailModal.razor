@@ -1,0 +1,168 @@
+@using Aegis.Application.Dtos.Map
+@using Aegis.Infrastructure.External.Overpass
+@using Aegis.Infrastructure.Geo
+@inject IJSRuntime Js
+
+@if (Visible && Feature is not null)
+{
+    <div class="aegis-dialog-backdrop" @onclick="Close">
+        <div class="aegis-dialog @(IsCamera && SupportsEmbed ? "aegis-dialog--wide" : "")" @onclick:stopPropagation="true">
+            <div class="aegis-dialog__header aegis-dialog__header--split">
+                <span>@Feature.Name</span>
+                <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:11px" @onclick="Close">Fechar</button>
+            </div>
+            <div class="aegis-dialog__body">
+                @if (IsCamera)
+                {
+                    @if (!string.IsNullOrWhiteSpace(LinkLabel))
+                    {
+                        <div style="margin-bottom:8px">
+                            <span class="aegis-tag">@LinkLabel</span>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Description))
+                    {
+                        <p class="aegis-camera-hint">@Description</p>
+                    }
+
+                    @if (SupportsEmbed && !string.IsNullOrWhiteSpace(CameraUrl))
+                    {
+                        @if (IsSnapshot)
+                        {
+                            <div class="aegis-camera-frame aegis-camera-frame--snapshot">
+                                <img src="@CameraUrl" alt="@Feature.Name" loading="lazy" referrerpolicy="no-referrer" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="aegis-camera-frame">
+                                <iframe src="@CameraUrl"
+                                        title="@Feature.Name"
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer"
+                                        allow="autoplay; encrypted-media; picture-in-picture"
+                                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+                            </div>
+                        }
+                        <p class="aegis-camera-hint">
+                            Se a imagem não carregar, a fonte pode exigir abertura no navegador.
+                        </p>
+                    }
+                    else if (IsPortal)
+                    {
+                        <EmptyState Title="Portal de câmeras"
+                                    Description="Este link abre um mapa ou lista de câmeras — não há stream único para embutir aqui."
+                                    Icon="▣" />
+                    }
+                    else if (string.IsNullOrWhiteSpace(CameraUrl))
+                    {
+                        <EmptyState Title="URL indisponível" Description="Esta câmera não possui link cadastrado." Icon="▣" />
+                    }
+                    else
+                    {
+                        <EmptyState Title="Abrir externamente"
+                                    Description="Esta fonte não permite reprodução embutida. Use o botão abaixo."
+                                    Icon="↗" />
+                    }
+                }
+                else if (IsErb)
+                {
+                    <KeyValueGrid Items="_erbItems" />
+                }
+                else if (IsPort)
+                {
+                    <KeyValueGrid Items="_portItems" />
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(ExternalUrl))
+            {
+                <div class="aegis-dialog__footer">
+                    <button type="button" class="aegis-btn aegis-btn--primary" @onclick="OpenExternalAsync">
+                        @FooterLabel
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public MapFeatureDto? Feature { get; set; }
+    [Parameter] public EventCallback OnClosed { get; set; }
+
+    private IEnumerable<KeyValueGrid.KeyValueItem> _erbItems = [];
+    private IEnumerable<KeyValueGrid.KeyValueItem> _portItems = [];
+
+    private bool IsCamera => Feature is not null && MapFeatureLayers.IsPublicCamera(Feature);
+    private bool IsErb => Feature is not null && MapFeatureLayers.IsErb(Feature);
+    private bool IsPort => Feature is not null && MapFeatureLayers.IsPort(Feature);
+
+    private string? CameraUrl => Feature?.Tags.GetValueOrDefault("url");
+    private string? ExternalUrl => Feature?.Tags.GetValueOrDefault("url");
+    private string? LinkType => Feature?.Tags.GetValueOrDefault("link_type");
+    private string? LinkLabel => Feature?.Tags.GetValueOrDefault("link_label");
+    private string? Description => Feature?.Tags.GetValueOrDefault("description");
+
+    private bool IsPortal => LinkType == "portal";
+    private bool IsSnapshot => LinkType == "snapshot";
+    private bool SupportsEmbed => PublicCameraLinkClassifier.SupportsIframe(LinkType ?? "portal");
+
+    private string FooterLabel => IsCamera switch
+    {
+        _ when IsPortal => "Abrir portal de câmeras",
+        _ when IsSnapshot => "Abrir imagem no navegador",
+        _ when LinkType == "stream_direct" => "Abrir stream no navegador",
+        _ when IsCamera => "Abrir transmissão no navegador",
+        _ when IsPort => "Abrir atlas ANTAQ",
+        _ => "Consultar fonte"
+    };
+
+    protected override void OnParametersSet()
+    {
+        _erbItems = [];
+        _portItems = [];
+
+        if (Feature is null)
+        {
+            return;
+        }
+
+        if (IsErb)
+        {
+            _erbItems =
+            [
+                new("Operadora", Feature.Tags.GetValueOrDefault("operator") ?? "—"),
+                new("Tecnologia", Feature.Tags.GetValueOrDefault("technology") ?? "—"),
+                new("Município", Feature.Tags.GetValueOrDefault("addr:city") ?? "—"),
+                new("UF", Feature.Tags.GetValueOrDefault("addr:state") ?? "—"),
+                new("Coordenadas", $"{Feature.Centroid.Lat:F5}, {Feature.Centroid.Lng:F5}"),
+                new("Fonte", "ANATEL / amostra local")
+            ];
+        }
+
+        if (IsPort)
+        {
+            _portItems =
+            [
+                new("Nome", Feature.Name ?? "—"),
+                new("UF", Feature.Tags.GetValueOrDefault("addr:state") ?? "—"),
+                new("Coordenadas", $"{Feature.Centroid.Lat:F5}, {Feature.Centroid.Lng:F5}"),
+                new("Fonte", "ANTAQ / OSINT Brazuca")
+            ];
+        }
+    }
+
+    private Task Close() => OnClosed.InvokeAsync();
+
+    private Task OpenExternalAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ExternalUrl))
+        {
+            return Task.CompletedTask;
+        }
+
+        return Js.InvokeVoidAsync("open", ExternalUrl, "_blank").AsTask();
+    }
+}

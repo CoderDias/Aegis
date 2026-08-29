@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Aegis.Application/Aegis.Application.csproj" />
+    <Project Path="src/Aegis.Domain/Aegis.Domain.csproj" />
+    <Project Path="src/Aegis.Infrastructure/Aegis.Infrastructure.csproj" />
+    <Project Path="src/Aegis.Web/Aegis.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Aegis.Application.Tests/Aegis.Application.Tests.csproj" />
+    <Project Path="tests/Aegis.Domain.Tests/Aegis.Domain.Tests.csproj" />
+    <Project Path="tests/Aegis.Infrastructure.Tests/Aegis.Infrastructure.Tests.csproj" />
+  </Folder>
+</Solution>

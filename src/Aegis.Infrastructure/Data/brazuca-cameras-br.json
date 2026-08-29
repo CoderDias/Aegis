@@ -1,0 +1,914 @@
+﻿[
+    {
+        "id":  1,
+        "name":  "Projeto City CÃ¢meras",
+        "url":  "https://www.citycameras.prefeitura.sp.gov.br/home",
+        "uf":  "SP",
+        "lat":  -23.5125,
+        "lng":  -46.54626
+    },
+    {
+        "id":  2,
+        "name":  "CÃ¢meras Cia. de Engenharia de TrÃ¡fego (CET)",
+        "url":  "http://cameras.cetsp.com.br/",
+        "uf":  null,
+        "lat":  -23.4662,
+        "lng":  -46.53722
+    },
+    {
+        "id":  3,
+        "name":  "CÃ¢meras DER - Departamento de Estradas de Rodagem (DER)",
+        "url":  "http://www.der.sp.gov.br/WebSite/Servicos/ServicosOnline/CamerasOnlineMapa.aspx",
+        "uf":  "SP",
+        "lat":  -23.4564,
+        "lng":  -46.60491
+    },
+    {
+        "id":  4,
+        "name":  "Windy - ServiÃ§o de CÃ£meras e Radar meteorolÃ³gico",
+        "url":  "https://www.windy.com/pt/-Webcams/webcams?-16.994",
+        "uf":  null,
+        "lat":  -23.5441,
+        "lng":  -46.56029
+    },
+    {
+        "id":  5,
+        "name":  "CÃ¢meras Rodovias Online",
+        "url":  "http://www.rodoviasonline.com.br/rodovias-der-sp/",
+        "uf":  null,
+        "lat":  -23.5271,
+        "lng":  -46.60908
+    },
+    {
+        "id":  6,
+        "name":  "CÃ¢meras Rodovias Online",
+        "url":  "http://www.rodoviasonline.com.br/cameras-ao-vivo-das-rodovias-do-estado-do-parana/",
+        "uf":  null,
+        "lat":  -23.5271,
+        "lng":  -46.60908
+    },
+    {
+        "id":  7,
+        "name":  "CÃ¢meras Rodovias Online",
+        "url":  "https://www.rodoviasonline.com.br/cameras-ao-vivo-nas-rodovias-do-rio-grande-de-sul-daer-rs/",
+        "uf":  null,
+        "lat":  -23.5271,
+        "lng":  -46.60908
+    },
+    {
+        "id":  8,
+        "name":  "CÃ¢meras Rodovias Online",
+        "url":  "https://www.rodoviasonline.com.br/rodovia-governador-ney-braga-br-277/",
+        "uf":  null,
+        "lat":  -23.5271,
+        "lng":  -46.60908
+    },
+    {
+        "id":  9,
+        "name":  "CÃ¢meras Rodovias Online",
+        "url":  "https://www.rodoviasonline.com.br/cameras-ao-vivo-viapar-parana/",
+        "uf":  null,
+        "lat":  -23.5271,
+        "lng":  -46.60908
+    },
+    {
+        "id":  10,
+        "name":  "CÃ¢meras ConcessionÃ¡ria Tamoios",
+        "url":  "https://concessionariatamoios.com.br/cameras/ver/12",
+        "uf":  null,
+        "lat":  -23.5316,
+        "lng":  -46.61278
+    },
+    {
+        "id":  11,
+        "name":  "CÃ¢meras ConcessionÃ¡ria Tamoios",
+        "url":  "https://concessionariatamoios.com.br/cameras/ver/14",
+        "uf":  null,
+        "lat":  -23.5316,
+        "lng":  -46.61278
+    },
+    {
+        "id":  12,
+        "name":  "CÃ¢meras ConcessionÃ¡ria Tamoios",
+        "url":  "https://concessionariatamoios.com.br/cameras/ver/10",
+        "uf":  null,
+        "lat":  -23.5316,
+        "lng":  -46.61278
+    },
+    {
+        "id":  13,
+        "name":  "CÃ¢meras ConcessionÃ¡ria Tamoios",
+        "url":  "https://concessionariatamoios.com.br/cameras/ver/9",
+        "uf":  null,
+        "lat":  -23.5316,
+        "lng":  -46.61278
+    },
+    {
+        "id":  14,
+        "name":  "CÃ¢meras ConcessionÃ¡ria Tamoios",
+        "url":  "https://concessionariatamoios.com.br/cameras/ver/8",
+        "uf":  null,
+        "lat":  -23.5316,
+        "lng":  -46.61278
+    },
+    {
+        "id":  15,
+        "name":  "CÃ¢meras ConcessionÃ¡ria Tamoios",
+        "url":  "https://concessionariatamoios.com.br/cameras/ver/13",
+        "uf":  null,
+        "lat":  -23.5316,
+        "lng":  -46.61278
+    },
+    {
+        "id":  16,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/condicoes-da-via#condition-camera",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  17,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/2",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  18,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "http://site.ecovias.com.br/cameras/vpon/0kamera1.jpg",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  19,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/4",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  20,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "http://site.ecovias.com.br/cameras/vpon/0kamera6.jpg",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  21,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/6",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  22,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/7",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  23,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/8",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  24,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/15",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  25,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/1",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  26,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/11",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  27,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/12",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  28,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/13",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  29,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/14",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  30,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/16",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  31,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/9",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  32,
+        "name":  "CÃ¢meras ConcessionÃ¡ria EcoRodovias",
+        "url":  "https://www.ecovias.com.br/boletim/camera/10",
+        "uf":  null,
+        "lat":  -23.5482,
+        "lng":  -46.5421
+    },
+    {
+        "id":  33,
+        "name":  "CÃ¢meras DAER - Rio Grande do Sul",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Santa_Maria",
+        "uf":  null,
+        "lat":  -23.4562,
+        "lng":  -46.53401
+    },
+    {
+        "id":  34,
+        "name":  "CÃ¢meras Governo de Santa Catarina",
+        "url":  "https://www.ssp.sc.gov.br/dtic/index.php/cameras/cameras-online",
+        "uf":  "SC",
+        "lat":  -27.5306,
+        "lng":  -48.54724
+    },
+    {
+        "id":  35,
+        "name":  "CÃ¢meras Governo de Santa Catarina",
+        "url":  "https://www.ssp.sc.gov.br/dtic/index.php/cameras/cameras-online-florianopolis",
+        "uf":  "SC",
+        "lat":  -27.5306,
+        "lng":  -48.54724
+    },
+    {
+        "id":  36,
+        "name":  "CÃ¢meras Governo de Santa Catarina",
+        "url":  "https://www.ssp.sc.gov.br/dtic/index.php/cameras/cameras-online-florianopolis-trindade",
+        "uf":  "SC",
+        "lat":  -27.5306,
+        "lng":  -48.54724
+    },
+    {
+        "id":  37,
+        "name":  "CÃ¢meras Governo de Santa Catarina",
+        "url":  "https://www.ssp.sc.gov.br/dtic/index.php/cameras/cameras-online-florianopolis-2",
+        "uf":  "SC",
+        "lat":  -27.5306,
+        "lng":  -48.54724
+    },
+    {
+        "id":  38,
+        "name":  "CÃ¢meras Governo de Santa Catarina",
+        "url":  "https://www.ssp.sc.gov.br/dtic/index.php/cameras/cameras-online-sao-jose",
+        "uf":  "SC",
+        "lat":  -27.5306,
+        "lng":  -48.54724
+    },
+    {
+        "id":  39,
+        "name":  "CÃ¢meras Governo de Santa Catarina",
+        "url":  "https://www.ssp.sc.gov.br/dtic/index.php/cameras/cameras-online-biguacu",
+        "uf":  "SC",
+        "lat":  -27.5306,
+        "lng":  -48.54724
+    },
+    {
+        "id":  40,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://www.climaaovivo.com.br/ma/sao-luis-hotel-abbeville",
+        "uf":  "MA",
+        "lat":  -2.4534,
+        "lng":  -44.27772
+    },
+    {
+        "id":  41,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://www.climaaovivo.com.br/ma/acailandia/acailandia",
+        "uf":  "MA",
+        "lat":  -2.4534,
+        "lng":  -44.27772
+    },
+    {
+        "id":  42,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://www.climaaovivo.com.br/ma/imperatriz/centro-empresarial-oeste",
+        "uf":  "MA",
+        "lat":  -2.4534,
+        "lng":  -44.27772
+    },
+    {
+        "id":  43,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://www.climaaovivo.com.br/ma/imperatriz/centro-empresarial-leste",
+        "uf":  "MA",
+        "lat":  -2.4534,
+        "lng":  -44.27772
+    },
+    {
+        "id":  44,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://www.achados-e-perdidos-rs.com.br/",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  45,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6716",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  46,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6714",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  47,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6713",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  48,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Restinga_Seca",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  49,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Ijui",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  50,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Santa_Maria",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  51,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Venancio_Aires",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  52,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Montenegro01",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  53,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Montenegro02",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  54,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer2.fiscaltech.com.br:8843/panoramicas/6208.jpg",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  55,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Portao",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  56,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Sao_Jeronimo",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  57,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Farroupilha",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  58,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer2.fiscaltech.com.br:8843/panoramicas/6212.jpg",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  59,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer2.fiscaltech.com.br:8843/panoramicas/6213.jpg",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  60,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Caxias_do_Sul",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  61,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6743",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  62,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6744",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  63,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Glorinha",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  64,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Igrejinha",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  65,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Gramado01",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  66,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Gramado02",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  67,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Itati",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  68,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer2.fiscaltech.com.br:8843/panoramicas/6210.jpg",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  69,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer2.fiscaltech.com.br:8843/panoramicas/6214.jpg",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  70,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer2.fiscaltech.com.br:8843/panoramicas/6215.jpg",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  71,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer2.fiscaltech.com.br:8843/panoramicas/6216.jpg",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  72,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "http://186.227.239.150:2150/ftp/imagem.php?id=Passo_Fundo",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  73,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer2.fiscaltech.com.br:8843/panoramicas/6211.jpg",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  74,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6718",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  75,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/live/media/PK5916/DeviceIpint.6/SourceEndpoint.video:0:0",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  76,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://191.253.194.194:60000/live/media/PK5916/DeviceIpint.7/SourceEndpoint.video:0:0",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  77,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://191.253.194.194:60000/live/media/PK5916/DeviceIpint.8/SourceEndpoint.video:0:0",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  78,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://191.253.194.194:60000/live/media/PK5916/DeviceIpint.9/SourceEndpoint.video:0:0",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  79,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://191.253.194.194:60000/live/media/PK5916/DeviceIpint.10/SourceEndpoint.video:0:0",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  80,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6734",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  81,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6737",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  82,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6739",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  83,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6748",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  84,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Serafina_Correa",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  85,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Nova_Bassano",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  86,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer.kopp.com.br/ftp/imagem.php?id=Sananduva",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  87,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://daer2.fiscaltech.com.br:8843/panoramicas/6204.jpg",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  88,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://camerasdaer.perkons.com:60000/DAER-6712",
+        "uf":  "RS",
+        "lat":  -29.9574,
+        "lng":  -51.18872
+    },
+    {
+        "id":  89,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://bemtevi.segurancapublica.sc.gov.br:10346/Interface/Cameras/GetJPEGStream?Camera=FNS_CEN_159\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  90,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://bemtevi.segurancapublica.sc.gov.br:10346/Interface/Cameras/GetJPEGStream?Camera=FNS_CEN_160\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  91,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://bemtevi.segurancapublica.sc.gov.br:10346/Interface/Cameras/GetJPEGStream?Camera=FNS_CEN_162\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  92,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://bemtevi.segurancapublica.sc.gov.br:10346/Interface/Cameras/GetJPEGStream?Camera=FNS_CEN_162\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  93,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "http://bemtevi.segurancapublica.sc.gov.br:10351/Interface/Cameras/GetJPEGStream?Camera=FNS_STM_051\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  94,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "http://bemtevi.segurancapublica.sc.gov.br:10351/Interface/Cameras/GetJPEGStream?Camera=FNS_STM_052\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  95,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "http://bemtevi.segurancapublica.sc.gov.br:10351/Interface/Cameras/GetJPEGStream?Camera=FNS_STM_061\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  96,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "http://bemtevi.segurancapublica.sc.gov.br:10351/Interface/Cameras/GetJPEGStream?Camera=FNS_STM_062\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  97,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://bemtevi.segurancapublica.sc.gov.br:10311/Interface/Cameras/GetJPEGStream?Camera=BGC_CEN_012\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  98,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://bemtevi.segurancapublica.sc.gov.br:10311/Interface/Cameras/GetJPEGStream?Camera=BGC_CEN_020\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  99,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://bemtevi.segurancapublica.sc.gov.br:10311/Interface/Cameras/GetJPEGStream?Camera=BGC_CEN_032\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  100,
+        "name":  "CÃ¢meras por Estado",
+        "url":  "https://bemtevi.segurancapublica.sc.gov.br:10311/Interface/Cameras/GetJPEGStream?Camera=BGC_VDV_040\u0026width=1920\u0026height=1080",
+        "uf":  "SC",
+        "lat":  -27.5184,
+        "lng":  -48.51972
+    },
+    {
+        "id":  101,
+        "name":  "CÃ¢meras da Prefeitura de JoÃ£o Pessoa - PB (SEMOB)",
+        "url":  "http://transito.gtrans.com.br/semobjp/index.php",
+        "uf":  null,
+        "lat":  -23.4995,
+        "lng":  -46.60815
+    },
+    {
+        "id":  102,
+        "name":  "CÃ¢meras da Prefeitura de Recife - PE (CTTU)",
+        "url":  "http://transito.gtrans.com.br/cttupe/index.php/mapa",
+        "uf":  null,
+        "lat":  -23.4991,
+        "lng":  -46.56695
+    },
+    {
+        "id":  103,
+        "name":  "CÃ¢meras do Centro Integrado de OperaÃ§Ãµes de BelÃ©m do ParÃ¡ (Segup no TrÃ¢nsito)",
+        "url":  "https://www.ciop.pa.gov.br/aovivo/index.html",
+        "uf":  "PA",
+        "lat":  -1.4414,
+        "lng":  -48.42669
+    },
+    {
+        "id":  104,
+        "name":  "CÃ¢meras da BHTRANS (Em beta ainda)",
+        "url":  "http://infotrafego.pbh.gov.br/info_trafego_cameras.html",
+        "uf":  null,
+        "lat":  -23.543,
+        "lng":  -46.55709
+    },
+    {
+        "id":  105,
+        "name":  "CÃ¢meras do Aeroporto Internacional de SÃ£o Paulo/Guarulhos - SGBR",
+        "url":  "https://www.youtube.com/@SBGRLIVE",
+        "uf":  null,
+        "lat":  -23.5339,
+        "lng":  -46.60638
+    },
+    {
+        "id":  106,
+        "name":  "CÃ¢meras do Aeroporto Internacional de SÃ£o Paulo/Guarulhos - SGBR",
+        "url":  "https://www.youtube.com/@GolfOscarRomeo",
+        "uf":  null,
+        "lat":  -23.5339,
+        "lng":  -46.60638
+    },
+    {
+        "id":  107,
+        "name":  "CÃ¢mera do Aeroporto de Congonhas SÃ£o Paulo - SBSP FULL ATC",
+        "url":  "https://www.youtube.com/@GolfOscarRomeo",
+        "uf":  null,
+        "lat":  -23.5205,
+        "lng":  -46.57197
+    },
+    {
+        "id":  108,
+        "name":  "CÃ¢mera do Aeroporto Santos Dumont - Rio de Janeiro - SBRJ FULL ATC",
+        "url":  "https://www.youtube.com/@avtv",
+        "uf":  null,
+        "lat":  -23.549,
+        "lng":  -46.5757
+    },
+    {
+        "id":  109,
+        "name":  "CÃ¢mera do Aeroporto GaleÃ£o - Rio de Janeiro - SBGL",
+        "url":  "https://www.youtube.com/@avtv",
+        "uf":  null,
+        "lat":  -23.4609,
+        "lng":  -46.61981
+    },
+    {
+        "id":  110,
+        "name":  "CÃ¢mera do Aeroporto Pinto Martins - Fortaleza - SBFZ",
+        "url":  "https://www.youtube.com/@mundo_aviao",
+        "uf":  null,
+        "lat":  -23.4915,
+        "lng":  -46.57904
+    },
+    {
+        "id":  111,
+        "name":  "CÃ¢mera do Aeroporto Internacional de FlorianÃ³polis - SBFL Com Fonia",
+        "url":  "https://www.youtube.com/@maaxcamaovivo",
+        "uf":  null,
+        "lat":  -23.4758,
+        "lng":  -46.59973
+    },
+    {
+        "id":  112,
+        "name":  "CÃ¢mera do Aeroporto Guararapes - Recife - SBRF",
+        "url":  "https://www.youtube.com/@papacharliegolfTV",
+        "uf":  null,
+        "lat":  -23.5207,
+        "lng":  -46.56027
+    },
+    {
+        "id":  113,
+        "name":  "CÃ¢mera do Aeroporto Viracopos - Campinas - VCP",
+        "url":  "https://www.youtube.com/@ViracoposFullHD",
+        "uf":  null,
+        "lat":  -23.457,
+        "lng":  -46.54661
+    },
+    {
+        "id":  114,
+        "name":  "CÃ¢meras de Obras em Andamento de Mato Grosso (SINFRA)",
+        "url":  "https://mapas.sinfra.mt.gov.br/portal/apps/sites/#/central-infra-20-2-1/pages/monitoramento-de-obras",
+        "uf":  "MT",
+        "lat":  -15.5998,
+        "lng":  -56.0902
+    }
+]

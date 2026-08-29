@@ -1,0 +1,101 @@
+@using Aegis.Application.Abstractions
+@using Aegis.Application.Dtos.Osint
+@using Aegis.Application.Services
+@inject IOsintBrazucaCatalog Catalog
+@inject InvestigationService InvestigationService
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+@inject ProtectedLocalStorage LocalStorage
+@inject IJSRuntime Js
+
+<div class="aegis-osint-section">
+    <div class="aegis-osint-section__title">Diários oficiais</div>
+    <p class="aegis-osint-playbook-hint">Portais de diário oficial por UF — busca contextual por entidade do caso.</p>
+
+    <select class="aegis-input" @bind="_selectedUf" @bind:after="RefreshLinks">
+        <option value="">Todas UFs</option>
+        @foreach (var uf in _ufs)
+        {
+            <option value="@uf">@uf</option>
+        }
+    </select>
+
+    @if (_results.Count == 0)
+    {
+        <EmptyState Title="Nenhum diário" Description="Ajuste a UF ou aguarde o catálogo." Icon="⌕" />
+    }
+    else
+    {
+        @foreach (var source in _results)
+        {
+            <div class="aegis-osint-row">
+                <div class="aegis-osint-row__main">
+                    <strong>@source.Fonte</strong>
+                    <div class="aegis-osint-row__meta">@(source.Uf ?? "BR") · @source.Categoria</div>
+                </div>
+                <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px" @onclick="() => OpenSourceAsync(source)">Abrir</button>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private const string LgpdStorageKey = "aegis_osint_lgpd_ack";
+
+    private string _selectedUf = string.Empty;
+    private IReadOnlyList<string> _ufs = [];
+    private IReadOnlyList<OsintSourceDto> _results = [];
+
+    protected override void OnInitialized()
+    {
+        _ufs = Catalog.Search(new OsintSearchQuery(CategoriaId: "diarios-oficiais", Limit: 200))
+            .Select(s => s.Uf)
+            .Where(uf => !string.IsNullOrWhiteSpace(uf))
+            .Select(uf => uf!)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(uf => uf, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        RefreshLinks();
+    }
+
+    private void RefreshLinks()
+    {
+        _results = Catalog.Search(new OsintSearchQuery(
+            CategoriaId: "diarios-oficiais",
+            Uf: string.IsNullOrWhiteSpace(_selectedUf) ? null : _selectedUf,
+            Limit: 40));
+    }
+
+    private async Task OpenSourceAsync(OsintSourceDto source)
+    {
+        try
+        {
+            var lgpd = await LocalStorage.GetAsync<bool>(LgpdStorageKey);
+            if (lgpd.Success != true || lgpd.Value != true)
+            {
+                Notifications.Show("Confirme o aviso LGPD na seção Fontes OSINT.", NotificationLevel.Warning);
+                return;
+            }
+        }
+        catch
+        {
+            Notifications.Show("Confirme o aviso LGPD na seção Fontes OSINT.", NotificationLevel.Warning);
+            return;
+        }
+
+        await Js.InvokeVoidAsync("open", source.Url, "_blank");
+
+        if (Workspace.ActiveInvestigationId is Guid investigationId)
+        {
+            try
+            {
+                await InvestigationService.RecordOsintSourceAccessAsync(investigationId, source.Fonte, source.Url);
+            }
+            catch (Exception ex)
+            {
+                Notifications.Show(ex.Message, NotificationLevel.Warning);
+            }
+        }
+    }
+}

@@ -1,0 +1,26 @@
+@inject UiNotificationService Notifications
+@inject UiNotificationService Notifications
+@implements IDisposable
+
+<div class="aegis-toast-host">
+    @foreach (var toast in Notifications.Notifications)
+    {
+        <div class="aegis-toast @LevelClass(toast.Level)">
+            <span>@toast.Message</span>
+            <button type="button" class="aegis-btn aegis-btn--ghost aegis-btn--icon" @onclick="() => Notifications.Dismiss(toast.Id)">✕</button>
+        </div>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized() => Notifications.Changed += StateHasChanged;
+    public void Dispose() => Notifications.Changed -= StateHasChanged;
+
+    private static string LevelClass(NotificationLevel level) => level switch
+    {
+        NotificationLevel.Success => "aegis-toast--success",
+        NotificationLevel.Warning => "aegis-toast--warning",
+        NotificationLevel.Danger => "aegis-toast--danger",
+        _ => ""
+    };
+}

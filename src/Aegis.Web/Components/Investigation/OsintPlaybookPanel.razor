@@ -1,0 +1,136 @@
+@using Aegis.Application.Osint
+@inject ProtectedLocalStorage LocalStorage
+@inject WorkspaceState Workspace
+@implements IDisposable
+
+<div class="aegis-osint-section">
+    <div class="aegis-osint-section__title">Playbooks OSINT</div>
+    <p class="aegis-osint-playbook-hint">Checklists inspirados no fluxograma OSINT Brazuca — progresso salvo localmente por caso.</p>
+
+    @foreach (var playbook in OsintPlaybookCatalog.All)
+    {
+        <details class="aegis-osint-playbook">
+            <summary>
+                <strong>@playbook.Title</strong>
+                <span class="aegis-osint-playbook__progress">@GetProgressLabel(playbook.Id)</span>
+            </summary>
+            <p class="aegis-osint-playbook__desc">@playbook.Description</p>
+            <ul class="aegis-osint-playbook__steps">
+                @for (var i = 0; i < playbook.Steps.Count; i++)
+                {
+                    var stepIndex = i;
+                    var step = playbook.Steps[i];
+                    <li>
+                        <label>
+                            <input type="checkbox"
+                                   checked="@IsStepDone(playbook.Id, stepIndex)"
+                                   @onchange="e => ToggleStepAsync(playbook.Id, stepIndex, e)" />
+                            <span>@step</span>
+                        </label>
+                    </li>
+                }
+            </ul>
+        </details>
+    }
+</div>
+
+@code {
+    private readonly Dictionary<string, HashSet<int>> _completedSteps = new(StringComparer.OrdinalIgnoreCase);
+
+    protected override async Task OnInitializedAsync()
+    {
+        Workspace.Changed += OnWorkspaceChanged;
+        await LoadProgressAsync();
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await LoadProgressAsync();
+            StateHasChanged();
+        });
+    }
+
+    private async Task LoadProgressAsync()
+    {
+        _completedSteps.Clear();
+        if (Workspace.ActiveInvestigationId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var key = StorageKey(Workspace.ActiveInvestigationId.Value);
+            var result = await LocalStorage.GetAsync<Dictionary<string, List<int>>>(key);
+            if (result.Success != true || result.Value is null)
+            {
+                return;
+            }
+
+            foreach (var (playbookId, steps) in result.Value)
+            {
+                _completedSteps[playbookId] = steps.ToHashSet();
+            }
+        }
+        catch
+        {
+        }
+    }
+
+    private async Task ToggleStepAsync(string playbookId, int stepIndex, ChangeEventArgs args)
+    {
+        if (Workspace.ActiveInvestigationId is null)
+        {
+            return;
+        }
+
+        if (!_completedSteps.TryGetValue(playbookId, out var done))
+        {
+            done = [];
+            _completedSteps[playbookId] = done;
+        }
+
+        var isChecked = args.Value is true;
+        if (isChecked)
+        {
+            done.Add(stepIndex);
+        }
+        else
+        {
+            done.Remove(stepIndex);
+        }
+
+        try
+        {
+            var payload = _completedSteps.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.OrderBy(v => v).ToList(),
+                StringComparer.OrdinalIgnoreCase);
+            await LocalStorage.SetAsync(StorageKey(Workspace.ActiveInvestigationId.Value), payload);
+        }
+        catch
+        {
+        }
+    }
+
+    private bool IsStepDone(string playbookId, int stepIndex) =>
+        _completedSteps.TryGetValue(playbookId, out var done) && done.Contains(stepIndex);
+
+    private string GetProgressLabel(string playbookId)
+    {
+        var playbook = OsintPlaybookCatalog.GetById(playbookId);
+        if (playbook is null)
+        {
+            return string.Empty;
+        }
+
+        var done = _completedSteps.TryGetValue(playbookId, out var steps) ? steps.Count : 0;
+        return $"{done}/{playbook.Steps.Count}";
+    }
+
+    private static string StorageKey(Guid investigationId) => $"aegis_osint_playbook:{investigationId:N}";
+
+    public void Dispose() => Workspace.Changed -= OnWorkspaceChanged;
+}

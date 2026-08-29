@@ -1,0 +1,173 @@
+@using Aegis.Application.Abstractions
+@using Aegis.Application.Dtos.Osint
+@inject IRdapBrClient RdapBr
+@inject AssetService AssetService
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+
+@if (Host is null)
+{
+    <EmptyState Title="Nenhum host selecionado" Description="Clique em um marcador Shodan no mapa." />
+}
+else
+{
+    <KeyValueGrid Items="_items" />
+    @if (Host.Vulnerabilities?.Count > 0)
+    {
+        <div class="aegis-panel" style="margin-top:12px;border:none;background:transparent">
+            <div class="aegis-panel__header">Vulnerabilidades</div>
+            <div class="aegis-panel__body" style="padding:0">
+                <div class="aegis-vuln-list">
+                    @foreach (var vuln in Host.Vulnerabilities)
+                    {
+                        <div class="aegis-vuln-row @(vuln.HasExploit || vuln.IsKnownExploited ? "aegis-vuln-row--danger" : "")">
+                            <div class="aegis-vuln-row__cve">@vuln.CveId</div>
+                            <div class="aegis-vuln-row__meta">
+                                @(vuln.Severity ?? "—")
+                                @if (vuln.IsKnownExploited) { <span> · KEV</span> }
+                                @if (vuln.HasExploit) { <span> · Exploit</span> }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (_brDomain is not null)
+    {
+        <div class="aegis-osint-section" style="margin-top:12px">
+            <div class="aegis-osint-section__title">
+                Domínio .br (RDAP)
+                <button type="button" class="aegis-btn aegis-btn--ghost" style="font-size:10px;margin-left:auto" disabled="@_loadingRdap" @onclick="LookupRdapAsync">Consultar</button>
+            </div>
+            @if (_loadingRdap)
+            {
+                <LoadingSpinner Label="Consultando RDAP..." />
+            }
+            else if (_rdapResult is not null)
+            {
+                <KeyValueGrid Items="_rdapSummary" />
+            }
+            else
+            {
+                <div class="aegis-osint-row__meta">Hostname: @_brDomain</div>
+            }
+        </div>
+    }
+
+    @if (Workspace.ActiveInvestigationId is not null)
+    {
+        <div style="margin-top:10px">
+            <button type="button" class="aegis-btn aegis-btn--primary" style="width:100%" disabled="@_saving" @onclick="AddToInvestigationAsync">
+                Adicionar à investigação
+            </button>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public ShodanHostDto? Host { get; set; }
+
+    private IEnumerable<KeyValueGrid.KeyValueItem> _items = [];
+    private IEnumerable<KeyValueGrid.KeyValueItem> _rdapSummary = [];
+    private string? _brDomain;
+    private RdapDomainDto? _rdapResult;
+    private bool _saving;
+    private bool _loadingRdap;
+
+    protected override void OnParametersSet()
+    {
+        if (Host is null)
+        {
+            _items = [];
+            _brDomain = null;
+            _rdapResult = null;
+            _rdapSummary = [];
+            return;
+        }
+
+        _items =
+        [
+            new("IP", Host.Ip),
+            new("Porta", Host.Port?.ToString() ?? "—"),
+            new("Transporte", Host.Transport ?? "—"),
+            new("Organização", Host.Org ?? "—"),
+            new("Produto", Host.Product ?? "—"),
+            new("Cidade", Host.City ?? "—"),
+            new("País", Host.Country ?? "—"),
+            new("Hostnames", string.IsNullOrWhiteSpace(Host.Hostnames) ? "—" : Host.Hostnames),
+            new("Latitude", Host.Lat.ToString("F5")),
+            new("Longitude", Host.Lng.ToString("F5"))
+        ];
+
+        _brDomain = ResolveBrDomain(Host.Hostnames);
+        _rdapResult = null;
+        _rdapSummary = [];
+    }
+
+    private async Task LookupRdapAsync()
+    {
+        if (_brDomain is null)
+        {
+            return;
+        }
+
+        _loadingRdap = true;
+        try
+        {
+            _rdapResult = await RdapBr.GetDomainAsync(_brDomain);
+            if (_rdapResult is null)
+            {
+                Notifications.Show("Domínio não encontrado no RDAP ou API indisponível.", NotificationLevel.Warning);
+                _rdapSummary = [];
+                return;
+            }
+
+            _rdapSummary =
+            [
+                new("Status", _rdapResult.Status ?? "—"),
+                new("Registro", _rdapResult.RegistrationDate?.ToLocalTime().ToString("dd/MM/yyyy") ?? "—"),
+                new("Expira", _rdapResult.ExpirationDate?.ToLocalTime().ToString("dd/MM/yyyy") ?? "—"),
+                new("NS", _rdapResult.Nameservers.Count > 0 ? string.Join(", ", _rdapResult.Nameservers) : "—"),
+                new("Handle", _rdapResult.RegistrantHandle ?? "—")
+            ];
+        }
+        finally
+        {
+            _loadingRdap = false;
+        }
+    }
+
+    private static string? ResolveBrDomain(string? hostnames)
+    {
+        if (string.IsNullOrWhiteSpace(hostnames))
+        {
+            return null;
+        }
+
+        return hostnames
+            .Split([',', ';', ' ', '\n', '\r', '\t'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(h => h.Trim().TrimEnd('.').ToLowerInvariant())
+            .FirstOrDefault(h => h.EndsWith(".br", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private async Task AddToInvestigationAsync()
+    {
+        if (Host is null || Workspace.ActiveInvestigationId is null) return;
+        _saving = true;
+        try
+        {
+            await AssetService.AddFromShodanHostAsync(Workspace.ActiveInvestigationId.Value, Host);
+            Notifications.Show($"Host {Host.Ip} adicionado à investigação.", NotificationLevel.Success);
+        }
+        catch (Exception ex)
+        {
+            Notifications.Show(ex.Message, NotificationLevel.Danger);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

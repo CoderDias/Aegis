@@ -1,0 +1,81 @@
+@inject IGeocodingService Geocoding
+@inject WorkspaceState Workspace
+@inject UiNotificationService Notifications
+@implements IDisposable
+
+<div class="aegis-panel aegis-search aegis-map-overlay aegis-map-overlay--top-left">
+    <input class="aegis-input"
+           type="search"
+           placeholder="Buscar local (Nominatim)..."
+           value="@_query"
+           @oninput="OnInput" />
+
+    @if (_loading)
+    {
+        <div style="padding:8px"><LoadingSpinner /></div>
+    }
+    else if (_results.Count > 0)
+    {
+        <div class="aegis-search-results">
+            @foreach (var result in _results)
+            {
+                <button type="button" class="aegis-search-result" @onclick="() => SelectResult(result)">
+                    @result.DisplayName
+                </button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public MapViewer? Map { get; set; }
+
+    private string _query = string.Empty;
+    private IReadOnlyList<GeocodeResultDto> _results = [];
+    private CancellationTokenSource? _debounce;
+    private bool _loading;
+
+    private async Task OnInput(ChangeEventArgs e)
+    {
+        _query = e.Value?.ToString() ?? string.Empty;
+        _debounce?.Cancel();
+        _debounce = new CancellationTokenSource();
+        var token = _debounce.Token;
+
+        if (_query.Length < 3)
+        {
+            _results = [];
+            return;
+        }
+
+        try
+        {
+            await Task.Delay(400, token);
+            _loading = true;
+            StateHasChanged();
+            _results = await Geocoding.SearchAsync(_query, 5, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        finally
+        {
+            _loading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SelectResult(GeocodeResultDto result)
+    {
+        if (Map is null) return;
+
+        await Map.SetViewAsync(result.Coordinate.Lat, result.Coordinate.Lng, 16);
+        Workspace.Select("geocode", result.DisplayName, result);
+        _results = [];
+        _query = result.DisplayName;
+        Notifications.Show($"Área visível: {result.DisplayName}", NotificationLevel.Info);
+    }
+
+    public void Dispose() => _debounce?.Cancel();
+}

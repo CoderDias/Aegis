@@ -1,0 +1,90 @@
+﻿[
+    {
+        "id":  1,
+        "name":  "Consulta dados pÃºblicos de fiscalizaÃ§Ã£o e processos sancionadores da ANTAQ",
+        "url":  "https://aquarela.antaq.gov.br/single/?appid=62518b21-6421-4eab-9c35-bcfac6d57ffd\u0026sheet=70ada7af-9026-4f15-a862-8a40becb7e7d\u0026theme=horizon\u0026opt=currsel",
+        "uf":  null,
+        "lat":  -14.99575,
+        "lng":  -46.97754
+    },
+    {
+        "id":  2,
+        "name":  "Dados PÃºblicos - GestÃ£o de multas e indicadores | ANTAQ",
+        "url":  "https://app.powerbi.com/view?r=eyJrIjoiYTI4MDc3OWEtMmY5Yi00OTU4LTk3OWYtZjExODY0NTExMTQ0IiwidCI6IjhlNTdmNzI3LTBlNWUtNDEzMC04ZTI0LTJkNWY3YzhjMzhmNiJ9",
+        "uf":  null,
+        "lat":  -14.9765,
+        "lng":  -46.99145
+    },
+    {
+        "id":  3,
+        "name":  "NavegaÃ§Ã£o Interior - Pesquisa de Empresas Autorizadas",
+        "url":  "https://web3.antaq.gov.br/Portal/Frota/ConsultarEmpresaInteriorAutorizada.aspx",
+        "uf":  null,
+        "lat":  -14.99225,
+        "lng":  -46.99148
+    },
+    {
+        "id":  4,
+        "name":  "Pesquisa de Linhas e HorÃ¡rios NavegaÃ§Ã£o Interior",
+        "url":  "https://web3.antaq.gov.br/ea/sense/index.html#pt",
+        "uf":  null,
+        "lat":  -14.9919,
+        "lng":  -46.98028
+    },
+    {
+        "id":  5,
+        "name":  "Atlas AquaviÃ¡rios",
+        "url":  "https://www.gov.br/dnit/pt-br/assuntos/aquaviario/atlas-aquaviario/",
+        "uf":  null,
+        "lat":  -14.97545,
+        "lng":  -46.99825
+    },
+    {
+        "id":  6,
+        "name":  "PatrimÃ´nio ImobiliÃ¡rio do DNIT no Ã‚mbito da Infraestrutura AquaviÃ¡ria",
+        "url":  "https://www.gov.br/dnit/pt-br/assuntos/aquaviario/patrimonio",
+        "uf":  null,
+        "lat":  -14.98095,
+        "lng":  -46.99851
+    },
+    {
+        "id":  7,
+        "name":  "Radar de TrÃ¡fego MarÃ­timo",
+        "url":  "https://www.marinetraffic.com/en/ais/home/centerx:-40.1/centery:-3.4/zoom:7",
+        "uf":  null,
+        "lat":  -14.9893,
+        "lng":  -46.98388
+    },
+    {
+        "id":  8,
+        "name":  "Radar de TrÃ¡fego MarÃ­timo",
+        "url":  "https://radar24.net/ship-radar/",
+        "uf":  null,
+        "lat":  -14.9893,
+        "lng":  -46.98388
+    },
+    {
+        "id":  9,
+        "name":  "Rotas de TrÃ¡fego MarÃ­timo",
+        "url":  "https://marineradar.de/en/",
+        "uf":  null,
+        "lat":  -14.98995,
+        "lng":  -46.99383
+    },
+    {
+        "id":  10,
+        "name":  "Pesquisa de Ferrys",
+        "url":  "https://www.ferryscanner.com/pt/navios-de-ferry",
+        "uf":  null,
+        "lat":  -14.99235,
+        "lng":  -46.97928
+    },
+    {
+        "id":  11,
+        "name":  "Pesquisa de Cruzeiros",
+        "url":  "https://centraldecruzeiros.com.br/",
+        "uf":  null,
+        "lat":  -14.9899,
+        "lng":  -46.98653
+    }
+]

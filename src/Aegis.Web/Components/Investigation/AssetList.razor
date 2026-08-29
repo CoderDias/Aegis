@@ -1,0 +1,53 @@
+@inject AssetService AssetService
+@inject UiNotificationService Notifications
+@inject WorkspaceState Workspace
+@using Aegis.Application.Dtos.Geo
+@using Aegis.Application.Dtos.Investigations
+
+@if (AssetsList.Count == 0)
+{
+    <EmptyState Title="Sem assets" Description="Adicione objetos a partir do mapa ou voos." />
+}
+else
+{
+    <div style="margin-top:12px">
+        <div class="aegis-panel__header" style="padding:6px 0">Assets (@AssetsList.Count)</div>
+        @foreach (var asset in AssetsList)
+        {
+            <button type="button"
+                    class="aegis-list-item aegis-list-item--clickable @(IsSelected(asset) ? "aegis-list-item--active" : "")"
+                    @onclick="() => SelectAsset(asset)">
+                <AssetDetail Asset="asset" />
+            </button>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public IReadOnlyList<AssetDto> AssetsList { get; set; } = [];
+    [Parameter] public Guid InvestigationId { get; set; }
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    public async Task AddFromSelectionAsync(string name, double? lat, double? lng)
+    {
+        if (lat is null || lng is null) return;
+
+        await AssetService.AddCoordinateAsync(
+            InvestigationId,
+            new CoordinateDto(lat.Value, lng.Value),
+            name);
+
+        Notifications.Show("Asset adicionado à investigação.", NotificationLevel.Success);
+        await OnChanged.InvokeAsync();
+    }
+
+    private void SelectAsset(AssetDto asset)
+    {
+        Workspace.Select("asset", asset.Id.ToString("N"), asset);
+        Workspace.ActiveTab = InspectorTab.Osint;
+    }
+
+    private bool IsSelected(AssetDto asset) =>
+        Workspace.Selection.Kind == "asset" &&
+        string.Equals(Workspace.Selection.Id, asset.Id.ToString("N"), StringComparison.OrdinalIgnoreCase);
+}
