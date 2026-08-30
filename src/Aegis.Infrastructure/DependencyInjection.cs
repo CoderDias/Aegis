@@ -50,6 +50,11 @@ public static class DependencyInjection
         services.Configure<HostDiscoveryOptions>(configuration.GetSection(HostDiscoveryOptions.SectionName));
         services.Configure<CensysOptions>(configuration.GetSection(CensysOptions.SectionName));
         services.Configure<RssOptions>(configuration.GetSection(RssOptions.SectionName));
+        services.PostConfigure<RssOptions>(options =>
+        {
+            var bundled = RssFeedDefaultsLoader.Load();
+            options.DefaultFeeds = RssFeedDefaultsLoader.Merge(bundled, options.DefaultFeeds);
+        });
         services.Configure<GeoIntelOptions>(configuration.GetSection(GeoIntelOptions.SectionName));
         services.Configure<RegionalPrefetchOptions>(configuration.GetSection(RegionalPrefetchOptions.SectionName));
 
@@ -176,6 +181,17 @@ public static class DependencyInjection
         }
 
         await IntegrationSettingsSeed.SeedAsync(db, configuration, cancellationToken).ConfigureAwait(false);
+
+        var rssOptions = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<RssOptions>>();
+        var rssStore = scope.ServiceProvider.GetRequiredService<IRssFeedStore>();
+        var loggerFactory = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
+        await DefaultRssFeedSeed.SeedAsync(
+                db,
+                rssStore,
+                rssOptions,
+                loggerFactory.CreateLogger("Aegis.Infrastructure.Data.Seed.DefaultRssFeedSeed"),
+                cancellationToken)
+            .ConfigureAwait(false);
 
         var integrationSettings = scope.ServiceProvider.GetRequiredService<IntegrationSettingsService>();
         await integrationSettings.WarmCacheAsync(cancellationToken).ConfigureAwait(false);

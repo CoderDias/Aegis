@@ -4,8 +4,7 @@ public sealed class OpenStreetMapOptions
 {
     public const string SectionName = "OpenStreetMap";
 
-    public string? StyleUrl { get; set; } =
-        "https://tiles.openfreemap.org/styles/dark";
+    public string? StyleUrl { get; set; }
 
     public string TileUrl { get; set; } =
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";

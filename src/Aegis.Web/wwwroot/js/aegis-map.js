@@ -640,19 +640,56 @@ window.aegisMap = (function () {
         const tileOpts = {
             attribution: options.attribution || "",
             maxZoom: options.maxZoom || 20,
-            minZoom: options.minZoom || 2
+            minZoom: options.minZoom || 2,
+            subdomains: "abc"
         };
 
-        if (options.styleUrl && typeof L.maplibreGL === "function") {
-            try {
-                L.maplibreGL({ style: options.styleUrl }).addTo(map);
-                return;
-            } catch {
-                // cai para raster escurecido
-            }
+        const useVector = Boolean(options.styleUrl) && typeof L.maplibreGL === "function";
+        if (!useVector) {
+            addRasterBaseLayer(map, el, options, tileOpts);
+            return;
         }
 
-        addRasterBaseLayer(map, el, options, tileOpts);
+        try {
+            const vectorLayer = L.maplibreGL({ style: options.styleUrl });
+            let usingRasterFallback = false;
+
+            const applyRasterFallback = (reason) => {
+                if (usingRasterFallback) {
+                    return;
+                }
+
+                usingRasterFallback = true;
+                console.warn("Aegis map: falling back to raster tiles.", reason || "");
+                try {
+                    map.removeLayer(vectorLayer);
+                } catch {
+                    // ignore cleanup errors
+                }
+
+                addRasterBaseLayer(map, el, options, tileOpts);
+                setTimeout(() => map.invalidateSize(), 0);
+            };
+
+            vectorLayer.addTo(map);
+
+            const glMap = vectorLayer.getMaplibreMap?.();
+            if (!glMap) {
+                applyRasterFallback("maplibre map unavailable");
+                return;
+            }
+
+            glMap.on("error", event => applyRasterFallback(event?.error || "maplibre error"));
+            glMap.once("idle", () => ensureMarkerLayersOnTop(map));
+            setTimeout(() => {
+                if (!usingRasterFallback && !glMap.isStyleLoaded?.()) {
+                    applyRasterFallback("style load timeout");
+                }
+            }, 5000);
+        } catch (error) {
+            console.warn("Aegis map: maplibre init failed, using raster tiles.", error);
+            addRasterBaseLayer(map, el, options, tileOpts);
+        }
     }
 
     return {

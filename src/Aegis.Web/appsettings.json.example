@@ -53,10 +53,7 @@
     "GeocodeBatchSize": 40,
     "MaxNewsMarkers": 2000,
     "NewsCacheMinutes": 15,
-    "DefaultFeeds": [
-      { "Title": "G1 — Brasil", "Url": "https://g1.globo.com/rss/g1/", "RegionQuery": "Brasília, Brasil" },
-      { "Title": "Agência Brasil", "Url": "https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml", "RegionQuery": "Brasília, Brasil" }
-    ]
+    "DefaultFeeds": []
   },
   "Nominatim": {
     "BaseUrl": "https://nominatim.openstreetmap.org",
@@ -99,10 +96,9 @@
     "MinZoom": 2
   },
   "OpenStreetMap": {
-    "StyleUrl": "https://tiles.openfreemap.org/styles/dark",
     "TileUrl": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     "FallbackTileUrl": "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
-    "Attribution": "&copy; OpenStreetMap contributors &copy; OpenFreeMap"
+    "Attribution": "&copy; OpenStreetMap contributors"
   },
   "Cache": {
     "FlightDataTtlMinutes": 2,

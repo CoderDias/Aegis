@@ -4,6 +4,7 @@ using System.Xml.Linq;
 using Aegis.Application.Abstractions;
 using Aegis.Application.Dtos.Intel;
 using Aegis.Infrastructure.Data;
+using Aegis.Infrastructure.Data.Seed;
 using Aegis.Infrastructure.Intel;
 using Aegis.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
@@ -50,97 +51,9 @@ public sealed partial class RssPollingService(
         await using var scope = scopeFactory.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AegisDbContext>();
         var store = scope.ServiceProvider.GetRequiredService<IRssFeedStore>();
-        var seeded = 0;
-        var configuredUrls = options.Value.DefaultFeeds
-            .Where(f => !string.IsNullOrWhiteSpace(f.Url))
-            .Select(f => f.Url.Trim())
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var feed in options.Value.DefaultFeeds)
-        {
-            if (string.IsNullOrWhiteSpace(feed.Url))
-            {
-                continue;
-            }
-
-            var url = feed.Url.Trim();
-            var existing = await db.RssFeeds
-                .FirstOrDefaultAsync(f => f.Url == url, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (existing is null)
-            {
-                await store.CreateAsync(new CreateRssFeedRequest(feed.Title, url, feed.RegionQuery), cancellationToken)
-                    .ConfigureAwait(false);
-                seeded++;
-                continue;
-            }
-
-            var regionQuery = string.IsNullOrWhiteSpace(feed.RegionQuery) ? null : feed.RegionQuery.Trim();
-            if (existing.Title != feed.Title.Trim())
-            {
-                existing.Title = feed.Title.Trim();
-            }
-
-            if (existing.DefaultRegionQuery != regionQuery)
-            {
-                existing.DefaultRegionQuery = regionQuery;
-            }
-        }
-
-        const string defesaNetFeedUrl = "https://www.defesanet.com.br/categoria/defense/feed/";
-        var canonicalDefesaNet = await db.RssFeeds
-            .FirstOrDefaultAsync(f => f.Url == defesaNetFeedUrl, cancellationToken)
+        await RssFeedSeeder.SyncAsync(db, store, options.Value.DefaultFeeds, logger, cancellationToken)
             .ConfigureAwait(false);
-
-        foreach (var legacy in await db.RssFeeds
-                     .Where(f => f.Title.Contains("DefesaNet") || f.Url.Contains("defesanet.com.br"))
-                     .ToListAsync(cancellationToken)
-                     .ConfigureAwait(false))
-        {
-            if (string.Equals(legacy.Url, defesaNetFeedUrl, StringComparison.OrdinalIgnoreCase))
-            {
-                legacy.Title = "DefesaNet";
-                legacy.Enabled = true;
-                continue;
-            }
-
-            if (canonicalDefesaNet is not null && canonicalDefesaNet.Id != legacy.Id)
-            {
-                legacy.Enabled = false;
-                continue;
-            }
-
-            legacy.Url = defesaNetFeedUrl;
-            legacy.Title = "DefesaNet";
-            legacy.Enabled = true;
-            canonicalDefesaNet = legacy;
-        }
-
-        var disabled = 0;
-        foreach (var orphan in await db.RssFeeds
-                     .Where(f => f.Enabled)
-                     .ToListAsync(cancellationToken)
-                     .ConfigureAwait(false))
-        {
-            if (!configuredUrls.Contains(orphan.Url))
-            {
-                orphan.Enabled = false;
-                disabled++;
-            }
-        }
-
-        if (seeded > 0)
-        {
-            logger.LogInformation("Seeded {Count} default RSS feeds", seeded);
-        }
-
-        if (disabled > 0)
-        {
-            logger.LogInformation("Disabled {Count} RSS feeds no longer in configuration", disabled);
-        }
-
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private async Task GeocodeRecentNewsAsync(CancellationToken cancellationToken)
