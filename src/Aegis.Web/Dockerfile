@@ -11,7 +11,10 @@ RUN dotnet restore src/Aegis.Web/Aegis.Web.csproj
 
 COPY src/ src/
 RUN cp src/Aegis.Web/appsettings.json.example src/Aegis.Web/appsettings.json
-RUN dotnet publish src/Aegis.Web/Aegis.Web.csproj -c Release -o /app/publish --no-restore
+# Publish must restore implicit SDK packages (Microsoft.AspNetCore.App.Internal.Assets)
+# that supply _framework/blazor.web.js. --no-restore skips them when restore ran
+# before .razor files were copied, causing 404 on blazor.web.js in the container.
+RUN dotnet publish src/Aegis.Web/Aegis.Web.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
